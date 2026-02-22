@@ -120,33 +120,60 @@ const { signup } = content;
 		if (!signupForm) return;
 
 		signupForm.addEventListener("submit", function (e) {
-			e.preventDefault(); // Prevent page reload causing a crash
+			e.preventDefault();
 
-			try {
-				var nameInput = signupForm.querySelector('input[name="name"]');
-				var emailInput = signupForm.querySelector('input[name="email"]');
-				var messageInput = signupForm.querySelector('textarea[name="message"]');
-				var email = emailInput ? emailInput.value.trim() : "";
-				var name = nameInput ? nameInput.value.trim() : "";
-				var message = messageInput ? messageInput.value.trim() : "";
+			var nameInput = signupForm.querySelector('input[name="name"]');
+			var emailInput = signupForm.querySelector('input[name="email"]');
+			var messageInput = signupForm.querySelector('textarea[name="message"]');
+			var email = emailInput ? emailInput.value.trim() : "";
+			var name = nameInput ? nameInput.value.trim() : "";
+			var message = messageInput ? messageInput.value.trim() : "";
 
-				if (email) {
-					window.posthog?.identify(email, { name: name || undefined });
+			// Show success screen immediately — don't wait on PostHog
+			if (formContainer && successMessage) {
+				formContainer.style.display = "none";
+				successMessage.classList.remove("hidden");
+				successMessage.classList.add("animate-fade-in");
+			}
+
+			// Send to PostHog — works even if called before PostHog fully loads
+			// because the stub queues calls made before initialisation completes
+			function sendToPostHog() {
+				try {
+					if (email) {
+						window.posthog.identify(email, {
+							name: name || undefined,
+							email: email,
+						});
+					}
+					window.posthog.capture("signup_form_submitted", {
+						name: name,
+						email: email,
+						message: message,
+						has_message: !!message,
+					});
+				} catch (err) {
+					// silently fail if posthog isn't available
 				}
+			}
 
-				window.posthog?.capture("signup_form_submitted", {
-					has_message: !!message,
-					message: message, // Captured in full
-				});
-
-				// Hide the form and display the success response
-				if (formContainer && successMessage) {
-					formContainer.style.display = "none";
-					successMessage.classList.remove("hidden");
-					successMessage.classList.add("animate-fade-in");
-				}
-			} catch (err) {
-				window.posthog?.captureException(err);
+			// If posthog is already available and initialised, send immediately
+			// otherwise wait up to 3s for it to load
+			if (window.posthog && window.posthog.__loaded) {
+				sendToPostHog();
+			} else {
+				var attempts = 0;
+				var interval = setInterval(function () {
+					attempts++;
+					if (window.posthog && window.posthog.__loaded) {
+						clearInterval(interval);
+						sendToPostHog();
+					} else if (attempts > 30) {
+						// 3 seconds passed — try anyway (stub will queue it)
+						clearInterval(interval);
+						sendToPostHog();
+					}
+				}, 100);
 			}
 		});
 	})();
