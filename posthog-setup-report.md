@@ -14,31 +14,31 @@ The wizard has completed a deep integration of PostHog analytics into the Muzibo
 
 ## Files created
 
-| File | Purpose |
-|---|---|
-| `src/components/posthog.astro` | PostHog JS snippet component (client-side) |
-| `src/lib/posthog-server.ts` | posthog-node singleton for server-side tracking |
+| File                           | Purpose                                         |
+| ------------------------------ | ----------------------------------------------- |
+| `src/components/posthog.astro` | PostHog JS snippet component (client-side)      |
+| `src/lib/posthog-server.ts`    | posthog-node singleton for server-side tracking |
 
 ## Files edited
 
-| File | Changes |
-|---|---|
-| `src/layouts/Layout.astro` | Imports and renders `<PostHog />` in `<head>` |
-| `src/pages/api/contact.ts` | Added `export const prerender = false`, server-side `contact_form_submitted_server` capture, and error tracking |
-| `src/components/MuzibooHero.astro` | Added `id="hero-cta-btn"` to CTA link and `signup_cta_clicked` capture script |
-| `src/components/MuzibooSignup.astro` | Added `signup_form_submitted` capture + `identify()` on submit |
-| `src/components/ContactForm.astro` | Added `contact_form_submitted` + `identify()` on success, `contact_form_submission_failed` + `captureException` on error |
-| `src/types/astro.d.ts` | Added `declare global { interface Window { posthog? } }` type declaration |
+| File                                 | Changes                                                                                                                  |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `src/layouts/Layout.astro`           | Imports and renders `<PostHog />` in `<head>`                                                                            |
+| `src/pages/api/contact.ts`           | Added `export const prerender = false`, server-side `contact_form_submitted_server` capture, and error tracking          |
+| `src/components/MuzibooHero.astro`   | Added `id="hero-cta-btn"` to CTA link and `signup_cta_clicked` capture script                                            |
+| `src/components/MuzibooSignup.astro` | Added `signup_form_submitted` capture + `identify()` on submit                                                           |
+| `src/components/ContactForm.astro`   | Added `contact_form_submitted` + `identify()` on success, `contact_form_submission_failed` + `captureException` on error |
+| `src/types/astro.d.ts`               | Added `declare global { interface Window { posthog? } }` type declaration                                                |
 
 ## Events instrumented
 
-| Event name | Description | File |
-|---|---|---|
-| `signup_cta_clicked` | User clicked the "Join Early Access" CTA button in the hero section | `src/components/MuzibooHero.astro` |
-| `signup_form_submitted` | User submitted the early access signup form (with identify) | `src/components/MuzibooSignup.astro` |
-| `contact_form_submitted` | Contact form successfully submitted via Web3Forms (with identify) | `src/components/ContactForm.astro` |
-| `contact_form_submission_failed` | Contact form submission failed (network error or Web3Forms error) | `src/components/ContactForm.astro` |
-| `contact_form_submitted_server` | Server-side: contact form submitted via the custom API route | `src/pages/api/contact.ts` |
+| Event name                       | Description                                                         | File                                 |
+| -------------------------------- | ------------------------------------------------------------------- | ------------------------------------ |
+| `signup_cta_clicked`             | User clicked the "Join Early Access" CTA button in the hero section | `src/components/MuzibooHero.astro`   |
+| `signup_form_submitted`          | User submitted the early access signup form (with identify)         | `src/components/MuzibooSignup.astro` |
+| `contact_form_submitted`         | Contact form successfully submitted via Web3Forms (with identify)   | `src/components/ContactForm.astro`   |
+| `contact_form_submission_failed` | Contact form submission failed (network error or Web3Forms error)   | `src/components/ContactForm.astro`   |
+| `contact_form_submitted_server`  | Server-side: contact form submitted via the custom API route        | `src/pages/api/contact.ts`           |
 
 ## Next steps
 

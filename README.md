@@ -137,11 +137,11 @@ Sass is installed and ready to use. You can use Sass in component `<style>` bloc
 
 ```astro
 <style lang="scss">
-  $primary-color: #000;
+	$primary-color: #000;
 
-  .my-component {
-    color: $primary-color;
-  }
+	.my-component {
+		color: $primary-color;
+	}
 </style>
 ```
 
@@ -157,7 +157,7 @@ A React component using Framer Motion for scroll-triggered animations:
 import ScrollReveal from "./ScrollReveal.tsx";
 
 <ScrollReveal client:load delay={0.2} scale={true}>
-  <div>Your content here</div>
+	<div>Your content here</div>
 </ScrollReveal>;
 ```
 
@@ -192,7 +192,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  # My MDX Page This is **markdown** with <Component /> support!
+	# My MDX Page This is **markdown** with <Component /> support!
 </Layout>
 ```
 
@@ -212,14 +212,14 @@ See `src/pages/example.mdx` for a complete example.
 
 ```javascript
 export default defineConfig({
-  integrations: [
-    react(), // React support
-    icon(), // Astro Icons
-    mdx(), // MDX support
-  ],
-  vite: {
-    plugins: [tailwindcss()],
-  },
+	integrations: [
+		react(), // React support
+		icon(), // Astro Icons
+		mdx(), // MDX support
+	],
+	vite: {
+		plugins: [tailwindcss()],
+	},
 });
 ```
 
@@ -229,7 +229,7 @@ export default defineConfig({
 import typography from "@tailwindcss/typography";
 
 export default {
-  plugins: [typography],
+	plugins: [typography],
 };
 ```
 

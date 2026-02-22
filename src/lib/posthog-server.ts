@@ -7,14 +7,14 @@ let posthogClient: PostHog | null = null;
  * Uses a singleton pattern to avoid creating multiple clients.
  */
 export function getPostHogServer(): PostHog {
-  if (!posthogClient) {
-    posthogClient = new PostHog(import.meta.env.PUBLIC_POSTHOG_KEY || "", {
-      host: import.meta.env.PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
-      flushAt: 1,
-      flushInterval: 0,
-    });
-  }
-  return posthogClient;
+	if (!posthogClient) {
+		posthogClient = new PostHog(import.meta.env.PUBLIC_POSTHOG_KEY || "", {
+			host: import.meta.env.PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
+			flushAt: 1,
+			flushInterval: 0,
+		});
+	}
+	return posthogClient;
 }
 
 /**
@@ -22,8 +22,8 @@ export function getPostHogServer(): PostHog {
  * Call this when your server is shutting down.
  */
 export async function shutdownPostHog(): Promise<void> {
-  if (posthogClient) {
-    await posthogClient.shutdown();
-    posthogClient = null;
-  }
+	if (posthogClient) {
+		await posthogClient.shutdown();
+		posthogClient = null;
+	}
 }

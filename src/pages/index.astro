@@ -5,10 +5,7 @@ import MuzibooHeader from "../components/MuzibooHeader.astro";
 import MuzibooHero from "../components/MuzibooHero.astro";
 import MuzibooFeatures from "../components/MuzibooFeatures.astro";
 import MuzibooManifesto from "../components/MuzibooManifesto.astro";
-<<<<<<< HEAD
-=======
 import MuzibooSignup from "../components/MuzibooSignup.astro";
->>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
 import MuzibooFooter from "../components/MuzibooFooter.astro";
 import { content, defaultLang, type Lang } from "../i18n";
 import { SITE } from "../config/site.mjs";
@@ -17,20 +14,17 @@ const t = content[defaultLang as Lang];
 ---
 
 <Layout
-  title={SITE.title}
-  description={SITE.description}
-  canonicalURL={Astro.url.href}
-  lang={defaultLang}
+	title={SITE.title}
+	description={SITE.description}
+	canonicalURL={Astro.url.href}
+	lang={defaultLang}
 >
-  <MuzibooHeader lang={defaultLang} content={t} />
-  <main id="main-content" role="main">
-    <MuzibooHero content={t} />
-    <MuzibooFeatures content={t} />
-    <MuzibooManifesto content={t} />
-<<<<<<< HEAD
-=======
-    <MuzibooSignup content={t} />
->>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
-  </main>
-  <MuzibooFooter content={t} lang={defaultLang} />
+	<MuzibooHeader lang={defaultLang} content={t} />
+	<main id="main-content" role="main">
+		<MuzibooHero content={t} />
+		<MuzibooFeatures content={t} />
+		<MuzibooManifesto content={t} />
+		<MuzibooSignup content={t} />
+	</main>
+	<MuzibooFooter content={t} lang={defaultLang} />
 </Layout>

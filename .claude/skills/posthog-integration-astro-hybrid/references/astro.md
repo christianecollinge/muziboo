@@ -150,9 +150,9 @@ For any technical questions for how to integrate specific PostHog features into 
 
 Alternatively, the following tutorials can help you get started:
 
--   [How to set up Astro analytics, feature flags, and more](/tutorials/astro-analytics.md)
--   [How to set up A/B tests in Astro](/tutorials/astro-ab-tests.md)
--   [How to set up surveys in Astro](/tutorials/astro-surveys.md)
+- [How to set up Astro analytics, feature flags, and more](/tutorials/astro-analytics.md)
+- [How to set up A/B tests in Astro](/tutorials/astro-ab-tests.md)
+- [How to set up surveys in Astro](/tutorials/astro-surveys.md)
 
 ### Community questions
 
