@@ -3,7 +3,7 @@ import ScrollReveal from "./ScrollReveal.tsx";
 import type { Content } from "../i18n";
 
 interface Props {
-  content: Content;
+	content: Content;
 }
 
 const { content } = Astro.props;
@@ -11,127 +11,143 @@ const { signup } = content;
 ---
 
 <section
-  id="early-signup"
-  class="max-w-xl mx-auto px-4 py-20 border-t border-muziboo-border"
-  aria-labelledby="signup-title"
+	id="early-signup"
+	class="max-w-xl mx-auto px-4 py-20 border-t border-muziboo-border"
+	aria-labelledby="signup-title"
 >
-  <ScrollReveal client:idle>
-    <div
-      class="bg-muziboo-bg p-8 rounded-lg border border-muziboo-border text-center"
-    >
-      <h2
-        id="signup-title"
-        class="text-xl md:text-2xl font-semibold text-muziboo-gold mb-6"
-      >
-        {signup.title}
-      </h2>
+	<ScrollReveal client:idle>
+		<div
+			class="bg-muziboo-bg p-8 rounded-lg border border-muziboo-border text-center"
+		>
+			<h2
+				id="signup-title"
+				class="text-xl md:text-2xl font-semibold text-muziboo-gold mb-6"
+			>
+				{signup.title}
+			</h2>
 
-      <div id="signup-form-container">
-        <form class="space-y-4 text-left" id="signup-form" action="#" method="POST">
-          <div>
-            <label
-              for="name"
-              class="block text-sm font-medium text-muziboo-text-muted mb-1"
-              >{signup.name}</label
-            >
-            <input
-              type="text"
-              id="name"
-              name="name"
-              required
-              class="w-full bg-muziboo-bg border border-muziboo-border rounded-md px-4 py-2 text-muziboo-text focus:outline-none focus:ring-2 focus:ring-muziboo-gold"
-            />
-          </div>
-          <div>
-            <label
-              for="email"
-              class="block text-sm font-medium text-muziboo-text-muted mb-1"
-              >{signup.email}</label
-            >
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              class="w-full bg-muziboo-bg border border-muziboo-border rounded-md px-4 py-2 text-muziboo-text focus:outline-none focus:ring-2 focus:ring-muziboo-gold"
-            />
-          </div>
-          <div>
-            <label
-              for="message"
-              class="block text-sm font-medium text-muziboo-text-muted mb-1"
-              >{signup.message}</label
-            >
-            <textarea
-              id="message"
-              name="message"
-              rows="3"
-              class="w-full bg-muziboo-bg border border-muziboo-border rounded-md px-4 py-2 text-muziboo-text focus:outline-none focus:ring-2 focus:ring-muziboo-gold resize-none"
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-muziboo-gold text-muziboo-bg font-semibold py-3 rounded-md hover:opacity-90 transition-opacity mt-4"
-          >
-            {signup.submit}
-          </button>
-        </form>
-      </div>
+			<div id="signup-form-container">
+				<form
+					class="space-y-4 text-left"
+					id="signup-form"
+					action="#"
+					method="POST"
+				>
+					<div>
+						<label
+							for="name"
+							class="block text-sm font-medium text-muziboo-text-muted mb-1"
+							>{signup.name}</label
+						>
+						<input
+							type="text"
+							id="name"
+							name="name"
+							required
+							class="w-full bg-muziboo-bg border border-muziboo-border rounded-md px-4 py-2 text-muziboo-text focus:outline-none focus:ring-2 focus:ring-muziboo-gold"
+						/>
+					</div>
+					<div>
+						<label
+							for="email"
+							class="block text-sm font-medium text-muziboo-text-muted mb-1"
+							>{signup.email}</label
+						>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							required
+							class="w-full bg-muziboo-bg border border-muziboo-border rounded-md px-4 py-2 text-muziboo-text focus:outline-none focus:ring-2 focus:ring-muziboo-gold"
+						/>
+					</div>
+					<div>
+						<label
+							for="message"
+							class="block text-sm font-medium text-muziboo-text-muted mb-1"
+							>{signup.message}</label
+						>
+						<textarea
+							id="message"
+							name="message"
+							rows="3"
+							class="w-full bg-muziboo-bg border border-muziboo-border rounded-md px-4 py-2 text-muziboo-text focus:outline-none focus:ring-2 focus:ring-muziboo-gold resize-none"
+						></textarea>
+					</div>
+					<button
+						type="submit"
+						class="w-full bg-muziboo-gold text-muziboo-bg font-semibold py-3 rounded-md hover:opacity-90 transition-opacity mt-4"
+					>
+						{signup.submit}
+					</button>
+				</form>
+			</div>
 
-      <div id="signup-success-message" class="hidden py-10 fade-in">
-        <div class="inline-flex justify-center items-center w-16 h-16 rounded-full bg-muziboo-border mb-6">
-          <svg class="w-8 h-8 text-muziboo-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h3 class="text-2xl font-semibold text-muziboo-gold mb-3">
-          {signup.successTitle}
-        </h3>
-        <p class="text-muziboo-text/90 text-lg">
-          {signup.successText}
-        </p>
-      </div>
-    </div>
-  </ScrollReveal>
+			<div id="signup-success-message" class="hidden py-10 fade-in">
+				<div
+					class="inline-flex justify-center items-center w-16 h-16 rounded-full bg-muziboo-border mb-6"
+				>
+					<svg
+						class="w-8 h-8 text-muziboo-gold"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M5 13l4 4L19 7"></path>
+					</svg>
+				</div>
+				<h3 class="text-2xl font-semibold text-muziboo-gold mb-3">
+					{signup.successTitle}
+				</h3>
+				<p class="text-muziboo-text/90 text-lg">
+					{signup.successText}
+				</p>
+			</div>
+		</div>
+	</ScrollReveal>
 </section>
 
 <script is:inline>
-  (function () {
-    var signupForm = document.getElementById("signup-form");
-    var formContainer = document.getElementById("signup-form-container");
-    var successMessage = document.getElementById("signup-success-message");
-    
-    if (!signupForm) return;
+	(function () {
+		var signupForm = document.getElementById("signup-form");
+		var formContainer = document.getElementById("signup-form-container");
+		var successMessage = document.getElementById("signup-success-message");
 
-    signupForm.addEventListener("submit", function (e) {
-      e.preventDefault(); // Prevent page reload causing a crash
+		if (!signupForm) return;
 
-      try {
-        var nameInput = signupForm.querySelector('input[name="name"]');
-        var emailInput = signupForm.querySelector('input[name="email"]');
-        var messageInput = signupForm.querySelector('textarea[name="message"]');
-        var email = emailInput ? emailInput.value.trim() : "";
-        var name = nameInput ? nameInput.value.trim() : "";
-        var message = messageInput ? messageInput.value.trim() : "";
+		signupForm.addEventListener("submit", function (e) {
+			e.preventDefault(); // Prevent page reload causing a crash
 
-        if (email) {
-          window.posthog?.identify(email, { name: name || undefined });
-        }
+			try {
+				var nameInput = signupForm.querySelector('input[name="name"]');
+				var emailInput = signupForm.querySelector('input[name="email"]');
+				var messageInput = signupForm.querySelector('textarea[name="message"]');
+				var email = emailInput ? emailInput.value.trim() : "";
+				var name = nameInput ? nameInput.value.trim() : "";
+				var message = messageInput ? messageInput.value.trim() : "";
 
-        window.posthog?.capture("signup_form_submitted", {
-          has_message: !!message,
-          message: message, // Captured in full
-        });
+				if (email) {
+					window.posthog?.identify(email, { name: name || undefined });
+				}
 
-        // Hide the form and display the success response
-        if (formContainer && successMessage) {
-          formContainer.style.display = "none";
-          successMessage.classList.remove("hidden");
-          successMessage.classList.add("animate-fade-in");
-        }
-      } catch (err) {
-        window.posthog?.captureException(err);
-      }
-    });
-  })();
+				window.posthog?.capture("signup_form_submitted", {
+					has_message: !!message,
+					message: message, // Captured in full
+				});
+
+				// Hide the form and display the success response
+				if (formContainer && successMessage) {
+					formContainer.style.display = "none";
+					successMessage.classList.remove("hidden");
+					successMessage.classList.add("animate-fade-in");
+				}
+			} catch (err) {
+				window.posthog?.captureException(err);
+			}
+		});
+	})();
 </script>
