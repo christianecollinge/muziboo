@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Muziboo theme — Tailwind v4 @theme so utilities (bg-muziboo-bg, text-muziboo-gold, etc.) are generated */
+@theme {
+  --color-muziboo-bg: #121921;
+  --color-muziboo-bg-softer: #1a222c;
+  --color-muziboo-gold: #d9b682;
+  --color-muziboo-gold-muted: #b89d6b;
+  --color-muziboo-text: #e5e0d8;
+  --color-muziboo-text-muted: #9c9588;
+  --color-muziboo-red: #cf493c;
+  --color-muziboo-orange: #e88b5d;
+  --color-muziboo-teal: #51817e;
+  --color-muziboo-teal-light: #6a9e9a;
+  --color-muziboo-bar-1: #cf493c;
+  --color-muziboo-bar-2: #e88b5d;
+  --color-muziboo-bar-3: #d9b682;
+  --color-muziboo-bar-4: #e5e0d8;
+  --color-muziboo-bar-5: #51817e;
+  --color-muziboo-bar-6: #6a9e9a;
+  --color-muziboo-border: rgba(217, 182, 130, 0.2);
+}
+
+/* Muziboo uses DM Sans */
+body {
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Keep raw CSS vars for inline styles (e.g. feature card bars) */
+:root {
+  --muziboo-bg: #121921;
+  --muziboo-bg-softer: #1a222c;
+  --muziboo-gold: #d9b682;
+  --muziboo-gold-muted: #b89d6b;
+  --muziboo-text: #e5e0d8;
+  --muziboo-text-muted: #9c9588;
+  --muziboo-red: #cf493c;
+  --muziboo-orange: #e88b5d;
+  --muziboo-teal: #51817e;
+  --muziboo-teal-light: #6a9e9a;
+  --muziboo-bar-1: #cf493c;
+  --muziboo-bar-2: #e88b5d;
+  --muziboo-bar-3: #d9b682;
+  --muziboo-bar-4: #e5e0d8;
+  --muziboo-bar-5: #51817e;
+  --muziboo-bar-6: #6a9e9a;
+  --muziboo-border: rgba(217, 182, 130, 0.2);
+}
+
+/* Accessibility: Skip to content link */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+<<<<<<< HEAD
+}
+=======
+}
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)

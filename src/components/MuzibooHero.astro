@@ -1,0 +1,123 @@
+---
+import ScrollReveal from "./ScrollReveal.tsx";
+import type { Content } from "../i18n";
+
+interface Props {
+  content: Content;
+}
+
+const { content } = Astro.props;
+const { hero } = content;
+---
+
+<section
+  class="max-w-5xl mx-auto px-4 py-20 md:py-28"
+  aria-labelledby="hero-heading"
+>
+  <div class="flex flex-col md:flex-row md:items-center md:gap-12 lg:gap-16">
+    <ScrollReveal client:load class="flex-shrink-0 order-2 md:order-1">
+      <div class="flex justify-center md:justify-end mb-8 md:mb-0">
+        <video
+          src="/hero-logo.m4v"
+          autoplay
+          loop
+          muted
+          playsinline
+          class="w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain rounded-lg"
+<<<<<<< HEAD
+          aria-hidden="true"
+        />
+=======
+          aria-hidden="true"></video>
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+      </div>
+    </ScrollReveal>
+    <div class="flex-1 min-w-0 order-1 md:order-2 md:text-left">
+      <ScrollReveal client:load>
+        <h1
+          id="hero-heading"
+          class="text-4xl md:text-5xl lg:text-6xl font-semibold text-muziboo-text mb-2 tracking-tight"
+        >
+          {hero.line1}<br />{hero.line2}
+        </h1>
+      </ScrollReveal>
+      <ScrollReveal client:load delay={0.15}>
+        <p class="text-muziboo-text-muted text-lg md:text-xl mt-6 mb-2">
+          {hero.notPlatform}<br />
+          {hero.notTalent}<br />
+          <span class="text-muziboo-gold">{hero.workshop}</span>
+        </p>
+      </ScrollReveal>
+      <ScrollReveal client:load delay={0.25}>
+<<<<<<< HEAD
+        <p class="text-muziboo-text/90 text-base md:text-lg mt-8 mb-4 md:max-w-xl">
+          {hero.description}
+        </p>
+        <p class="text-muziboo-gold-muted text-sm md:text-base">
+          {hero.share}
+        </p>
+=======
+        <p
+          class="text-muziboo-text/90 text-base md:text-lg mt-8 mb-4 md:max-w-xl"
+        >
+          {hero.description}
+        </p>
+        <p class="text-muziboo-gold-muted text-sm md:text-base mb-8">
+          {hero.share}
+        </p>
+        <div class="mt-6">
+          <a
+            href="#early-signup"
+            id="hero-cta-btn"
+            class="inline-block bg-muziboo-gold text-muziboo-bg font-semibold px-8 py-3.5 rounded-md hover:bg-muziboo-text hover:text-muziboo-bg transition-colors"
+          >
+            {content.signup.button}
+          </a>
+        </div>
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+      </ScrollReveal>
+      <ScrollReveal client:load delay={0.35}>
+        <div
+          class="mt-10 flex gap-2 md:justify-start justify-center"
+          aria-hidden="true"
+        >
+<<<<<<< HEAD
+          <span class="w-8 h-10 rounded-sm bg-muziboo-bar-1 opacity-90" />
+          <span class="w-8 h-6 rounded-sm bg-muziboo-bar-2 opacity-90" />
+          <span class="w-8 h-12 rounded-sm bg-muziboo-bar-3 opacity-90" />
+          <span class="w-8 h-14 rounded-sm bg-muziboo-bar-4 opacity-90" />
+          <span class="w-8 h-9 rounded-sm bg-muziboo-bar-5 opacity-90" />
+          <span class="w-8 h-16 rounded-sm bg-muziboo-bar-6 opacity-90" />
+=======
+          <span class="w-8 h-10 rounded-sm bg-muziboo-bar-1 opacity-90"></span>
+          <span class="w-8 h-6 rounded-sm bg-muziboo-bar-2 opacity-90"></span>
+          <span class="w-8 h-12 rounded-sm bg-muziboo-bar-3 opacity-90"></span>
+          <span class="w-8 h-14 rounded-sm bg-muziboo-bar-4 opacity-90"></span>
+          <span class="w-8 h-9 rounded-sm bg-muziboo-bar-5 opacity-90"></span>
+          <span class="w-8 h-16 rounded-sm bg-muziboo-bar-6 opacity-90"></span>
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+        </div>
+      </ScrollReveal>
+    </div>
+  </div>
+</section>
+<<<<<<< HEAD
+=======
+
+<script is:inline>
+  (function () {
+    var ctaBtn = document.getElementById("hero-cta-btn");
+    if (ctaBtn) {
+      ctaBtn.addEventListener("click", function () {
+        try {
+          window.posthog?.capture("signup_cta_clicked", {
+            location: "hero",
+          });
+        } catch (err) {
+          window.posthog?.captureException(err);
+        }
+      });
+    }
+  })();
+</script>
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)

@@ -1,0 +1,41 @@
+---
+import ScrollReveal from "./ScrollReveal.tsx";
+import type { Content } from "../i18n";
+
+interface Props {
+  content: Content;
+}
+
+const { content } = Astro.props;
+const { manifesto } = content;
+---
+
+<section
+  id="manifesto"
+  class="max-w-3xl mx-auto px-4 py-20 md:py-28 border-t border-muziboo-border"
+  aria-labelledby="manifesto-title"
+>
+  <ScrollReveal client:idle>
+    <h2
+      id="manifesto-title"
+      class="text-xl md:text-2xl font-semibold text-muziboo-gold mb-12 text-center"
+    >
+      {manifesto.title}
+    </h2>
+  </ScrollReveal>
+  <div class="prose prose-invert max-w-none prose-p:text-muziboo-text/95">
+    <ScrollReveal client:idle delay={0.1}>
+<<<<<<< HEAD
+      <div class="space-y-6 text-muziboo-text/95 text-base md:text-lg leading-relaxed">
+=======
+      <div class="space-y-4 text-muziboo-text/95 text-base md:text-lg leading-normal">
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+        {
+          manifesto.paragraphs.map((p, i) => (
+            <p class="m-0">{p}</p>
+          ))
+        }
+      </div>
+    </ScrollReveal>
+  </div>
+</section>

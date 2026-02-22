@@ -1,0 +1,70 @@
+---
+import { languages, labels, type Lang } from "../i18n";
+import type { Content } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  content: Content;
+}
+
+const { lang, content } = Astro.props;
+---
+
+<header
+  class="w-full py-4 px-4 border-b border-muziboo-border bg-muziboo-bg/95 backdrop-blur sticky top-0 z-50"
+  role="banner"
+>
+  <nav
+    class="max-w-4xl mx-auto flex items-center justify-between"
+    aria-label="Main navigation"
+  >
+    <a
+      href={lang === "en" ? "/" : `/${lang}`}
+      class="flex items-center gap-3 text-muziboo-gold hover:text-muziboo-gold-muted transition-colors"
+      aria-label="Muziboo — Home"
+    >
+      <img
+        src="/logo.png"
+        alt=""
+        width="40"
+        height="40"
+        class="w-10 h-10 object-contain"
+      />
+      <span class="text-xl font-semibold tracking-tight">muziboo</span>
+    </a>
+
+    <div class="flex items-center gap-4">
+      <a
+        href={`#features`}
+        class="hidden sm:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
+      >
+        {content.nav.features}
+      </a>
+      <a
+        href={`#manifesto`}
+        class="hidden sm:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
+      >
+        {content.nav.manifesto}
+      </a>
+
+      <div class="flex items-center gap-1" role="group" aria-label="Language">
+        {
+          languages.map((l) => (
+            <a
+              href={l === "en" ? "/" : `/${l}`}
+              class={`px-2 py-1 rounded text-sm font-medium transition-colors ${
+                l === lang
+                  ? "text-muziboo-gold bg-muziboo-gold/10"
+                  : "text-muziboo-text-muted hover:text-muziboo-text"
+              }`}
+              aria-current={l === lang ? "true" : undefined}
+              aria-label={`Switch to ${labels[l]}`}
+            >
+              {labels[l]}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </nav>
+</header>

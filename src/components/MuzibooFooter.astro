@@ -1,0 +1,38 @@
+---
+import type { Content } from "../i18n";
+
+interface Props {
+  content: Content;
+  lang: string;
+}
+
+const { content } = Astro.props;
+const { footer } = content;
+---
+
+<footer
+  class="w-full py-6 px-4 bg-muziboo-bg"
+  role="contentinfo"
+>
+  <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+    <div class="flex items-center gap-2 text-muziboo-text-muted tracking-wide">
+      <span class="text-muziboo-text font-semibold tracking-tight">{footer.brand}</span>
+      <span aria-hidden="true">·</span>
+      <span>{footer.est}</span>
+      <span aria-hidden="true">·</span>
+      <span>{footer.reborn}</span>
+    </div>
+    <nav class="flex items-center gap-6 text-muziboo-text-muted uppercase tracking-widest" aria-label="Footer">
+<<<<<<< HEAD
+      <a href="#" class="hover:text-muziboo-gold transition-colors">{footer.facebook}</a>
+=======
+      <a href="https://www.facebook.com/muziboo" target="_blank" rel="noopener noreferrer" class="hover:text-muziboo-gold transition-colors">{footer.facebook}</a>
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+      <a href="#" class="hover:text-muziboo-gold transition-colors">{footer.privacy}</a>
+      <a href="#" class="hover:text-muziboo-gold transition-colors">{footer.terms}</a>
+    </nav>
+    <div class="text-muziboo-text-muted uppercase tracking-widest">
+      {footer.copyright}
+    </div>
+  </div>
+</footer>

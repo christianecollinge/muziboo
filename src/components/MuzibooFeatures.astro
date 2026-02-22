@@ -1,0 +1,55 @@
+---
+import ScrollReveal from "./ScrollReveal.tsx";
+import type { Content } from "../i18n";
+
+interface Props {
+  content: Content;
+}
+
+const { content } = Astro.props;
+const { features } = content;
+const barVars = [
+  "var(--muziboo-bar-1)",
+  "var(--muziboo-bar-2)",
+  "var(--muziboo-bar-3)",
+  "var(--muziboo-bar-4)",
+  "var(--muziboo-bar-5)",
+  "var(--muziboo-bar-6)",
+];
+---
+
+<section id="features" class="max-w-4xl mx-auto px-4 py-20 md:py-28 border-t border-muziboo-border">
+  <ScrollReveal client:idle delay={0.1}>
+    <h2 class="text-2xl md:text-3xl font-semibold text-muziboo-gold text-center mb-14">
+      {features.title}
+    </h2>
+  </ScrollReveal>
+  <div class="grid md:grid-cols-2 gap-8 md:gap-10">
+    {
+      features.items.map((item, i) => (
+        <ScrollReveal client:idle delay={0.1 + i * 0.05} scale={true}>
+          <article
+            class="p-6 rounded-lg border border-muziboo-border bg-muziboo-bg-softer/50 hover:border-muziboo-gold/30 transition-colors"
+          >
+            <div
+              class="w-10 h-10 rounded flex items-center justify-center mb-4"
+              style={`background-color: color-mix(in srgb, ${barVars[i]} 20%, transparent);`}
+            >
+              <span
+                class="w-1.5 h-6 rounded-full opacity-80"
+                style={`background: ${barVars[i]};`}
+                aria-hidden="true"
+              />
+            </div>
+            <h3 class="text-lg font-semibold text-muziboo-text mb-2">
+              {item.title}
+            </h3>
+            <p class="text-muziboo-text-muted text-sm leading-relaxed">
+              {item.body}
+            </p>
+          </article>
+        </ScrollReveal>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,50 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MuzibooHeader from "../../components/MuzibooHeader.astro";
+import MuzibooHero from "../../components/MuzibooHero.astro";
+import MuzibooFeatures from "../../components/MuzibooFeatures.astro";
+import MuzibooManifesto from "../../components/MuzibooManifesto.astro";
+<<<<<<< HEAD
+=======
+import MuzibooSignup from "../../components/MuzibooSignup.astro";
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+import MuzibooFooter from "../../components/MuzibooFooter.astro";
+import { content, defaultLang, type Lang } from "../../i18n";
+import { SITE } from "../../config/site.mjs";
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: "en" } },
+    { params: { lang: "de" } },
+    { params: { lang: "es" } },
+  ];
+}
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const langKey = lang ?? defaultLang;
+const safeLang = langKey in content ? langKey : defaultLang;
+const t = content[safeLang as Lang];
+---
+
+<Layout
+  title={SITE.title}
+  description={SITE.description}
+  canonicalURL={Astro.url.href}
+  lang={safeLang}
+>
+  <MuzibooHeader lang={safeLang} content={t} />
+  <main id="main-content" role="main">
+    <MuzibooHero content={t} />
+    <MuzibooFeatures content={t} />
+    <MuzibooManifesto content={t} />
+<<<<<<< HEAD
+=======
+    <MuzibooSignup content={t} />
+>>>>>>> b1623401 (feat: init muziboo site with signup and posthog)
+  </main>
+  <MuzibooFooter content={t} lang={safeLang} />
+</Layout>
