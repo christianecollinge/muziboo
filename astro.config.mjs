@@ -5,10 +5,13 @@ import icon from "astro-icon";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import cloudflare from "@astrojs/cloudflare";
 import { SITE } from "./src/config/site.mjs";
 
 // https://astro.build/config
 export default defineConfig({
+	output: "server",
+	adapter: cloudflare(),
 	site: SITE.url,
 	integrations: [
 		react(),
