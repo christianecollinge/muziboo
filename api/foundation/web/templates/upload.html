@@ -1,0 +1,185 @@
+{{define "content"}}
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-muziboo-bg-softer rounded-xl p-8 border border-muziboo-border">
+        <h1 class="text-3xl font-semibold text-muziboo-text mb-2">Upload a Track</h1>
+        <p class="text-muziboo-text-muted mb-8">Share what you're working on. Demos, fragments, works in progress — everything is welcome.</p>
+
+        <div id="upload-error" class="hidden mb-4 text-muziboo-red text-sm bg-muziboo-red/10 rounded-lg px-4 py-3"></div>
+        <div id="upload-success" class="hidden mb-6 bg-muziboo-teal/10 border border-muziboo-teal/30 rounded-lg px-4 py-3">
+            <p class="text-muziboo-teal-light font-medium">Track uploaded!</p>
+            <p class="text-muziboo-text-muted text-sm mt-1">
+                Your track is now live.
+                <a href="/app/dashboard" class="text-muziboo-gold hover:underline">View your dashboard</a>
+            </p>
+        </div>
+
+        <form id="upload-form" class="space-y-6" onsubmit="handleUpload(event)">
+            <!-- Audio file -->
+            <div>
+                <label class="block text-sm font-medium text-muziboo-text mb-2">Audio File *</label>
+                <input id="audio-file" type="file" accept="audio/*" class="hidden" onchange="updateAudioLabel(this)" />
+                <button type="button" onclick="document.getElementById('audio-file').click()"
+                        id="audio-drop"
+                        class="w-full border-2 border-dashed border-muziboo-border rounded-xl py-8 px-4 text-center hover:border-muziboo-gold/50 transition-colors group">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto text-muziboo-text-muted/50 mb-2 group-hover:text-muziboo-gold transition-colors">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <p id="audio-label" class="text-muziboo-text-muted group-hover:text-muziboo-text transition-colors">Click to select audio file</p>
+                    <p class="text-muziboo-text-muted/50 text-sm mt-1">MP3, WAV, FLAC, M4A, OGG · Max 50 MB</p>
+                </button>
+            </div>
+
+            <!-- Artwork -->
+            <div>
+                <label class="block text-sm font-medium text-muziboo-text mb-2">Artwork (optional)</label>
+                <input id="artwork-file" type="file" accept="image/*" class="hidden" onchange="previewArtwork(this)" />
+                <button type="button" onclick="document.getElementById('artwork-file').click()"
+                        class="border-2 border-dashed border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold/50 transition-colors group w-40 h-40">
+                    <div id="artwork-preview-container" class="w-full h-full flex flex-col items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-text-muted/50 mb-1 group-hover:text-muziboo-gold transition-colors">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span class="text-xs text-muziboo-text-muted/50 group-hover:text-muziboo-text-muted transition-colors">Add artwork</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-muziboo-text mb-1.5">Title *</label>
+                <input id="title" type="text" required placeholder="What's this track called?"
+                       class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
+            </div>
+
+            <!-- Genre -->
+            <div>
+                <label for="genre" class="block text-sm font-medium text-muziboo-text mb-1.5">Genre</label>
+                <select id="genre"
+                        class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text focus:outline-none focus:border-muziboo-gold transition-colors">
+                    <option value="">Select genre (optional)</option>
+                    <option>Rock</option><option>Jazz</option><option>Classical</option>
+                    <option>Electronic</option><option>Hip Hop</option><option>Folk</option>
+                    <option>Blues</option><option>Metal</option><option>Punk</option>
+                    <option>Ambient</option><option>Experimental</option><option>World</option>
+                    <option>Singer-Songwriter</option><option>Lo-Fi</option><option>Other</option>
+                </select>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-muziboo-text mb-1.5">Description</label>
+                <textarea id="description" rows="3"
+                          placeholder="Tell us about this track... What's the story? What gear did you use?"
+                          class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors resize-none"></textarea>
+            </div>
+
+            <button type="submit" id="upload-btn"
+                    class="w-full bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-3.5 rounded-lg hover:bg-muziboo-text hover:text-muziboo-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Upload Track
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+const API_URL = window.location.origin;
+
+function updateAudioLabel(input) {
+    const label = document.getElementById('audio-label');
+    if (input.files[0]) {
+        const f = input.files[0];
+        label.textContent = f.name + ' (' + (f.size / (1024*1024)).toFixed(1) + ' MB)';
+        label.classList.add('text-muziboo-text');
+    }
+}
+
+function previewArtwork(input) {
+    if (input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const c = document.getElementById('artwork-preview-container');
+            c.innerHTML = '<img src="' + e.target.result + '" class="w-full h-full object-cover" />';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+async function handleUpload(e) {
+    e.preventDefault();
+    const btn = document.getElementById('upload-btn');
+    const errEl = document.getElementById('upload-error');
+    const successEl = document.getElementById('upload-success');
+    errEl.classList.add('hidden');
+    successEl.classList.add('hidden');
+    btn.disabled = true;
+
+    const token = await getToken();
+    if (!token) { window.location.href = '/app/login'; return; }
+
+    const audioFile = document.getElementById('audio-file').files[0];
+    const artworkFile = document.getElementById('artwork-file').files[0];
+    const title = document.getElementById('title').value;
+    const genre = document.getElementById('genre').value;
+    const description = document.getElementById('description').value;
+
+    if (!audioFile) {
+        errEl.textContent = 'Please select an audio file';
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        return;
+    }
+
+    try {
+        // 1. Upload audio
+        btn.textContent = 'Uploading audio…';
+        const audioForm = new FormData();
+        audioForm.append('file', audioFile);
+        const audioRes = await fetch(API_URL + '/api/upload/audio', {
+            method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: audioForm
+        });
+        if (!audioRes.ok) throw new Error('Audio upload failed');
+        const audioData = await audioRes.json();
+
+        // 2. Upload artwork (optional)
+        let artworkUrl = '';
+        if (artworkFile) {
+            btn.textContent = 'Uploading artwork…';
+            const artForm = new FormData();
+            artForm.append('file', artworkFile);
+            const artRes = await fetch(API_URL + '/api/upload/artwork', {
+                method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: artForm
+            });
+            if (artRes.ok) {
+                const artData = await artRes.json();
+                artworkUrl = artData.url;
+            }
+        }
+
+        // 3. Create track record
+        btn.textContent = 'Creating track…';
+        const trackRes = await fetch(API_URL + '/api/tracks', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, description, genre, audio_url: audioData.url, artwork_url: artworkUrl })
+        });
+        if (!trackRes.ok) throw new Error('Track creation failed');
+
+        successEl.classList.remove('hidden');
+        document.getElementById('upload-form').reset();
+        document.getElementById('audio-label').textContent = 'Click to select audio file';
+        document.getElementById('artwork-preview-container').innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-text-muted/50 mb-1">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+            </svg>
+            <span class="text-xs text-muziboo-text-muted/50">Add artwork</span>
+        `;
+    } catch (err) {
+        errEl.textContent = err.message || 'Upload failed';
+        errEl.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Upload Track';
+    }
+}
+</script>
+{{end}}

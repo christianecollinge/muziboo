@@ -1,0 +1,5 @@
+---
+// Redirect to the Go backend user profile page
+const { username } = Astro.params;
+return Astro.redirect(`/app/user/${username}`);
+---

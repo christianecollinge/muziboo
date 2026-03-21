@@ -5,11 +5,14 @@ import icon from "astro-icon";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import cloudflare from "@astrojs/cloudflare";
 import { SITE } from "./src/config/site.mjs";
 
 // https://astro.build/config
 export default defineConfig({
 	site: SITE.url,
+	output: "server",
+	adapter: cloudflare(),
 	integrations: [
 		react(),
 		icon(),
@@ -25,6 +28,19 @@ export default defineConfig({
 		build: {
 			cssMinify: "lightningcss",
 			minify: "esbuild",
+		},
+		server: {
+			proxy: {
+				// Proxy Go app pages and API to the Go backend
+				"/app": {
+					target: "http://localhost:8080",
+					changeOrigin: true,
+				},
+				"/api": {
+					target: "http://localhost:8080",
+					changeOrigin: true,
+				},
+			},
 		},
 	},
 	build: {

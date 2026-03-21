@@ -1,0 +1,43 @@
+{{define "content"}}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Profile header -->
+    <div class="mb-10">
+        <div class="flex items-center gap-6 mb-6">
+            {{if .Profile.AvatarURL}}
+            <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}"
+                 class="w-24 h-24 rounded-full object-cover border-2 border-muziboo-border" />
+            {{else}}
+            <div class="w-24 h-24 rounded-full bg-muziboo-gold/20 flex items-center justify-center border-2 border-muziboo-border">
+                <span class="text-3xl text-muziboo-gold font-semibold">{{slice .Profile.DisplayName 0 1}}</span>
+            </div>
+            {{end}}
+            <div>
+                <h1 class="text-3xl font-semibold text-muziboo-text">{{.Profile.DisplayName}}</h1>
+                <p class="text-muziboo-text-muted">@{{.Profile.Username}}</p>
+                {{if .Profile.Bio}}
+                <p class="text-muziboo-text/80 mt-2 max-w-xl">{{.Profile.Bio}}</p>
+                {{end}}
+                <p class="text-muziboo-text-muted/60 text-sm mt-2">{{len .Tracks}} track{{if ne (len .Tracks) 1}}s{{end}}</p>
+            </div>
+        </div>
+        <hr class="border-muziboo-border" />
+    </div>
+
+    <!-- Tracks Grid -->
+    {{if .TrackCards}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {{range .TrackCards}}
+        {{template "track_card" .}}
+        {{end}}
+    </div>
+    {{else}}
+    <div class="text-center py-20">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto text-muziboo-text-muted/40 mb-4">
+            <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+        </svg>
+        <p class="text-muziboo-text-muted">{{.Profile.DisplayName}} hasn't uploaded any tracks yet.</p>
+        <a href="/app/explore" class="inline-block mt-4 text-muziboo-gold hover:text-muziboo-text transition-colors">← Back to Explore</a>
+    </div>
+    {{end}}
+</div>
+{{end}}

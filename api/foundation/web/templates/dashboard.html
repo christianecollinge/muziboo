@@ -1,0 +1,40 @@
+{{define "content"}}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Profile header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-3xl font-semibold text-muziboo-text">{{.Profile.DisplayName}}</h1>
+                <p class="text-muziboo-text-muted">@{{.Profile.Username}} · {{len .Tracks}} track{{if ne (len .Tracks) 1}}s{{end}}</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="/app/upload" class="bg-muziboo-gold text-muziboo-bg font-semibold px-5 py-2.5 rounded-lg hover:bg-muziboo-text transition-colors text-sm">
+                    Upload Track
+                </a>
+                <a href="/app/user/{{.Profile.Username}}" class="bg-muziboo-bg-softer border border-muziboo-border text-muziboo-text px-5 py-2.5 rounded-lg hover:border-muziboo-gold/40 transition-colors text-sm">
+                    View Public Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tracks Grid -->
+    {{if .Tracks}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {{range .TrackCards}}
+        {{template "track_card" .}}
+        {{end}}
+    </div>
+    {{else}}
+    <div class="text-center py-20">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto text-muziboo-text-muted/40 mb-4">
+            <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+        </svg>
+        <p class="text-muziboo-text-muted">You haven't uploaded any tracks yet. Share what you're working on!</p>
+        <a href="/app/upload" class="inline-block mt-4 bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-2.5 rounded-lg hover:bg-muziboo-text transition-colors text-sm">
+            Upload Your First Track
+        </a>
+    </div>
+    {{end}}
+</div>
+{{end}}

@@ -1,0 +1,35 @@
+{{define "content"}}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-semibold text-muziboo-text mb-2">Explore</h1>
+        <p class="text-muziboo-text-muted">Discover what musicians are working on. Every track here was played by someone who cared enough to try.</p>
+    </div>
+
+    {{if .TrackCards}}
+    <div id="track-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {{range .TrackCards}}
+        {{template "track_card" .}}
+        {{end}}
+    </div>
+
+    {{if .HasMore}}
+    <div class="text-center mt-8">
+        <button hx-get="/app/explore?offset={{.NextOffset}}"
+                hx-target="#track-grid"
+                hx-swap="beforeend"
+                hx-select=".track-card-item"
+                class="bg-muziboo-bg-softer border border-muziboo-border text-muziboo-text px-6 py-3 rounded-lg hover:border-muziboo-gold/40 transition-colors">
+            Load More
+        </button>
+    </div>
+    {{end}}
+    {{else}}
+    <div class="text-center py-20">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto text-muziboo-text-muted/40 mb-4">
+            <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+        </svg>
+        <p class="text-muziboo-text-muted">No tracks uploaded yet. Be the first one!</p>
+    </div>
+    {{end}}
+</div>
+{{end}}

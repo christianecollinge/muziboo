@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MuzibooHeader from '../../components/MuzibooHeader.astro';
+import MuzibooFooter from '../../components/MuzibooFooter.astro';
+import { getCollection } from 'astro:content';
+import { content, defaultLang, type Lang } from '../../i18n';
+
+const t = content[defaultLang as Lang];
+const posts = await getCollection('blog');
+posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout
+  title="Muziboo Blog — Craft Over Metrics"
+  description="Insights, guides, and stories for hobby musicians and bedroom producers who care about craft, not metrics."
+  lang={defaultLang}
+>
+  <MuzibooHeader lang={defaultLang} content={t} />
+
+  <main id="main-content" class="min-h-screen bg-muziboo-bg text-muziboo-text">
+    <div class="max-w-4xl mx-auto py-16 px-4">
+      <div class="mb-12">
+        <p class="text-muziboo-text-muted uppercase tracking-widest text-xs mb-4">From the workshop</p>
+        <h1 class="text-4xl font-semibold text-muziboo-text leading-tight">
+          Real Music.<br />Real Conversation.
+        </h1>
+      </div>
+
+      <div class="divide-y divide-muziboo-border">
+        {posts.map(post => (
+          <article class="py-8 group">
+            <a href={`/blog/${post.slug}`} class="block">
+              <div class="flex items-start justify-between gap-6">
+                <div class="flex-1">
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {post.data.tags?.map(tag => (
+                      <span class="text-muziboo-text-muted uppercase tracking-widest text-xs">{tag}</span>
+                    ))}
+                  </div>
+                  <h2 class="text-xl font-semibold text-muziboo-text group-hover:text-muziboo-gold transition-colors mb-2 leading-snug">
+                    {post.data.title}
+                  </h2>
+                  <p class="text-muziboo-text-muted text-sm leading-relaxed line-clamp-2">
+                    {post.data.description}
+                  </p>
+                </div>
+                <span class="text-muziboo-gold text-lg mt-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">→</span>
+              </div>
+              <div class="mt-4 text-xs text-muziboo-text-muted uppercase tracking-widest">
+                {post.data.author} · {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric'})}
+              </div>
+            </a>
+          </article>
+        ))}
+
+        {posts.length === 0 && (
+          <p class="py-12 text-muziboo-text-muted text-sm">No posts yet. Check back tomorrow.</p>
+        )}
+      </div>
+    </div>
+  </main>
+
+  <MuzibooFooter content={t} lang={defaultLang} />
+</Layout>

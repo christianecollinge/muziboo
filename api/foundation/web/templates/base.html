@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}} — Muziboo</title>
+    <meta name="description" content="{{.Description}}" />
+
+    <!-- Font: DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS v4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-muziboo-bg: #121921;
+            --color-muziboo-bg-softer: #1a222c;
+            --color-muziboo-gold: #d9b682;
+            --color-muziboo-gold-muted: #b89d6b;
+            --color-muziboo-text: #e5e0d8;
+            --color-muziboo-text-muted: #9c9588;
+            --color-muziboo-red: #cf493c;
+            --color-muziboo-orange: #e88b5d;
+            --color-muziboo-teal: #51817e;
+            --color-muziboo-teal-light: #6a9e9a;
+            --color-muziboo-bar-1: #cf493c;
+            --color-muziboo-bar-2: #e88b5d;
+            --color-muziboo-bar-3: #d9b682;
+            --color-muziboo-bar-4: #e5e0d8;
+            --color-muziboo-bar-5: #51817e;
+            --color-muziboo-bar-6: #6a9e9a;
+            --color-muziboo-border: rgba(217, 182, 130, 0.2);
+        }
+    </style>
+    <style>
+        body { font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif; }
+        /* HTMX loading indicator */
+        .htmx-request #app-content { opacity: 0.5; transition: opacity 200ms; }
+        .htmx-settling #app-content { opacity: 1; transition: opacity 200ms; }
+    </style>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+    <!-- Supabase JS (for auth only) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="min-h-screen bg-muziboo-bg text-muziboo-text antialiased flex flex-col"
+      hx-boost="true"
+      hx-target="#app-content"
+      hx-select="#app-content"
+      hx-swap="innerHTML transition:true">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-muziboo-bg/95 backdrop-blur-sm border-b border-muziboo-border">
+        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+            <a href="/app/explore" class="text-muziboo-gold font-bold text-xl tracking-tight">muziboo</a>
+            <div class="flex items-center gap-6">
+                <a href="/app/explore"
+                   class="text-sm {{if eq .CurrentPage "/app/explore"}}text-muziboo-text{{else}}text-muziboo-text-muted hover:text-muziboo-text{{end}} transition-colors">
+                    Explore
+                </a>
+                <a href="/app/upload"
+                   class="text-sm {{if eq .CurrentPage "/app/upload"}}text-muziboo-text{{else}}text-muziboo-text-muted hover:text-muziboo-text{{end}} transition-colors">
+                    Upload
+                </a>
+                <div id="nav-user" class="flex items-center gap-2">
+                    {{if .User}}
+                    <a href="/app/dashboard"
+                       class="w-8 h-8 rounded-full bg-muziboo-gold/20 flex items-center justify-center text-sm font-semibold text-muziboo-gold hover:bg-muziboo-gold/30 transition-colors"
+                       title="{{.User.DisplayName}}">
+                        {{slice .User.DisplayName 0 1}}
+                    </a>
+                    <button onclick="logout()" class="text-xs text-muziboo-text-muted hover:text-muziboo-text transition-colors">
+                        Logout
+                    </button>
+                    {{else}}
+                    <a href="/app/login" class="text-sm text-muziboo-text-muted hover:text-muziboo-text transition-colors">
+                        Log In
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area — HTMX swaps this -->
+    <main class="flex-1">
+        <div id="app-content">
+            {{block "content" .}}{{end}}
+        </div>
+    </main>
+
+    <!-- Persistent Audio Player -->
+    <div id="global-player" class="fixed bottom-0 left-0 right-0 bg-muziboo-bg-softer border-t border-muziboo-border z-50 hidden">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
+            <button id="player-play-btn" onclick="toggleGlobalPlayer()" class="w-10 h-10 rounded-full bg-muziboo-gold text-muziboo-bg flex items-center justify-center hover:bg-muziboo-text transition-colors flex-shrink-0">
+                <svg id="player-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21" /></svg>
+                <svg id="player-pause-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="hidden"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+            </button>
+            <div class="flex-1 min-w-0">
+                <p id="player-title" class="text-sm text-muziboo-text font-medium truncate"></p>
+                <p id="player-artist" class="text-xs text-muziboo-text-muted truncate"></p>
+            </div>
+            <div class="flex-1 flex items-center gap-2">
+                <span id="player-time" class="text-xs text-muziboo-text-muted tabular-nums w-10 text-right">0:00</span>
+                <div id="player-progress-bar" class="flex-1 h-1.5 bg-muziboo-bg rounded-full cursor-pointer group" onclick="seekGlobalPlayer(event)">
+                    <div id="player-progress" class="h-full bg-muziboo-gold rounded-full transition-all duration-100 group-hover:bg-muziboo-text" style="width: 0%"></div>
+                </div>
+                <span id="player-duration" class="text-xs text-muziboo-text-muted tabular-nums w-10">0:00</span>
+            </div>
+        </div>
+        <audio id="global-audio"></audio>
+    </div>
+
+    <script>
+    // =========================================================================
+    // Supabase Auth Helper
+    // =========================================================================
+    const SUPABASE_URL = '{{.SupabaseURL}}';
+    const SUPABASE_ANON_KEY = '{{.SupabaseAnonKey}}';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function getToken() {
+        const { data: { session } } = await supabase.auth.getSession();
+        return session?.access_token || null;
+    }
+
+    async function logout() {
+        await supabase.auth.signOut();
+        window.location.href = '/app/login';
+    }
+
+    // Inject auth header into all HTMX requests
+    document.addEventListener('htmx:configRequest', async function(evt) {
+        const token = await getToken();
+        if (token) {
+            evt.detail.headers['Authorization'] = 'Bearer ' + token;
+        }
+    });
+
+    // =========================================================================
+    // Auth Forms (Event Delegation)
+    // =========================================================================
+    document.body.addEventListener('submit', async function(e) {
+        if (!e.target || e.target.tagName !== 'FORM') return;
+
+        // --- Login Form ---
+        if (e.target.id === 'login-form') {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const errEl = document.getElementById('login-error');
+            errEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.textContent = 'Logging in…';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                window.location.href = '/app/dashboard';
+            } catch (err) {
+                errEl.textContent = err.message || 'An unexpected error occurred.';
+                errEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Log In';
+            }
+        }
+
+        // --- Signup Form ---
+        if (e.target.id === 'signup-form') {
+            e.preventDefault();
+            const btn = document.getElementById('signup-btn');
+            const errEl = document.getElementById('signup-error');
+            const successEl = document.getElementById('signup-success');
+            errEl.classList.add('hidden');
+            successEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.textContent = 'Creating account…';
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { username: username, display_name: username } }
+                });
+                if (error) throw error;
+
+                if (data.user && !data.session) {
+                    successEl.textContent = 'Check your email to confirm your account, then log in.';
+                    successEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Create Account';
+                    return;
+                }
+                window.location.href = '/app/dashboard';
+            } catch (err) {
+                errEl.textContent = err.message || 'An unexpected error occurred.';
+                errEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+    });
+
+    // =========================================================================
+    // Global Audio Player
+    // =========================================================================
+    const audio = document.getElementById('global-audio');
+    let isPlaying = false;
+
+    function playTrack(src, title, artist) {
+        const player = document.getElementById('global-player');
+        player.classList.remove('hidden');
+        document.getElementById('player-title').textContent = title;
+        document.getElementById('player-artist').textContent = artist;
+        audio.src = src;
+        audio.play();
+        isPlaying = true;
+        updatePlayIcon();
+    }
+
+    function toggleGlobalPlayer() {
+        if (isPlaying) { audio.pause(); } else { audio.play(); }
+        isPlaying = !isPlaying;
+        updatePlayIcon();
+    }
+
+    function updatePlayIcon() {
+        document.getElementById('player-play-icon').classList.toggle('hidden', isPlaying);
+        document.getElementById('player-pause-icon').classList.toggle('hidden', !isPlaying);
+    }
+
+    function seekGlobalPlayer(e) {
+        if (!audio.duration) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pct * audio.duration;
+    }
+
+    function fmtTime(t) {
+        const m = Math.floor(t / 60);
+        const s = Math.floor(t % 60);
+        return m + ':' + s.toString().padStart(2, '0');
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (!audio.duration) return;
+        const pct = (audio.currentTime / audio.duration) * 100;
+        document.getElementById('player-progress').style.width = pct + '%';
+        document.getElementById('player-time').textContent = fmtTime(audio.currentTime);
+    });
+    audio.addEventListener('loadedmetadata', () => {
+        document.getElementById('player-duration').textContent = fmtTime(audio.duration);
+    });
+    audio.addEventListener('ended', () => {
+        isPlaying = false;
+        updatePlayIcon();
+    });
+    </script>
+</body>
+</html>

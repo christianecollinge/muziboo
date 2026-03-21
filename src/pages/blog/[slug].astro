@@ -1,0 +1,143 @@
+---
+import { getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import MuzibooHeader from '../../components/MuzibooHeader.astro';
+import MuzibooFooter from '../../components/MuzibooFooter.astro';
+import { content, defaultLang, type Lang } from '../../i18n';
+
+const t = content[defaultLang as Lang];
+
+const { slug } = Astro.params;
+const post = await getEntry('blog', slug as string);
+
+if (!post) {
+  return Astro.redirect('/blog');
+}
+
+const { Content, headings } = await post.render();
+
+// Only H2s for the TOC (top-level sections)
+const tocHeadings = headings.filter(h => h.depth === 2);
+---
+
+<Layout
+  title={`${post.data.title} — Muziboo Blog`}
+  description={post.data.description}
+  ogType="article"
+  lang={defaultLang}
+>
+  <MuzibooHeader lang={defaultLang} content={t} />
+
+  <main id="main-content" class="min-h-screen bg-muziboo-bg text-muziboo-text">
+    <div class="max-w-5xl mx-auto py-16 px-4">
+
+      <!-- Header section (full width) -->
+      <div class="max-w-2xl mb-12">
+        <div class="flex flex-wrap gap-2 mb-6">
+          {post.data.tags?.map(tag => (
+            <span class="text-muziboo-text-muted uppercase tracking-widest text-xs">{tag}</span>
+          ))}
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-semibold text-muziboo-text leading-tight mb-6">
+          {post.data.title}
+        </h1>
+        <div class="text-xs text-muziboo-text-muted uppercase tracking-widest pb-8 border-b border-muziboo-border">
+          {post.data.author} · {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric'})}
+        </div>
+      </div>
+
+      <!-- Two-column layout: TOC left, article right -->
+      <div class="flex gap-12 items-start">
+
+        <!-- Sticky TOC sidebar -->
+        {tocHeadings.length > 0 && (
+          <aside class="toc-sidebar hidden lg:block w-44 shrink-0">
+            <nav class="sticky top-24">
+              <p class="text-muziboo-text-muted uppercase tracking-widest text-xs mb-4">Contents</p>
+              <ul class="space-y-2">
+                {tocHeadings.map(heading => (
+                  <li>
+                    <a
+                      href={`#${heading.slug}`}
+                      class="toc-link text-xs text-muziboo-text-muted leading-snug hover:text-muziboo-gold transition-colors block"
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )}
+
+        <!-- Article content -->
+        <div class="flex-1 min-w-0">
+          <article class="prose prose-invert max-w-none
+            prose-headings:text-muziboo-text prose-headings:font-semibold
+            prose-p:text-muziboo-text-muted prose-p:leading-relaxed prose-p:text-base
+            prose-a:text-muziboo-gold prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-muziboo-text
+            prose-hr:border-muziboo-border
+            prose-blockquote:border-muziboo-gold prose-blockquote:text-muziboo-text-muted
+          ">
+            <Content />
+          </article>
+
+          <!-- Back link -->
+          <div class="mt-16 pt-8 border-t border-muziboo-border">
+            <a href="/blog" class="text-muziboo-text-muted uppercase tracking-widest text-xs hover:text-muziboo-gold transition-colors">
+              ← Back to Blog
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <MuzibooFooter content={t} lang={defaultLang} />
+</Layout>
+
+<style>
+  /* Replace bullet dots with hyphens, keep the indent */
+  article :global(ul) {
+    list-style: none;
+    padding-left: 1.5rem;
+  }
+  article :global(li) {
+    position: relative;
+    margin-bottom: 0.75rem;
+  }
+  article :global(ul li::before) {
+    content: '–';
+    position: absolute;
+    left: -1.5rem;
+    color: var(--color-muziboo-text-muted, #888);
+  }
+
+  /* TOC active link highlight (JS-driven) */
+  .toc-link.active {
+    color: var(--color-muziboo-gold, #c9a96e);
+  }
+</style>
+
+<script>
+  // Highlight the TOC link that's currently in view
+  const links = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('article h2');
+
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'));
+          const active = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    },
+    { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+  );
+
+  headings.forEach(h => observer.observe(h));
+</script>
