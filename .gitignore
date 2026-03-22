@@ -30,3 +30,4 @@ node_modules/
 dist/
 .astro/
 node_modules/
+package-lock.json
