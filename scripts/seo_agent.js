@@ -30,29 +30,40 @@ const currentTarget = TARGETS[dayOfYear % TARGETS.length];
 async function fetchKeywords(target) {
     console.log(`🔍 Fetching keywords from DataForSEO for ${target.location} (${target.language})...`);
     try {
-        const post_array = [{
+        const seedKeywords = [
+            "upload original music",
+            "get feedback on unfinished songs",
+            "where to share bedroom pop demos",
+            "community for hobby musicians",
+            "indie musician feedback forum"
+        ];
+
+        const post_array = seedKeywords.map(kw => ({
             "location_name": target.location,
             "language_name": target.language,
-            "keywords": [
-                "upload original music",
-                "get feedback on unfinished songs",
-                "where to share bedroom pop demos",
-                "community for hobby musicians",
-                "indie musician feedback forum"
-            ],
-            "limit": 10
-        }];
+            "keyword": kw,
+            "limit": 2
+        }));
 
         const response = await dfsPost("/v3/dataforseo_labs/google/keyword_suggestions/live", post_array);
 
-        if (response.tasks && response.tasks.length > 0 && response.tasks[0].result) {
-            const items = response.tasks[0].result[0].items || [];
-            return items.slice(0, 10).map(item => item.keyword);
+        if (response.tasks && response.tasks.length > 0) {
+            const task = response.tasks[0];
+            if (task.result && task.result.length > 0 && task.result[0].items) {
+                const items = task.result[0].items || [];
+                return items.slice(0, 10).map(item => item.keyword);
+            } else {
+                console.error("❌ DataForSEO returned an error or empty result payload:", JSON.stringify(task, null, 2));
+                throw new Error("DataForSEO API failed to return keywords");
+            }
+        } else {
+            console.error("❌ DataForSEO response format unexpected:", JSON.stringify(response, null, 2));
+            throw new Error("DataForSEO API failed to return tasks");
         }
     } catch (error) {
-        console.error("❌ DataForSEO Error:", error);
+        console.error("❌ DataForSEO Fetch/Parse Error:", error);
+        throw error; // Fail loudly instead of using static fallbacks indefinitely
     }
-    return ["how to share original music online", "best music community platforms"]; // Fallbacks
 }
 
 async function generateBlogPost(keyword, target) {

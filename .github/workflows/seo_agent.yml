@@ -38,7 +38,7 @@ jobs:
           git add src/content/blog/
           
           # Only commit if there are changes
-          if ! git diff-index --quiet HEAD; then
+          if ! git diff --staged --quiet; then
             git commit -m "chore: automated SEO blog generation"
             git push
           else
