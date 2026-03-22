@@ -8,6 +8,8 @@ interface ScrollRevealProps {
 	distance?: number;
 	duration?: number;
 	scale?: boolean;
+	className?: string;
+	class?: string;
 }
 
 export default function ScrollReveal({
