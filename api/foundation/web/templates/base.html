@@ -171,112 +171,106 @@
     });
 
     // =========================================================================
-    // Auth Forms (Event Delegation)
+    // Auth Forms (Inline Handlers)
     // =========================================================================
-    document.body.addEventListener('submit', async function(e) {
-        if (!e.target || e.target.tagName !== 'FORM') return;
+    
+    async function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('login-btn');
+        const errEl = document.getElementById('login-error');
+        errEl.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Logging in…';
 
-        // --- Login Form ---
-        if (e.target.id === 'login-form') {
-            e.preventDefault();
-            const btn = document.getElementById('login-btn');
-            const errEl = document.getElementById('login-error');
-            errEl.classList.add('hidden');
-            btn.disabled = true;
-            btn.textContent = 'Logging in…';
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            try {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                window.location.href = '/app/dashboard';
-            } catch (err) {
-                errEl.textContent = err.message || 'An unexpected error occurred.';
-                errEl.classList.remove('hidden');
-                btn.disabled = false;
-                btn.textContent = 'Log In';
-            }
+        try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            window.location.href = '/app/dashboard';
+        } catch (err) {
+            errEl.textContent = err.message || 'An unexpected error occurred.';
+            errEl.classList.remove('hidden');
+            btn.disabled = false;
+            btn.textContent = 'Log In';
         }
+    }
 
-        // --- Signup Form ---
-        if (e.target.id === 'signup-form') {
-            e.preventDefault();
-            const btn = document.getElementById('signup-btn');
-            const errEl = document.getElementById('signup-error');
-            const successEl = document.getElementById('signup-success');
-            errEl.classList.add('hidden');
-            successEl.classList.add('hidden');
-            btn.disabled = true;
-            btn.textContent = 'Creating account…';
+    async function handleSignup(e) {
+        e.preventDefault();
+        const btn = document.getElementById('signup-btn');
+        const errEl = document.getElementById('signup-error');
+        const successEl = document.getElementById('signup-success');
+        errEl.classList.add('hidden');
+        successEl.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Creating account…';
 
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { username: username, display_name: username } }
-                });
-                if (error) throw error;
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: { data: { username: username, display_name: username } }
+            });
+            if (error) throw error;
 
-                // Supabase returns a fake user with empty identities for already-registered emails
-                if (data.user && data.user.identities && data.user.identities.length === 0) {
-                    throw new Error('An account with this email already exists. Please log in instead.');
-                }
+            // Supabase returns a fake user with empty identities for already-registered emails
+            if (data.user && data.user.identities && data.user.identities.length === 0) {
+                throw new Error('An account with this email already exists. Please log in instead.');
+            }
 
-                if (data.user && !data.session) {
-                    successEl.textContent = 'Check your email to confirm your account, then log in.';
-                    successEl.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.textContent = 'Create Account';
-                    return;
-                }
-                window.location.href = '/app/dashboard';
-            } catch (err) {
-                errEl.textContent = err.message || 'An unexpected error occurred.';
-                errEl.classList.remove('hidden');
+            if (data.user && !data.session) {
+                successEl.textContent = 'Check your email to confirm your account, then log in.';
+                successEl.classList.remove('hidden');
                 btn.disabled = false;
                 btn.textContent = 'Create Account';
+                return;
             }
+            window.location.href = '/app/dashboard';
+        } catch (err) {
+            errEl.textContent = err.message || 'An unexpected error occurred.';
+            errEl.classList.remove('hidden');
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
         }
+    }
 
-        // --- Magic Link Form (used on both login and signup pages) ---
-        if (e.target.id === 'magic-form') {
-            e.preventDefault();
-            const btn = document.getElementById('magic-btn');
-            const email = document.getElementById('magic-email').value;
-            const errEl = document.getElementById('login-error') || document.getElementById('signup-error');
-            const successEl = document.getElementById('login-success') || document.getElementById('signup-success');
-            if (errEl) errEl.classList.add('hidden');
-            btn.disabled = true;
-            btn.textContent = 'Sending…';
+    async function handleMagic(e) {
+        e.preventDefault();
+        const btn = document.getElementById('magic-btn');
+        const email = document.getElementById('magic-email').value;
+        const errEl = document.getElementById('login-error') || document.getElementById('signup-error');
+        const successEl = document.getElementById('login-success') || document.getElementById('signup-success');
+        if (errEl) errEl.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
 
-            try {
-                const { error } = await supabase.auth.signInWithOtp({
-                    email,
-                    options: { emailRedirectTo: window.location.origin + '/app/dashboard' }
-                });
-                if (error) throw error;
-                if (successEl) {
-                    successEl.textContent = '✓ Magic link sent! Check your email inbox.';
-                    successEl.classList.remove('hidden');
-                }
-                btn.disabled = false;
-                btn.textContent = 'Send Magic Link';
-            } catch (err) {
-                if (errEl) {
-                    errEl.textContent = err.message || 'Failed to send magic link.';
-                    errEl.classList.remove('hidden');
-                }
-                btn.disabled = false;
-                btn.textContent = 'Send Magic Link';
+        try {
+            const { error } = await supabase.auth.signInWithOtp({
+                email,
+                options: { emailRedirectTo: window.location.origin + '/app/dashboard' }
+            });
+            if (error) throw error;
+            if (successEl) {
+                successEl.textContent = '✓ Magic link sent! Check your email inbox.';
+                successEl.classList.remove('hidden');
             }
+            btn.disabled = false;
+            btn.textContent = 'Send Magic Link';
+        } catch (err) {
+            if (errEl) {
+                errEl.textContent = err.message || 'Failed to send magic link.';
+                errEl.classList.remove('hidden');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Send Magic Link';
         }
-    });
+    }
 
     // =========================================================================
     // Global Audio Player

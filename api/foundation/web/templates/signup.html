@@ -49,7 +49,7 @@
         </div>
 
         <!-- Email/Password form -->
-        <form id="signup-form" class="space-y-4" hx-boost="false">
+        <form id="signup-form" class="space-y-4" onsubmit="handleSignup(event)">
             <div>
                 <label for="username" class="block text-sm font-medium text-muziboo-text mb-1.5">Username</label>
                 <input id="username" type="text" required placeholder="your_username"
@@ -72,7 +72,7 @@
         </form>
 
         <!-- Magic Link form (hidden by default) -->
-        <form id="magic-form" class="space-y-4 hidden" hx-boost="false">
+        <form id="magic-form" class="space-y-4 hidden" onsubmit="handleMagic(event)">
             <div>
                 <label for="magic-email" class="block text-sm font-medium text-muziboo-text mb-1.5">Your email</label>
                 <input id="magic-email" type="email" required placeholder="you@example.com"
