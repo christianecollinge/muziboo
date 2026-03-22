@@ -66,7 +66,7 @@ async function fetchKeywords(target) {
     }
 }
 
-async function generateBlogPost(keyword, target) {
+async function generateBlogPost(keyword, target, pubDate) {
     console.log(`✍️ Generating blog post for keyword: "${keyword}" in ${target.language}...`);
 
     const prompt = `
@@ -89,7 +89,7 @@ async function generateBlogPost(keyword, target) {
     ---
     title: "Catchy SEO title including the keyword"
     description: "A short 160-character SEO description."
-    pubDate: ${new Date().toISOString()}
+    pubDate: ${pubDate}
     author: "Muziboo Team"
     tags: ["music", "creators", "community"]
     ---
@@ -132,13 +132,29 @@ async function main() {
     const keywords = await fetchKeywords(currentTarget);
     console.log(`✅ Found ${keywords.length} keywords.`);
 
+    let i = 0;
     for (const keyword of keywords) {
         const slug = keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const markdown = await generateBlogPost(keyword, currentTarget);
+        
+        let pubDate;
+        let logDateString;
+        if (i < 2) {
+            // Keep 2 posts exactly on today's date
+            pubDate = new Date().toISOString();
+            logDateString = "today";
+        } else {
+            // SEO: Backdate randomly between 1 and 180 days ago to make historical publishing look organic
+            const randomDaysAgo = Math.floor(Math.random() * 180) + 1;
+            pubDate = new Date(Date.now() - randomDaysAgo * 24 * 60 * 60 * 1000).toISOString();
+            logDateString = `backdated ${randomDaysAgo} days`;
+        }
+        i++;
+        
+        const markdown = await generateBlogPost(keyword, currentTarget, pubDate);
         if (markdown) {
             const filepath = path.join(BLOG_DIR, `${slug}.md`);
             fs.writeFileSync(filepath, markdown);
-            console.log(`✅ Saved: ${slug}.md`);
+            console.log(`✅ Saved: ${slug}.md (${logDateString})`);
         }
 
         // Wait 4 seconds between posts to respect rate limits
