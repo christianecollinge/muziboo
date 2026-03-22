@@ -133,6 +133,35 @@
         window.location.href = '/app/login';
     }
 
+    function showAuthError(msg) {
+        const el = document.getElementById('login-error') || document.getElementById('signup-error');
+        if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+        else { alert(msg); }
+    }
+
+    async function signInWithProvider(provider, btn) {
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.textContent = 'Redirecting…';
+        
+        // Hide previous errors just in case
+        const errEl = document.getElementById('login-error') || document.getElementById('signup-error');
+        if (errEl) errEl.classList.add('hidden');
+
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: provider,
+                options: { redirectTo: window.location.origin + '/app/dashboard' }
+            });
+            
+            if (error) throw error;
+        } catch (error) {
+            showAuthError(error.message || `Failed to sign in with ${provider}`);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+
     // Inject auth header into all HTMX requests
     document.addEventListener('htmx:configRequest', async function(evt) {
         const token = await getToken();

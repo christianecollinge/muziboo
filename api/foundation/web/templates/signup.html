@@ -10,7 +10,7 @@
         <!-- Social / Magic Link buttons -->
         <div class="space-y-3 mb-6">
             <!-- Google -->
-            <button id="google-btn" onclick="signInWithGoogle()"
+            <button id="google-btn" type="button" onclick="signInWithProvider('google', this)"
                     class="w-full flex items-center justify-center gap-3 bg-muziboo-bg border border-muziboo-border text-muziboo-text px-4 py-3 rounded-lg text-sm font-medium hover:border-muziboo-gold/50 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -21,8 +21,17 @@
                 Continue with Google
             </button>
 
+            <!-- Apple -->
+            <button id="apple-btn" type="button" onclick="signInWithProvider('apple', this)"
+                    class="w-full flex items-center justify-center gap-3 bg-muziboo-bg border border-muziboo-border text-muziboo-text px-4 py-3 rounded-lg text-sm font-medium hover:border-muziboo-gold/50 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.62-1.496 3.6-2.998 1.128-1.62 1.594-3.18 1.623-3.268-.035-.018-3.05-1.168-3.08-4.665-.027-2.924 2.396-4.325 2.508-4.398-1.37-1.992-3.486-2.269-4.225-2.315-2.046-.11-4.053 1.258-4.71 1.258zM15.42 4.145c.828-1 1.385-2.399 1.233-3.791-1.185.048-2.636.786-3.492 1.802-.76.883-1.42 2.306-1.246 3.678 1.32.102 2.678-.68 3.505-1.689z"/>
+                </svg>
+                Continue with Apple
+            </button>
+
             <!-- Magic Link -->
-            <button onclick="showMagicLink()"
+            <button id="magic-toggle-btn" type="button" onclick="showMagicLink()"
                     class="w-full flex items-center justify-center gap-3 bg-muziboo-bg border border-muziboo-border text-muziboo-text px-4 py-3 rounded-lg text-sm font-medium hover:border-muziboo-gold/50 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -93,22 +102,6 @@ function showMagicLink() {
 function showEmailPassword() {
     document.getElementById('magic-form').classList.add('hidden');
     document.getElementById('signup-form').classList.remove('hidden');
-}
-async function signInWithGoogle() {
-    const btn = document.getElementById('google-btn');
-    btn.disabled = true;
-    btn.textContent = 'Redirecting…';
-    const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + '/app/dashboard' }
-    });
-    if (error) {
-        const errEl = document.getElementById('signup-error');
-        errEl.textContent = error.message;
-        errEl.classList.remove('hidden');
-        btn.disabled = false;
-        btn.textContent = 'Continue with Google';
-    }
 }
 </script>
 {{end}}
