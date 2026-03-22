@@ -194,6 +194,11 @@
                 });
                 if (error) throw error;
 
+                // Supabase returns a fake user with empty identities for already-registered emails
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                    throw new Error('An account with this email already exists. Please log in instead.');
+                }
+
                 if (data.user && !data.session) {
                     successEl.textContent = 'Check your email to confirm your account, then log in.';
                     successEl.classList.remove('hidden');
@@ -207,6 +212,39 @@
                 errEl.classList.remove('hidden');
                 btn.disabled = false;
                 btn.textContent = 'Create Account';
+            }
+        }
+
+        // --- Magic Link Form (used on both login and signup pages) ---
+        if (e.target.id === 'magic-form') {
+            e.preventDefault();
+            const btn = document.getElementById('magic-btn');
+            const email = document.getElementById('magic-email').value;
+            const errEl = document.getElementById('login-error') || document.getElementById('signup-error');
+            const successEl = document.getElementById('login-success') || document.getElementById('signup-success');
+            if (errEl) errEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+
+            try {
+                const { error } = await supabase.auth.signInWithOtp({
+                    email,
+                    options: { emailRedirectTo: window.location.origin + '/app/dashboard' }
+                });
+                if (error) throw error;
+                if (successEl) {
+                    successEl.textContent = '✓ Magic link sent! Check your email inbox.';
+                    successEl.classList.remove('hidden');
+                }
+                btn.disabled = false;
+                btn.textContent = 'Send Magic Link';
+            } catch (err) {
+                if (errEl) {
+                    errEl.textContent = err.message || 'Failed to send magic link.';
+                    errEl.classList.remove('hidden');
+                }
+                btn.disabled = false;
+                btn.textContent = 'Send Magic Link';
             }
         }
     });
