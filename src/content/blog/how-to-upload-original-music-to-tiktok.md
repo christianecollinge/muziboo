@@ -1,7 +1,7 @@
 ---
 title: "Unlocking TikTok for Your Music: A UK Guide to Uploading Original Tracks"
 description: "Learn how to upload original music to TikTok in the UK, from bedroom producers to chart-toppers. Get real feedback on Muziboo before you share your sound!"
-pubDate: 2026-03-22T07:55:26.150Z
+pubDate: 2026-03-22T09:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "tiktok", "DIY music", "UK music", "bedroom producers", "original music"]
 ---

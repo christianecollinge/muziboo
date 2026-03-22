@@ -1,7 +1,7 @@
 ---
 title: "Can I Upload My Original Music to Spotify? Navigating Your Sound's Journey"
 description: "Discover how to upload your original music to Spotify, and why perfecting your craft with real feedback on Muziboo is the crucial first step for UK artists."
-pubDate: 2026-03-22T07:55:10.375Z
+pubDate: 2026-03-20T11:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
 ---
