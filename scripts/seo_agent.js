@@ -24,6 +24,30 @@ const TARGETS = [
     { location: "Germany", language: "German", instructions: "Write the post entirely in German, focusing on the German music scene." }
 ];
 
+const FALLBACK_KEYWORDS = {
+    "English": [
+        "best community for musicians 2026",
+        "how to share music demos for feedback",
+        "where to post unfinished songs",
+        "bedroom producer feedback groups",
+        "human feedback on music without algorithms"
+    ],
+    "Spanish": [
+        "mejor comunidad para músicos 2026",
+        "cómo compartir maquetas de música para recibir feedback",
+        "donde subir canciones sin terminar",
+        "grupos de feedback para productores de dormitorio",
+        "feedback humano sobre música sin algoritmos"
+    ],
+    "German": [
+        "beste Community für Musiker 2026",
+        "Musik-Demos für Feedback teilen",
+        "wo man unfertige Songs hochlädt",
+        "Feedback-Gruppen für Bedroom Producer",
+        "menschliches Feedback zu Musik ohne Algorithmen"
+    ]
+};
+
 const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
 const currentTarget = TARGETS[dayOfYear % TARGETS.length];
 
@@ -49,20 +73,19 @@ async function fetchKeywords(target) {
 
         if (response.tasks && response.tasks.length > 0) {
             const task = response.tasks[0];
-            if (task.result && task.result.length > 0 && task.result[0].items) {
+            if (task.result && task.result.length > 0 && task.result[0].items && task.result[0].items.length > 0) {
                 const items = task.result[0].items || [];
                 return items.slice(0, 10).map(item => item.keyword);
-            } else {
-                console.error("❌ DataForSEO returned an error or empty result payload:", JSON.stringify(task, null, 2));
-                throw new Error("DataForSEO API failed to return keywords");
             }
-        } else {
-            console.error("❌ DataForSEO response format unexpected:", JSON.stringify(response, null, 2));
-            throw new Error("DataForSEO API failed to return tasks");
         }
+        
+        console.warn(`⚠️ DataForSEO returned no results for ${target.location}. Using static fallback keywords.`);
+        return FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"];
+
     } catch (error) {
         console.error("❌ DataForSEO Fetch/Parse Error:", error);
-        throw error; // Fail loudly instead of using static fallbacks indefinitely
+        console.warn(`⚠️ Falling back to static keywords due to error.`);
+        return FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"];
     }
 }
 
