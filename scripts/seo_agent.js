@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
+import { calculateFleschReadingEase, calculateFleschKincaidGradeLevel } from './readability.js';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -101,6 +102,13 @@ async function generateBlogPost(keyword, target, pubDate) {
 
     Write an SEO-optimized, engaging blog post targeting the core keyword: "${keyword}".
 
+    IMPORTANT READABILITY RULES (Flesch-Kincaid):
+    - Target a Flesch Reading Ease score of 60.0 or higher.
+    - Use clear, simple language and avoid unnecessary jargon.
+    - Keep sentences relatively short (average 15-20 words).
+    - Use simple, short words where possible.
+    - Aim for a grade level around 8th or 9th grade (Grade Level 8-9).
+
     IMPORTANT FORMATTING RULES:
     - Do NOT use bullet points or numbered lists anywhere in the post.
     - Write in flowing prose paragraphs only.
@@ -177,7 +185,12 @@ async function main() {
         if (markdown) {
             const filepath = path.join(BLOG_DIR, `${slug}.md`);
             fs.writeFileSync(filepath, markdown);
+            
+            const readability = calculateFleschReadingEase(markdown);
+            const gradeLevel = calculateFleschKincaidGradeLevel(markdown);
+            
             console.log(`✅ Saved: ${slug}.md (${logDateString})`);
+            console.log(`   Readability: ${readability.score} (Ease), Grade Level: ${gradeLevel}`);
         }
 
         // Wait 4 seconds between posts to respect rate limits

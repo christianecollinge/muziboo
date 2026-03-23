@@ -11,6 +11,8 @@ permissions:
 jobs:
   generate-posts:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -18,11 +20,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '22'
+          # Removed cache: 'npm' as package-lock.json is not tracked.
           
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run SEO Agent Generator
         env:
