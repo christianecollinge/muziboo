@@ -7,7 +7,7 @@ const blogCollection = defineCollection({
     description: z.string(),
     pubDate: z.date(),
     author: z.string().default('Muziboo Team'),
-    image: z.string().optional(),
+    image: z.string().nullable().optional(),
     tags: z.array(z.string()).optional()
   })
 });

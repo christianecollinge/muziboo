@@ -8,6 +8,22 @@ import { content, defaultLang, type Lang } from '../../i18n';
 const t = content[defaultLang as Lang];
 const posts = await getCollection('blog');
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Helper to get image from data or fallback to body
+function getPostImage(post: any) {
+  if (post.data.image) return post.data.image;
+  
+  // Fallback: try to extract first image from body
+  const body = post.body || '';
+  const match = body.match(/!\[.*?\]\((https?:\/\/[^)]+)\)/);
+  return match ? match[1] : null;
+}
+
+// Helper to get clean ID/Slug for URL
+function getPostSlug(post: any) {
+  // In Astro 5, id is the filename relative to the collection
+  return post.id.replace(/\.[^/.]+$/, ""); // Strip extension just in case
+}
 ---
 
 <Layout
@@ -27,49 +43,54 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {posts.map(post => (
-          <article class="flex flex-col group bg-muziboo-bg border border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold transition-all duration-300">
-            <a href={`/blog/${post.id}`} class="flex flex-col h-full">
-              <div class="aspect-video w-full overflow-hidden bg-muziboo-border">
-                {post.data.image ? (
-                  <img 
-                    src={post.data.image} 
-                    alt={post.data.title}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center text-muziboo-text-muted">
-                    <span class="text-xs uppercase tracking-widest">No Image</span>
+        {posts.map(post => {
+          const image = getPostImage(post);
+          const slug = getPostSlug(post);
+          
+          return (
+            <article class="flex flex-col group bg-muziboo-bg border border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold transition-all duration-300">
+              <a href={`/blog/${slug}`} class="flex flex-col h-full">
+                <div class="aspect-video w-full overflow-hidden bg-muziboo-border">
+                  {image ? (
+                    <img 
+                      src={image} 
+                      alt={post.data.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center text-muziboo-text-muted">
+                      <span class="text-[10px] uppercase tracking-widest">In the workshop...</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div class="p-5 flex flex-col flex-1">
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {post.data.tags?.slice(0, 2).map(tag => (
+                      <span class="text-muziboo-gold uppercase tracking-widest text-[10px] font-bold">{tag}</span>
+                    ))}
                   </div>
-                )}
-              </div>
-              
-              <div class="p-5 flex flex-col flex-1">
-                <div class="flex flex-wrap gap-2 mb-3">
-                  {post.data.tags?.slice(0, 2).map(tag => (
-                    <span class="text-muziboo-gold uppercase tracking-widest text-[10px] font-bold">{tag}</span>
-                  ))}
+                  
+                  <h2 class="text-lg font-bold text-muziboo-text group-hover:text-muziboo-gold transition-colors mb-2 leading-tight line-clamp-2">
+                    {post.data.title}
+                  </h2>
+                  
+                  <p class="text-muziboo-text-muted text-xs leading-relaxed line-clamp-3 mb-4 flex-1">
+                    {post.data.description}
+                  </p>
+                  
+                  <div class="pt-4 border-t border-muziboo-border flex items-center justify-between mt-auto">
+                    <span class="text-[10px] text-muziboo-text-muted uppercase tracking-widest">
+                      {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric'})}
+                    </span>
+                    <span class="text-muziboo-gold group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
                 </div>
-                
-                <h2 class="text-lg font-bold text-muziboo-text group-hover:text-muziboo-gold transition-colors mb-2 leading-tight line-clamp-2">
-                  {post.data.title}
-                </h2>
-                
-                <p class="text-muziboo-text-muted text-xs leading-relaxed line-clamp-3 mb-4 flex-1">
-                  {post.data.description}
-                </p>
-                
-                <div class="pt-4 border-t border-muziboo-border flex items-center justify-between mt-auto">
-                  <span class="text-[10px] text-muziboo-text-muted uppercase tracking-widest">
-                    {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric'})}
-                  </span>
-                  <span class="text-muziboo-gold group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-              </div>
-            </a>
-          </article>
-        ))}
+              </a>
+            </article>
+          );
+        })}
       </div>
 
       {posts.length === 0 && (

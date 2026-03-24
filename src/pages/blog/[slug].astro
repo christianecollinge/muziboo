@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import MuzibooHeader from '../../components/MuzibooHeader.astro';
 import MuzibooFooter from '../../components/MuzibooFooter.astro';
@@ -8,7 +8,13 @@ import { content, defaultLang, type Lang } from '../../i18n';
 const t = content[defaultLang as Lang];
 
 const { slug } = Astro.params;
-const post = await getEntry('blog', slug as string);
+
+// Astro 5 robust retrieval
+const posts = await getCollection('blog');
+const post = posts.find(p => {
+  const cleanId = p.id.replace(/\.[^/.]+$/, "");
+  return p.id === slug || cleanId === slug || p.slug === slug;
+});
 
 if (!post) {
   return Astro.redirect('/blog');
