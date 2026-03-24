@@ -6,6 +6,9 @@ author: "Muziboo Team"
 tags: ["music", "creators", "community"]
 image: "https://lh3.googleusercontent.com/u/0/d/1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9"
 ---
+
+![El Pulso de la Creatividad Española: ¿Dónde Encontrar Feedback Humano sobre Música sin Algoritmos?](https://lh3.googleusercontent.com/u/0/d/1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9)
+
 ![Artista español recibiendo feedback humano sobre sus demos musicales, fuera de algoritmos, para impulsar su creatividad en la comunidad Muziboo.]
 
 Hoy en día, la música española tiene mucha fuerza. Cada riff, estrofa o ritmo puede llegar a gente de todo el mundo en un instante. Desde los cuartos de Madrid hasta los estudios de Barcelona, miles de músicos crean sonidos nuevos. Mezclan lo antiguo con lo moderno. Pero en este mundo de algoritmos y números, una pregunta clave aparece para los artistas: ¿cómo conseguir **feedback humano sobre música sin algoritmos**? ¿Dónde encontrar a gente real que escuche con atención? ¿Quién puede dar una crítica útil, lejos de los "me gusta" y las reproducciones?

@@ -6,7 +6,8 @@ author: "Muziboo Team"
 tags: ["music", "creators", "community"]
 image: "https://lh3.googleusercontent.com/u/0/d/1kN30JHlluzSCYkQ0iFn2EIzYFxOJq99g"
 ---
-![UK musician with headphones creating music on a laptop, symbolizing the creative process and sharing original demos online for feedback.](https://lh3.googleusercontent.com/u/0/d/1kN30JHlluzSCYkQoI9mYFxOJq99g)
+
+![How to Share Your Original Music Online in the UK](https://lh3.googleusercontent.com/u/0/d/1kN30JHlluzSCYkQ0iFn2EIzYFxOJq99g)
 
 Finishing a new song or even a small music idea is exciting. You might have a demo, a rough track, or just a small piece you made at home. Maybe you are a hobby musician. Or perhaps you are a new producer working from your bedroom. Making music feels magical. But then you ask: "How do I share my music online?" This can feel hard, especially in the UK. The music world here is busy, and it's easy to get lost. Finding the right way to share your music is important.
 

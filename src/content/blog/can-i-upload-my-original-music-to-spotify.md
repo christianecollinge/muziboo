@@ -6,7 +6,8 @@ author: "Muziboo Team"
 tags: ["music", "creators", "community"]
 image: https://lh3.googleusercontent.com/u/0/d/1zglpN9alqH5ddZXJV0jaoovPIDUAU86n
 ---
-![Digital music distribution for UK artists: laptop, headphones, and mixer. Uploading original music to Spotify community.](https://lh3.googleusercontent.com/u/0/d/1zglpN9alqH5ddZXJV0jaoovPIDUAU86n)
+
+![Can I Upload My Original Music to Spotify? Your Path from Bedroom to Beyond](https://lh3.googleusercontent.com/u/0/d/1zglpN9alqH5ddZXJV0jaoovPIDUAU86n)
 
 ## Can I Upload My Original Music to Spotify? Get Your Songs Heard
 

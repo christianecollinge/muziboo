@@ -7,7 +7,7 @@ tags: ["music", "creators", "community"]
 image: https://lh3.googleusercontent.com/u/0/d/1t1ijVuFekEMmtKVTDbYDWsBHBqi_Ew-g
 ---
 
-![Grafik einer aufstrebenden Musik-Community, die Musik-Demos in Deutschland teilt und ehrliches Feedback für kreatives Wachstum sucht.]()
+![Deine Musik-Demos für Feedback teilen: Warum es in der deutschen Szene zählt](https://lh3.googleusercontent.com/u/0/d/1t1ijVuFekEMmtKVTDbYDWsBHBqi_Ew-g)
 
 Jeder, der in Deutschland Musik macht, kennt es. Man verbringt Stunden mit Melodien, Rhythmen und Sounds. Egal ob im Wohnzimmer mit der Gitarre, am Laptop im Schlafzimmerstudio oder im Proberaum mit Freunden: Aus Leidenschaft entsteht Musik. Doch irgendwann stellt sich die Frage: Was kommt als Nächstes? Wie finde ich heraus, ob meine Ideen gut sind? Wo kann ich meine Musik-Demos für Feedback teilen?
 
