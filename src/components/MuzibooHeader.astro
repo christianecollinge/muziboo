@@ -35,13 +35,13 @@ const { lang, content } = Astro.props;
 
 		<div class="flex items-center gap-6">
 			<a
-				href={`#features`}
+				href={lang === "en" ? "/#features" : `/${lang}#features`}
 				class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
 			>
 				{content.nav.features}
 			</a>
 			<a
-				href={`#manifesto`}
+				href={lang === "en" ? "/#manifesto" : `/${lang}#manifesto`}
 				class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
 			>
 				{content.nav.manifesto}
@@ -56,14 +56,14 @@ const { lang, content } = Astro.props;
 			<div class="w-px bg-muziboo-border h-4 hidden sm:block"></div>
 
 			<a
-				href="/explore"
+				href="/app/explore"
 				class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium"
 			>
 				Explore
 			</a>
 
 			<a
-				href="/login"
+				href="/app/login"
 				class="bg-muziboo-gold text-muziboo-bg px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors"
 			>
 				Log In

@@ -35,7 +35,7 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
 		window.location.href = "/";
 	};
 
-	const navLinks = [{ href: "/explore", label: "Explore" }];
+	const navLinks = [{ href: "/app/explore", label: "Explore" }];
 
 	const isActive = (href: string) => currentPage === href;
 
@@ -69,7 +69,7 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
 					{user ? (
 						<>
 							<a
-								href="/upload"
+								href="/app/upload"
 								className={`text-sm font-medium transition-colors ${
 									isActive("/upload")
 										? "text-muziboo-gold"
@@ -111,7 +111,7 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
 										/>
 										<div className="absolute right-0 top-12 w-48 bg-muziboo-bg-softer border border-muziboo-border rounded-xl shadow-xl py-2 z-50">
 											<a
-												href="/dashboard"
+												href="/app/dashboard"
 												className="block px-4 py-2.5 text-sm text-muziboo-text hover:bg-muziboo-gold/10 transition-colors"
 											>
 												Dashboard
@@ -139,13 +139,13 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
 					) : (
 						<>
 							<a
-								href="/login"
+								href="/app/login"
 								className="text-sm font-medium text-muziboo-text-muted hover:text-muziboo-text transition-colors"
 							>
 								Log In
 							</a>
 							<a
-								href="/signup"
+								href="/app/signup"
 								className="text-sm font-medium bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg hover:bg-muziboo-text transition-colors"
 							>
 								Sign Up
