@@ -4,7 +4,7 @@ description: "Erfahre, wie du deine Musik-Demos für ehrliches Feedback teilst u
 pubDate: 2026-03-24T05:42:25.729Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: https://drive.google.com/uc?export=view&id=1t1ijVuFekEMmtKVTDbYDWsBHBqi_Ew-g
+image: "https://drive.google.com/uc?export=view&id=1t1ijVuFekEMmtKVTDbYDWsBHBqi_Ew-g"
 ---
 
 ![Deine Musik-Demos für Feedback teilen: Warum es in der deutschen Szene zählt](https://drive.google.com/uc?export=view&id=1t1ijVuFekEMmtKVTDbYDWsBHBqi_Ew-g)

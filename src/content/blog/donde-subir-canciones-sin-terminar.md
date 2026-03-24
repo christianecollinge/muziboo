@@ -4,7 +4,7 @@ description: "Descubre dónde compartir tus demos y fragmentos musicales sin pre
 pubDate: 2025-12-03T09:07:27.175Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: https://drive.google.com/uc?export=view&id=1PV50l35UmVRL_mzJ52qaMD9ZeM4ptf7a
+image: "https://drive.google.com/uc?export=view&id=1PV50l35UmVRL_mzJ52qaMD9ZeM4ptf7a"
 ---
 
 ![¿Dónde subir canciones sin terminar? ¡Muziboo es tu taller creativo!](https://drive.google.com/uc?export=view&id=1PV50l35UmVRL_mzJ52qaMD9ZeM4ptf7a)

@@ -4,7 +4,7 @@ description: "Aprende dónde y cómo compartir tus maquetas musicales en España
 pubDate: 2023-10-27T10:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "maquetas", "feedback", "música española", "producción musical"]
-image: https://drive.google.com/uc?export=view&id=1DDzJptJNTk8oZUXqqfOLX3G7wDVv3nlD
+image: "https://drive.google.com/uc?export=view&id=1DDzJptJNTk8oZUXqqfOLX3G7wDVv3nlD"
 ---
 
 ![Descubre Cómo Compartir Maquetas de Música para Recibir Feedback Genuino en España](https://drive.google.com/uc?export=view&id=1DDzJptJNTk8oZUXqqfOLX3G7wDVv3nlD)

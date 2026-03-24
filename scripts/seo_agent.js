@@ -190,6 +190,7 @@ async function main() {
                 // Insert image into frontmatter
                 markdown = markdown.replace('---', `---\nimage: "${url}"`);
                 // Also insert as markdown image at the top of content for body display with alt text
+
                 const imageTag = `\n![${alt}](${url})\n`;
                 const parts = markdown.split('---');
                 if (parts.length >= 3) {
