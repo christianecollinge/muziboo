@@ -4,7 +4,7 @@ description: "Spanish bedroom producers need honest feedback to improve their mu
 pubDate: 2026-02-15T07:58:56.036Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "feedback", "producción musical", "España", "productores de dormitorio"]
-image: "https://drive.google.com/uc?export=view&id=1RN2nt4MHOWzh3lYJU7fN3-U1x3eRNiLU"
+image: "/blog/images/grupos-de-feedback-para-productores-de-dormitorio.png"
 ---
 
 

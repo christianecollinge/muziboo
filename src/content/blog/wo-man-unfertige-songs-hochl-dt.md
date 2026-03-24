@@ -4,7 +4,7 @@ description: "Du fragst dich, wo man unfertige Songs hochlädt? Entdecke Muziboo
 pubDate: 2025-10-01T05:42:47.170Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "deutsche Musikszene", "Feedback Musik", "unfertige Songs"]
-image: "https://drive.google.com/uc?export=view&id=1Cd9YyPiqDse-Pmv4UKQTKT1L1DO-Czpn"
+image: "/blog/images/wo-man-unfertige-songs-hochl-dt.png"
 ---
 
 

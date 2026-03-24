@@ -185,11 +185,13 @@ async function main() {
         if (markdown) {
             const { image, alt } = await getRelevantImage(markdown, ai);
             if (image) {
-                const url = getImageUrl(image.id);
-                // Insert image into frontmatter only. The Astro layout will render it.
-                markdown = markdown.replace('---', `---\nimage: "${url}"`);
-                saveUsedImage(image.id);
-                console.log(`🖼️ Added relevant image to frontmatter: ${image.name} with alt: "${alt}"`);
+                const localUrl = await downloadImage(image.id, image.name);
+                if (localUrl) {
+                    // Insert local image path into frontmatter
+                    markdown = markdown.replace('---', `---\nimage: "${localUrl}"`);
+                    saveUsedImage(image.id);
+                    console.log(`🖼️ Downloaded relevant image: ${image.name} to ${localUrl}`);
+                }
             }
 
             const filepath = path.join(BLOG_DIR, `${slug}.md`);

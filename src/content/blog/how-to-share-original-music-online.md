@@ -4,7 +4,7 @@ description: "Are you a UK musician looking to share your original music online?
 pubDate: 2026-03-18T09:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: "https://drive.google.com/uc?export=view&id=1kN30JHlluzSCYkQ0iFn2EIzYFxOJq99g"
+image: "/blog/images/how-to-share-original-music-online.png"
 ---
 
 

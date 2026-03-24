@@ -4,7 +4,7 @@ description: "Entdecke, warum die deutsche Musikszene echtes Feedback braucht. M
 pubDate: 2025-11-09T05:43:42.182Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: "https://drive.google.com/uc?export=view&id=157nCVuLv8pCwpXkMoNhs0Zh4jGawaxAp"
+image: "/blog/images/sound-wave-circle-logo.png"
 ---
 
 

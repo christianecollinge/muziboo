@@ -4,7 +4,7 @@ description: "Descubre por qué Muziboo es la mejor comunidad para músicos 2026
 pubDate: 2026-03-23T09:07:02.931Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: "https://drive.google.com/uc?export=view&id=1ntPoMOW5EI6S3OKMH3tm6oV8sRazfUXt"
+image: "/blog/images/mejor-comunidad-para-m-sicos-2026.png"
 ---
 
 

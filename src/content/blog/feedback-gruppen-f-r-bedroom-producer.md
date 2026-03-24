@@ -4,7 +4,7 @@ description: "Finde heraus, warum authentisches Feedback für Bedroom Producer i
 pubDate: 2025-09-30T05:43:14.583Z
 author: "Muziboo Team"
 tags: ["Musik", "Kreative", "Community"]
-image: "https://drive.google.com/uc?export=view&id=1-CuubEqzhBzkNoacGC2AwCb4dpjpkET9"
+image: "/blog/images/feedback-gruppen-f-r-bedroom-producer.png"
 ---
 
 

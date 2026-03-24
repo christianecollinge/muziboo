@@ -4,7 +4,7 @@ description: "Descubre cómo los músicos españoles encuentran feedback humano 
 pubDate: 2026-02-18T07:59:21.244Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: "https://drive.google.com/uc?export=view&id=1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9"
+image: "/blog/images/play-button-deconstructed-abstract-logo.png"
 ---
 
 

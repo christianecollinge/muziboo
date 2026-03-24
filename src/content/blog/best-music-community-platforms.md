@@ -4,7 +4,7 @@ description: "Discover the best music community platforms for UK musicians seeki
 pubDate: 2026-03-16T10:30:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "UK music", "feedback", "demos", "DIY music"]
-image: "https://drive.google.com/uc?export=view&id=1_k-8xYmweBEjIFTFLBmbQaZbs8uwQFcU"
+image: "/blog/images/best-music-community-platforms.png"
 ---
 
 

@@ -4,7 +4,7 @@ description: "Learn how to upload your original music to Spotify. Find out why g
 pubDate: 2026-03-20T11:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: "https://drive.google.com/uc?export=view&id=1zglpN9alqH5ddZXJV0jaoovPIDUAU86n"
+image: "/blog/images/can-i-upload-my-original-music-to-spotify.png"
 ---
 
 

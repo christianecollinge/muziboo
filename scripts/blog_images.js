@@ -124,9 +124,32 @@ export function injectImageIntoMarkdown(markdown, imageUrl, imageName) {
 }
 
 /**
- * Drive Image Link Helper
- * Using the universal 'uc' link which is the most reliable for public embedding.
+ * Downloads an image from Google Drive to the local public folder
+ */
+export async function downloadImage(fileId, filename) {
+    const { execSync } = await import('child_process');
+    const localDir = path.join(process.cwd(), 'public', 'blog', 'images');
+    if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
+
+    // Clean filename for filesystem
+    const safeName = filename.toLowerCase().replace(/[^a-z0-9.]/g, '-');
+    const localPath = path.join(localDir, safeName);
+
+    try {
+        console.log(`📥 Downloading image to local: ${safeName}...`);
+        execSync(`gws drive files get --params '{"fileId": "${fileId}"}' --output "${localPath}"`);
+        return `/blog/images/${safeName}`;
+    } catch (e) {
+        console.error(`❌ Error downloading image ${fileId}:`, e);
+        return null;
+    }
+}
+
+/**
+ * Returns the local public URL for an image
  */
 export function getImageUrl(fileId) {
+    // This is no longer used for Drive URLs, we use downloadImage instead.
+    // Kept for signature compatibility if needed.
     return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }

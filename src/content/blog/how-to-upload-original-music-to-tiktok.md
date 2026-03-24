@@ -4,7 +4,7 @@ description: "Learn how to upload original music to TikTok in the UK, from bedro
 pubDate: 2026-03-22T09:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "tiktok", "DIY music", "UK music", "bedroom producers", "original music"]
-image: "https://drive.google.com/uc?export=view&id=1NuESSl_YgKj-cGqEiGOK9Xm14DsUcHZo"
+image: "/blog/images/how-to-upload-original-music-to-tiktok.png"
 ---
 
 
