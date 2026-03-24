@@ -7,6 +7,9 @@ tags: ["music", "creators", "community", "deutsche Musikszene", "Feedback Musik"
 ---
 # Wo man unfertige Songs hochlädt: Dein sicherer Hafen für Musikideen bei Muziboo
 
+![Abstract Logo Mark.png](https://lh3.googleusercontent.com/u/0/d/1Cd9YyPiqDse-Pmv4UKQTKT1L1DO-Czpn)
+
+
 Jeder Musiker kennt es: Man sitzt stundenlang an einem neuen Track, bastelt an Melodien, Rhythmen oder Texten. Die Ideen sprudeln, doch dann kommt der Punkt, an dem man nicht weiterweiß. Oder man hat einen Rohdiamanten, der noch geschliffen werden muss. Die Frage, die sich dann stellt, ist immer dieselbe: **Wo man unfertige Songs hochlädt**, um ehrliches und konstruktives Feedback zu bekommen? Diese Herausforderung ist besonders in der schnelllebigen deutschen Musikszene präsent. Viele fühlen sich allein mit ihren Demos und unfertigen Aufnahmen.
 
 Die meisten öffentlichen Plattformen sind auf Perfektion ausgelegt. Sie wollen fertige, glänzende Produkte sehen, die Millionen von Klicks generieren. Das kann für Hobby-Musiker, Bedroom-Producer oder jene, die einfach nur Spaß am Klang haben, ziemlich einschüchternd sein. Man scheut sich, unfertige Stücke zu teilen, aus Angst vor negativen Kommentaren oder dem Gefühl, nicht gut genug zu sein. Doch genau hier liegt das Problem: Kreativität lebt vom Austausch, nicht von der Angst vor dem Urteil.

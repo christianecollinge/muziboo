@@ -3,6 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
 import { calculateFleschReadingEase, calculateFleschKincaidGradeLevel } from './readability.js';
+import { getNextImage, getImageUrl, injectImageIntoMarkdown, saveUsedImage } from './blog_images.js';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -181,8 +182,17 @@ async function main() {
         }
         i++;
         
-        const markdown = await generateBlogPost(keyword, currentTarget, pubDate);
+        let markdown = await generateBlogPost(keyword, currentTarget, pubDate);
         if (markdown) {
+            // Add image
+            const image = await getNextImage();
+            if (image) {
+                const url = getImageUrl(image.id);
+                markdown = injectImageIntoMarkdown(markdown, url, image.name);
+                saveUsedImage(image.id);
+                console.log(`🖼️ Added image: ${image.name}`);
+            }
+
             const filepath = path.join(BLOG_DIR, `${slug}.md`);
             fs.writeFileSync(filepath, markdown);
             

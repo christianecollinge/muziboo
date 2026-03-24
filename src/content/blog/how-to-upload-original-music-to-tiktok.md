@@ -7,6 +7,9 @@ tags: ["music", "creators", "community", "tiktok", "DIY music", "UK music", "bed
 ---
 # How to Upload Original Music to TikTok: A UK Guide for DIY Musicians
 
+![Redo This Image in My Style (4).png](https://lh3.googleusercontent.com/u/0/d/1NuESSl_YgKj-cGqEiGOK9Xm14DsUcHZo)
+
+
 Hello, fellow music creators. TikTok has a huge impact on the UK music scene. It is almost impossible to ignore. Viral dance trends have made unknown artists famous. Small, simple song clips have touched millions of hearts. This platform has truly become a place for new ideas and discoveries. At Muziboo, we celebrate real music made by real people. Many of you ask: "How can I get my own sound, my recordings, or my demos onto TikTok?" Don't worry, we are here to show you. We will explain how to upload your original music to TikTok. This will help your unique sound be heard.
 
 Today's music world, especially in the UK, is open to everyone. You do not need a big record deal to share your art. You just need your ideas, your tools, and some basic knowledge. This guide is for the home producer and the hobby musician. It is for anyone making music in their own space. We will look at different ways to upload your music. Some are official, and others are more direct. We will help you move your music from your computer to TikTok. Always remember that your music's heart comes from your true self and the care you put into every note.

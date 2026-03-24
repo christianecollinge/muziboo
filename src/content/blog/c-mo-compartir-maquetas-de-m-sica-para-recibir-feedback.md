@@ -7,6 +7,9 @@ tags: ["music", "creators", "community", "maquetas", "feedback", "música españ
 ---
 # Cómo Compartir Maquetas de Música para Recibir Comentarios Útiles en España
 
+![Create Content Redo (13).png](https://lh3.googleusercontent.com/u/0/d/1DDzJptJNTk8oZUXqqrOLX3G7wDVv3nlD)
+
+
 Muchos artistas en España están creando música. Desde las ciudades de Madrid y Barcelona hasta los estudios en casa de Sevilla, miles de personas dan vida a sus ideas. Con guitarras, teclados y micrófonos sencillos, la pasión por la música crece. Tú creas, pruebas cosas nuevas, y grabas esas melodías que te llegan. Haces partes de canciones que suenan prometedoras. Pero, ¿qué pasa cuando esa idea se convierte en una maqueta? ¿Cómo la sacas de tu ordenador? ¿Cómo puede crecer y mejorar? La pregunta principal para cada creador es **cómo compartir maquetas de música para recibir feedback** que sea real, útil, y que te ayude a seguir adelante.
 
 En Muziboo, entendemos esta preocupación muy bien. Somos un lugar para la música de verdad, hecha por gente de verdad. Sabemos que el camino de un artista es difícil si no se comparte. No somos una página para escuchar música en línea. Tampoco somos un concurso de talentos. Somos un espacio seguro donde cada nota, cada demo y cada grabación sin terminar encuentra oídos atentos. Aquí valoramos tu habilidad, tu arte y tu pasión. No nos importan los números o los concursos de popularidad.

@@ -7,6 +7,9 @@ tags: ["music", "creators", "community"]
 ---
 # El Pulso de la Creatividad Española: ¿Dónde Encontrar Feedback Humano sobre Música sin Algoritmos?
 
+![Create Redo Content.png](https://lh3.googleusercontent.com/u/0/d/1htdP5BkTgmOIpb-Z18vCxCFfJEGtOOr9)
+
+
 Hoy en día, la música española tiene mucha fuerza. Cada riff, estrofa o ritmo puede llegar a gente de todo el mundo en un instante. Desde los cuartos de Madrid hasta los estudios de Barcelona, miles de músicos crean sonidos nuevos. Mezclan lo antiguo con lo moderno. Pero en este mundo de algoritmos y números, una pregunta clave aparece para los artistas: ¿cómo conseguir **feedback humano sobre música sin algoritmos**? ¿Dónde encontrar a gente real que escuche con atención? ¿Quién puede dar una crítica útil, lejos de los "me gusta" y las reproducciones?
 
 Las plataformas de música y redes sociales hoy se enfocan más en la cantidad que en la calidad. También buscan lo que se hace viral, no el arte profundo. Esto puede desanimar a los músicos principiantes. También a los productores que prueban cosas en casa, o a los compositores que quieren mejorar su trabajo. Compartir una canción a medio hacer en un lugar que solo quiere lo "perfecto" puede ser muy difícil. A menudo, esto lleva al silencio. O, peor aún, a comentarios que no ayudan al artista a crecer.

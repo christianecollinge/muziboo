@@ -7,6 +7,9 @@ tags: ["music", "creators", "community"]
 ---
 # ¿Dónde subir canciones sin terminar? Muziboo es el refugio de la creatividad auténtica en España
 
+![Create Content Redo (11).png](https://lh3.googleusercontent.com/u/0/d/1PV50l35UmVRL_mzJ52qaMD9ZeM4ptf7a)
+
+
 ¿Eres de los que tienen el disco duro lleno de ideas a medio cocer? ¿Tu móvil guarda decenas de grabaciones nocturnas, maquetas con potencial o fragmentos de canciones que nunca ven la luz? No te preocupes. Esta situación es más común de lo que piensas, especialmente entre la vibrante comunidad de músicos independientes y productores caseros en España. Crear música es un viaje increíble, pero a menudo solitario. Y la pregunta persistente es siempre la misma: **¿dónde subir canciones sin terminar** para obtener esa opinión honesta que te ayude a avanzar?
 
 Olvídate de las grandes plataformas donde solo cuenta el número de "me gusta" o las reproducciones. Esos espacios están diseñados para el producto final, para la música pulida y lista para el consumo masivo. Tu demo de guitarra, esa melodía experimental que acabas de grabar, o esa letra a medio escribir, necesitan un ambiente distinto. Necesitan un taller, un espacio seguro donde el valor resida en la idea, no en la perfección. En Muziboo entendemos esto perfectamente. Somos ese lugar.
