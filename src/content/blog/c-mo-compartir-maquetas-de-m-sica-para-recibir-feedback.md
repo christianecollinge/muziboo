@@ -4,7 +4,7 @@ description: "Aprende dónde y cómo compartir tus maquetas musicales en España
 pubDate: 2023-10-27T10:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community", "maquetas", "feedback", "música española", "producción musical"]
-image: "/blog/images/abstract-background-for-music-platform.png"
+image: "/blog/images/redo-this-image-in-my-style--2--copy-2.png"
 ---
 
 

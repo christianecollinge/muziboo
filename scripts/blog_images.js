@@ -137,7 +137,7 @@ export async function downloadImage(fileId, filename) {
 
     try {
         console.log(`📥 Downloading image to local: ${safeName}...`);
-        execSync(`gws drive files get --params '{"fileId": "${fileId}"}' --output "${localPath}"`);
+        execSync(`gws drive files get --params '{"fileId": "${fileId}", "alt": "media"}' --output "${localPath}"`);
         return `/blog/images/${safeName}`;
     } catch (e) {
         console.error(`❌ Error downloading image ${fileId}:`, e);
