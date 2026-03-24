@@ -7,7 +7,7 @@ tags: ["music", "creators", "community"]
 image: "https://drive.google.com/uc?export=view&id=1zglpN9alqH5ddZXJV0jaoovPIDUAU86n"
 ---
 
-![Can I Upload My Original Music to Spotify? Your Path from Bedroom to Beyond](https://drive.google.com/uc?export=view&id=1zglpN9alqH5ddZXJV0jaoovPIDUAU86n)
+
 
 ## Can I Upload My Original Music to Spotify? Get Your Songs Heard
 

@@ -7,7 +7,7 @@ tags: ["music", "creators", "community"]
 image: "https://drive.google.com/uc?export=view&id=1ntPoMOW5EI6S3OKMH3tm6oV8sRazfUXt"
 ---
 
-![Muziboo: La Mejor Comunidad para Músicos 2026 en la Escena Española](https://drive.google.com/uc?export=view&id=1ntPoMOW5EI6S3OKMH3tm6oV8sRazfUXt)
+
 
 ![Muziboo, a vibrant online community for Spanish musicians and producers, sharing unpolished demos and receiving constructive feedback.]
 

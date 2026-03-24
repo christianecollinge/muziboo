@@ -7,7 +7,7 @@ tags: ["music", "creators", "community"]
 image: "https://drive.google.com/uc?export=view&id=1PV50l35UmVRL_mzJ52qaMD9ZeM4ptf7a"
 ---
 
-![¿Dónde subir canciones sin terminar? ¡Muziboo es tu taller creativo!](https://drive.google.com/uc?export=view&id=1PV50l35UmVRL_mzJ52qaMD9ZeM4ptf7a)
+
 
 ¿Eres de los que tienen el disco duro lleno de ideas a medio cocer? ¿Tu móvil guarda decenas de grabaciones nocturnas, maquetas con potencial o fragmentos de canciones que nunca ven la luz? No te preocupes. Esta situación es más común de lo que piensas, especialmente entre la vibrante comunidad de músicos independientes y productores caseros en España. Crear música es un viaje increíble, pero a menudo solitario. Y la pregunta persistente es siempre la misma: **¿dónde subir canciones sin terminar** para obtener esa opinión honesta que te ayude a avanzar?
 

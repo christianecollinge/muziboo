@@ -24,12 +24,18 @@ const { Content, headings } = await post.render();
 
 // Only H2s for the TOC (top-level sections)
 const tocHeadings = headings.filter(h => h.depth === 2);
+
+// Image fallback logic same as index
+const body = post.body || '';
+const bodyImageMatch = body.match(/!\[.*?\]\((https?:\/\/[^)]+)\)/);
+const displayImage = post.data.image || (bodyImageMatch ? bodyImageMatch[1] : null);
 ---
 
 <Layout
   title={`${post.data.title} — Muziboo Blog`}
   description={post.data.description}
   ogType="article"
+  ogImage={displayImage || undefined}
   lang={defaultLang}
 >
   <MuzibooHeader lang={defaultLang} content={t} />
@@ -38,34 +44,47 @@ const tocHeadings = headings.filter(h => h.depth === 2);
     <div class="max-w-5xl mx-auto py-16 px-4">
 
       <!-- Header section (full width) -->
-      <div class="max-w-2xl mb-12">
+      <div class="max-w-3xl mb-12">
         <div class="flex flex-wrap gap-2 mb-6">
           {post.data.tags?.map(tag => (
-            <span class="text-muziboo-text-muted uppercase tracking-widest text-xs">{tag}</span>
+            <span class="text-muziboo-gold uppercase tracking-widest text-[10px] font-bold border border-muziboo-gold/20 px-2 py-0.5 rounded">{tag}</span>
           ))}
         </div>
-        <h1 class="text-3xl sm:text-4xl font-semibold text-muziboo-text leading-tight mb-6">
+        
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-muziboo-text leading-tight mb-8">
           {post.data.title}
         </h1>
-        <div class="text-xs text-muziboo-text-muted uppercase tracking-widest pb-8 border-b border-muziboo-border">
-          {post.data.author} · {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric'})}
+
+        {displayImage && (
+          <div class="aspect-video w-full overflow-hidden rounded-2xl mb-10 bg-muziboo-border shadow-2xl">
+            <img 
+              src={displayImage} 
+              alt={post.data.title}
+              class="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        <div class="flex items-center justify-between text-[10px] text-muziboo-text-muted uppercase tracking-[0.2em] pb-8 border-b border-muziboo-border">
+          <span>{post.data.author}</span>
+          <span>{post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric'})}</span>
         </div>
       </div>
 
       <!-- Two-column layout: TOC left, article right -->
-      <div class="flex gap-12 items-start">
+      <div class="flex flex-col lg:flex-row gap-12 items-start">
 
         <!-- Sticky TOC sidebar -->
         {tocHeadings.length > 0 && (
-          <aside class="toc-sidebar hidden lg:block w-44 shrink-0">
+          <aside class="toc-sidebar hidden lg:block w-48 shrink-0">
             <nav class="sticky top-24">
-              <p class="text-muziboo-text-muted uppercase tracking-widest text-xs mb-4">Contents</p>
-              <ul class="space-y-2">
+              <p class="text-muziboo-text font-bold uppercase tracking-widest text-[10px] mb-6">On this page</p>
+              <ul class="space-y-3">
                 {tocHeadings.map(heading => (
                   <li>
                     <a
                       href={`#${heading.slug}`}
-                      class="toc-link text-xs text-muziboo-text-muted leading-snug hover:text-muziboo-gold transition-colors block"
+                      class="toc-link text-xs text-muziboo-text-muted leading-snug hover:text-muziboo-gold transition-colors block border-l-2 border-transparent pl-4"
                     >
                       {heading.text}
                     </a>
@@ -79,20 +98,21 @@ const tocHeadings = headings.filter(h => h.depth === 2);
         <!-- Article content -->
         <div class="flex-1 min-w-0">
           <article class="prose prose-invert max-w-none
-            prose-headings:text-muziboo-text prose-headings:font-semibold
-            prose-p:text-muziboo-text-muted prose-p:leading-relaxed prose-p:text-base
+            prose-headings:text-muziboo-text prose-headings:font-bold
+            prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6
+            prose-p:text-muziboo-text/80 prose-p:leading-relaxed prose-p:text-lg prose-p:mb-6
             prose-a:text-muziboo-gold prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-muziboo-text
-            prose-hr:border-muziboo-border
-            prose-blockquote:border-muziboo-gold prose-blockquote:text-muziboo-text-muted
+            prose-strong:text-muziboo-text prose-strong:font-bold
+            prose-hr:border-muziboo-border prose-hr:my-12
+            prose-blockquote:border-muziboo-gold prose-blockquote:bg-muziboo-gold/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:text-muziboo-text/90 prose-blockquote:italic
           ">
             <Content />
           </article>
 
           <!-- Back link -->
-          <div class="mt-16 pt-8 border-t border-muziboo-border">
-            <a href="/blog" class="text-muziboo-text-muted uppercase tracking-widest text-xs hover:text-muziboo-gold transition-colors">
-              ← Back to Blog
+          <div class="mt-20 pt-10 border-t border-muziboo-border flex justify-center">
+            <a href="/blog" class="inline-flex items-center gap-2 text-muziboo-gold font-bold uppercase tracking-widest text-[10px] hover:text-muziboo-text transition-colors group">
+              <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to all posts
             </a>
           </div>
         </div>
@@ -105,25 +125,10 @@ const tocHeadings = headings.filter(h => h.depth === 2);
 </Layout>
 
 <style>
-  /* Replace bullet dots with hyphens, keep the indent */
-  article :global(ul) {
-    list-style: none;
-    padding-left: 1.5rem;
-  }
-  article :global(li) {
-    position: relative;
-    margin-bottom: 0.75rem;
-  }
-  article :global(ul li::before) {
-    content: '–';
-    position: absolute;
-    left: -1.5rem;
-    color: var(--color-muziboo-text-muted, #888);
-  }
-
   /* TOC active link highlight (JS-driven) */
   .toc-link.active {
-    color: var(--color-muziboo-gold, #c9a96e);
+    color: var(--color-muziboo-gold, #d9b682);
+    border-left-color: var(--color-muziboo-gold, #d9b682);
   }
 </style>
 
@@ -142,7 +147,7 @@ const tocHeadings = headings.filter(h => h.depth === 2);
         }
       });
     },
-    { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+    { rootMargin: '-10% 0px -70% 0px', threshold: 0 }
   );
 
   headings.forEach(h => observer.observe(h));
