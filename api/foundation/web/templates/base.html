@@ -56,22 +56,18 @@
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-muziboo-bg/95 backdrop-blur-sm border-b border-muziboo-border">
         <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/app/explore" class="text-muziboo-gold font-bold text-xl tracking-tight">muziboo</a>
+            <a href="/" class="text-muziboo-gold font-bold text-xl tracking-tight">muziboo</a>
             <div class="flex items-center gap-6">
                 <a href="/blog"
                    class="text-sm text-muziboo-text-muted hover:text-muziboo-text transition-colors">
                     Blog
                 </a>
-                <a href="/app/explore"
-                   class="text-sm {{if eq .CurrentPage "/app/explore"}}text-muziboo-text{{else}}text-muziboo-text-muted hover:text-muziboo-text{{end}} transition-colors">
-                    Explore
-                </a>
-                <a href="/app/upload"
-                   class="text-sm {{if eq .CurrentPage "/app/upload"}}text-muziboo-text{{else}}text-muziboo-text-muted hover:text-muziboo-text{{end}} transition-colors">
-                    Upload
-                </a>
                 <div id="nav-user" class="flex items-center gap-2">
                     {{if .User}}
+                    <a href="/app/upload"
+                       class="text-sm {{if eq .CurrentPage "/app/upload"}}text-muziboo-text{{else}}text-muziboo-text-muted hover:text-muziboo-text{{end}} transition-colors">
+                        Upload
+                    </a>
                     <a href="/app/dashboard"
                        class="w-8 h-8 rounded-full bg-muziboo-gold/20 flex items-center justify-center text-sm font-semibold text-muziboo-gold hover:bg-muziboo-gold/30 transition-colors"
                        title="{{.User.DisplayName}}">

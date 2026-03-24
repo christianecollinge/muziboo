@@ -35,7 +35,7 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
 		window.location.href = "/";
 	};
 
-	const navLinks = [{ href: "/app/explore", label: "Explore" }];
+	const navLinks: any[] = [];
 
 	const isActive = (href: string) => currentPage === href;
 
