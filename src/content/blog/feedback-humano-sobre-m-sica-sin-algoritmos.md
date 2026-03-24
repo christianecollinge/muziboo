@@ -4,10 +4,10 @@ description: "Descubre cómo los músicos españoles encuentran feedback humano 
 pubDate: 2026-02-18T07:59:21.244Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: "https://lh3.googleusercontent.com/u/0/d/1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9"
+image: "https://drive.google.com/uc?export=view&id=1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9"
 ---
 
-![El Pulso de la Creatividad Española: ¿Dónde Encontrar Feedback Humano sobre Música sin Algoritmos?](https://lh3.googleusercontent.com/u/0/d/1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9)
+![El Pulso de la Creatividad Española: ¿Dónde Encontrar Feedback Humano sobre Música sin Algoritmos?](https://drive.google.com/uc?export=view&id=1htdP5BkTgmOIpb-Z18vCxCFjEGtOOr9)
 
 ![Artista español recibiendo feedback humano sobre sus demos musicales, fuera de algoritmos, para impulsar su creatividad en la comunidad Muziboo.]
 

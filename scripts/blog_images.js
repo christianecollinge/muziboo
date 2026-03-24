@@ -124,9 +124,9 @@ export function injectImageIntoMarkdown(markdown, imageUrl, imageName) {
 }
 
 /**
- * Drive Image Link Helper (requires making images public or using a proxy)
- * For now we'll use the direct thumbnail/view link which works if public.
+ * Drive Image Link Helper
+ * Using the universal 'uc' link which is the most reliable for public embedding.
  */
 export function getImageUrl(fileId) {
-    return `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+    return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }

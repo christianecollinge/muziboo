@@ -4,10 +4,10 @@ description: "Learn how to upload your original music to Spotify. Find out why g
 pubDate: 2026-03-20T11:00:00.000Z
 author: "Muziboo Team"
 tags: ["music", "creators", "community"]
-image: https://lh3.googleusercontent.com/u/0/d/1zglpN9alqH5ddZXJV0jaoovPIDUAU86n
+image: https://drive.google.com/uc?export=view&id=1zglpN9alqH5ddZXJV0jaoovPIDUAU86n
 ---
 
-![Can I Upload My Original Music to Spotify? Your Path from Bedroom to Beyond](https://lh3.googleusercontent.com/u/0/d/1zglpN9alqH5ddZXJV0jaoovPIDUAU86n)
+![Can I Upload My Original Music to Spotify? Your Path from Bedroom to Beyond](https://drive.google.com/uc?export=view&id=1zglpN9alqH5ddZXJV0jaoovPIDUAU86n)
 
 ## Can I Upload My Original Music to Spotify? Get Your Songs Heard
 

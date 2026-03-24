@@ -49,7 +49,12 @@ export default defineConfig({
 	},
 	compressHTML: true,
 	image: {
-		domains: [],
-		remotePatterns: [],
+		domains: ["drive.google.com"],
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "drive.google.com",
+			},
+		],
 	},
 });
