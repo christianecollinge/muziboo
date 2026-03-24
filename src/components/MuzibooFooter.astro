@@ -1,50 +1,79 @@
 ---
+import { languages, labels, type Lang } from "../i18n";
 import type { Content } from "../i18n";
 
 interface Props {
 	content: Content;
-	lang: string;
+	lang: Lang;
 }
 
-const { content } = Astro.props;
+const { content, lang } = Astro.props;
 const { footer } = content;
 ---
 
-<footer class="w-full py-6 px-4 bg-muziboo-bg" role="contentinfo">
+<footer class="w-full py-12 px-4 bg-muziboo-bg border-t border-muziboo-border" role="contentinfo">
 	<div
-		class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm"
+		class="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-12"
 	>
-		<div class="flex items-center gap-2 text-muziboo-text-muted tracking-wide">
-			<span class="text-muziboo-text font-semibold tracking-tight"
-				>{footer.brand}</span
-			>
-			<span aria-hidden="true">·</span>
-			<span>{footer.est}</span>
-			<span aria-hidden="true">·</span>
-			<span>{footer.reborn}</span>
+		<div class="flex flex-col gap-4 max-w-xs">
+			<a href="/" class="flex items-center gap-2 text-muziboo-gold">
+				<img src="/logo.png" alt="" width="32" height="32" class="w-8 h-8 object-contain" />
+				<span class="text-xl font-bold tracking-tight">muziboo</span>
+			</a>
+			<p class="text-muziboo-text-muted text-sm leading-relaxed">
+				{footer.brand} · {footer.est} · {footer.reborn}
+			</p>
+			
+			<div class="flex items-center gap-2 mt-2" role="group" aria-label="Language">
+				{
+					languages.map((l) => (
+						<a
+							href={l === "en" ? "/" : `/${l}`}
+							class={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all ${
+								l === lang
+									? "text-muziboo-gold bg-muziboo-gold/10 ring-1 ring-muziboo-gold/20"
+									: "text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border"
+							}`}
+							aria-current={l === lang ? "true" : undefined}
+							aria-label={`Switch to ${labels[l]}`}
+						>
+							{labels[l]}
+						</a>
+					))
+				}
+			</div>
 		</div>
-		<nav
-			class="flex items-center gap-6 text-muziboo-text-muted uppercase tracking-widest"
-			aria-label="Footer"
-		>
-			<a
-				href="https://www.facebook.com/muziboo"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="hover:text-muziboo-gold transition-colors">{footer.facebook}</a
-			>
-			<a href="/blog" class="hover:text-muziboo-gold transition-colors"
-				>{footer.blog}</a
-			>
-			<a href="#" class="hover:text-muziboo-gold transition-colors"
-				>{footer.privacy}</a
-			>
-			<a href="#" class="hover:text-muziboo-gold transition-colors"
-				>{footer.terms}</a
-			>
-		</nav>
-		<div class="text-muziboo-text-muted uppercase tracking-widest">
-			{footer.copyright}
+
+		<div class="grid grid-cols-2 sm:grid-cols-3 gap-12 text-sm">
+			<div class="flex flex-col gap-4">
+				<h3 class="text-muziboo-text font-bold uppercase tracking-widest text-[10px]">{content.nav.features}</h3>
+				<nav class="flex flex-col gap-2 text-muziboo-text-muted">
+					<a href="/explore" class="hover:text-muziboo-gold transition-colors">Explore</a>
+					<a href="/#features" class="hover:text-muziboo-gold transition-colors">{content.nav.features}</a>
+					<a href="/#manifesto" class="hover:text-muziboo-gold transition-colors">{content.nav.manifesto}</a>
+				</nav>
+			</div>
+			
+			<div class="flex flex-col gap-4">
+				<h3 class="text-muziboo-text font-bold uppercase tracking-widest text-[10px]">Resources</h3>
+				<nav class="flex flex-col gap-2 text-muziboo-text-muted">
+					<a href="/blog" class="hover:text-muziboo-gold transition-colors">Blog</a>
+					<a href="https://www.facebook.com/muziboo" target="_blank" rel="noopener noreferrer" class="hover:text-muziboo-gold transition-colors">Facebook</a>
+				</nav>
+			</div>
+
+			<div class="flex flex-col gap-4">
+				<h3 class="text-muziboo-text font-bold uppercase tracking-widest text-[10px]">Legal</h3>
+				<nav class="flex flex-col gap-2 text-muziboo-text-muted">
+					<a href="#" class="hover:text-muziboo-gold transition-colors">{footer.privacy}</a>
+					<a href="#" class="hover:text-muziboo-gold transition-colors">{footer.terms}</a>
+				</nav>
+			</div>
 		</div>
+	</div>
+	
+	<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-muziboo-border flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-muziboo-text-muted uppercase tracking-[0.2em]">
+		<div>{footer.copyright}</div>
+		<div>Crafted with soul for hobby musicians</div>
 	</div>
 </footer>

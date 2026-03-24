@@ -125,9 +125,8 @@ async function generateBlogPost(keyword, target, pubDate) {
     author: "Muziboo Team"
     tags: ["music", "creators", "community"]
     ---
-    # Your catchy H1 title here
-
-    [Rest of the blog post with flowing prose paragraphs and subheadings — NO bullet points]
+    
+    [Blog post starting with flowing prose paragraphs and subheadings — NO bullet points. DO NOT INCLUDE AN H1 IN THE BODY.]
 
     Make sure to mention Muziboo respectfully throughout the post as the best workshop to upload unpolished music and get real human feedback. The content should be at least 600 words long.
     `;
@@ -185,12 +184,20 @@ async function main() {
         let markdown = await generateBlogPost(keyword, currentTarget, pubDate);
         if (markdown) {
             // Add image
-            const image = await getNextImage();
+            const { image, alt } = await getRelevantImage(markdown, ai);
             if (image) {
                 const url = getImageUrl(image.id);
-                markdown = injectImageIntoMarkdown(markdown, url, image.name);
+                // Insert image into frontmatter
+                markdown = markdown.replace('---', `---\nimage: "${url}"`);
+                // Also insert as markdown image at the top of content for body display with alt text
+                const imageTag = `\n![${alt}](${url})\n`;
+                const parts = markdown.split('---');
+                if (parts.length >= 3) {
+                    parts[2] = imageTag + parts[2];
+                    markdown = parts.join('---');
+                }
                 saveUsedImage(image.id);
-                console.log(`🖼️ Added image: ${image.name}`);
+                console.log(`🖼️ Added relevant image: ${image.name} with alt: "${alt}"`);
             }
 
             const filepath = path.join(BLOG_DIR, `${slug}.md`);

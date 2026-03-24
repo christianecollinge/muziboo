@@ -36,29 +36,63 @@ export function saveUsedImage(fileId) {
 }
 
 /**
- * Returns the next available image and warns if low
+ * Returns a relevant image based on the post content and available filenames
  */
-export async function getNextImage() {
+export async function getRelevantImage(content, aiInstance) {
     const allImages = await getAllImages();
     const usedIds = getUsedImages();
-    
     const available = allImages.filter(img => !usedIds.includes(img.id));
     
     if (available.length === 0) {
         console.warn("⚠️ WARNING: All images in the Drive folder have been used!");
-        return null;
+        return { image: null, alt: "" };
     }
-    
+
     if (available.length <= 3) {
         console.warn(`⚠️ WARNING: Only ${available.length} images left in the Drive folder!`);
     }
+
+    // Use AI to pick the most relevant image from available names
+    const imageListStr = available.map((img, i) => `${i}: ${img.name}`).join('\n');
+    const prompt = `
+    You are an SEO expert. Given the following blog post content and a list of available image filenames, pick the MOST RELEVANT image.
+    If multiple seem relevant, pick the best one. If none are relevant, pick a random one from the list.
     
-    // Pick a random one
-    const randomIndex = Math.floor(Math.random() * available.length);
-    const selected = available[randomIndex];
+    Also, generate a descriptive, keyword-rich SEO alt text for this image (max 125 characters).
     
-    // We don't save it here yet, we save it when it's actually applied to a post
-    return selected;
+    BLOG CONTENT:
+    ${content.substring(0, 1000)}...
+    
+    AVAILABLE IMAGES:
+    ${imageListStr}
+    
+    Output ONLY a JSON object like this:
+    {"index": number, "alt": "Descriptive alt text"}
+    `;
+
+    try {
+        const response = await aiInstance.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+        });
+
+        let resultText = response.text;
+        if (resultText.includes('```json')) {
+            resultText = resultText.match(/```json\n([\s\S]*?)\n```/)[1];
+        } else if (resultText.includes('```')) {
+            resultText = resultText.match(/```\n([\s\S]*?)\n```/)[1];
+        }
+        
+        const result = JSON.parse(resultText);
+        const selected = available[result.index] || available[0];
+        
+        return { image: selected, alt: result.alt };
+    } catch (e) {
+        console.error("❌ Error selecting relevant image with AI:", e);
+        // Fallback to random
+        const randomIndex = Math.floor(Math.random() * available.length);
+        return { image: available[randomIndex], alt: "Music creation and community" };
+    }
 }
 
 /**

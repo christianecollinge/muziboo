@@ -18,7 +18,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
   <MuzibooHeader lang={defaultLang} content={t} />
 
   <main id="main-content" class="min-h-screen bg-muziboo-bg text-muziboo-text">
-    <div class="max-w-4xl mx-auto py-16 px-4">
+    <div class="max-w-7xl mx-auto py-16 px-4">
       <div class="mb-12">
         <p class="text-muziboo-text-muted uppercase tracking-widest text-xs mb-4">From the workshop</p>
         <h1 class="text-4xl font-semibold text-muziboo-text leading-tight">
@@ -26,37 +26,57 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
         </h1>
       </div>
 
-      <div class="divide-y divide-muziboo-border">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {posts.map(post => (
-          <article class="py-8 group">
-            <a href={`/blog/${post.slug}`} class="block">
-              <div class="flex items-start justify-between gap-6">
-                <div class="flex-1">
-                  <div class="flex flex-wrap gap-2 mb-3">
-                    {post.data.tags?.map(tag => (
-                      <span class="text-muziboo-text-muted uppercase tracking-widest text-xs">{tag}</span>
-                    ))}
+          <article class="flex flex-col group bg-muziboo-bg border border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold transition-all duration-300">
+            <a href={`/blog/${post.slug}`} class="flex flex-col h-full">
+              <div class="aspect-video w-full overflow-hidden bg-muziboo-border">
+                {post.data.image ? (
+                  <img 
+                    src={post.data.image} 
+                    alt={post.data.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center text-muziboo-text-muted">
+                    <span class="text-xs uppercase tracking-widest">No Image</span>
                   </div>
-                  <h2 class="text-xl font-semibold text-muziboo-text group-hover:text-muziboo-gold transition-colors mb-2 leading-snug">
-                    {post.data.title}
-                  </h2>
-                  <p class="text-muziboo-text-muted text-sm leading-relaxed line-clamp-2">
-                    {post.data.description}
-                  </p>
-                </div>
-                <span class="text-muziboo-gold text-lg mt-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">→</span>
+                )}
               </div>
-              <div class="mt-4 text-xs text-muziboo-text-muted uppercase tracking-widest">
-                {post.data.author} · {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric'})}
+              
+              <div class="p-5 flex flex-col flex-1">
+                <div class="flex flex-wrap gap-2 mb-3">
+                  {post.data.tags?.slice(0, 2).map(tag => (
+                    <span class="text-muziboo-gold uppercase tracking-widest text-[10px] font-bold">{tag}</span>
+                  ))}
+                </div>
+                
+                <h2 class="text-lg font-bold text-muziboo-text group-hover:text-muziboo-gold transition-colors mb-2 leading-tight line-clamp-2">
+                  {post.data.title}
+                </h2>
+                
+                <p class="text-muziboo-text-muted text-xs leading-relaxed line-clamp-3 mb-4 flex-1">
+                  {post.data.description}
+                </p>
+                
+                <div class="pt-4 border-t border-muziboo-border flex items-center justify-between mt-auto">
+                  <span class="text-[10px] text-muziboo-text-muted uppercase tracking-widest">
+                    {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric'})}
+                  </span>
+                  <span class="text-muziboo-gold group-hover:translate-x-1 transition-transform">→</span>
+                </div>
               </div>
             </a>
           </article>
         ))}
-
-        {posts.length === 0 && (
-          <p class="py-12 text-muziboo-text-muted text-sm">No posts yet. Check back tomorrow.</p>
-        )}
       </div>
+
+      {posts.length === 0 && (
+        <div class="text-center py-20">
+          <p class="text-muziboo-text-muted text-sm italic">The workshop is quiet today. New insights coming soon.</p>
+        </div>
+      )}
     </div>
   </main>
 
