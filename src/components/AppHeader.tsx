@@ -136,22 +136,7 @@ export default function AppHeader({ currentPage }: AppHeaderProps) {
 								)}
 							</div>
 						</>
-					) : (
-						<>
-							<a
-								href="/app/login"
-								className="text-sm font-medium text-muziboo-text-muted hover:text-muziboo-text transition-colors"
-							>
-								Log In
-							</a>
-							<a
-								href="/app/signup"
-								className="text-sm font-medium bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg hover:bg-muziboo-text transition-colors"
-							>
-								Sign Up
-							</a>
-						</>
-					)}
+					) : null}
 				</nav>
 			</div>
 		</header>
