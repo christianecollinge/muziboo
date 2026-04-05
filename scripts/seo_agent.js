@@ -3,7 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
 import { calculateFleschReadingEase, calculateFleschKincaidGradeLevel } from './readability.js';
-import { getNextImage, getImageUrl, injectImageIntoMarkdown, saveUsedImage } from './blog_images.js';
+import { getRelevantImage, downloadImage, saveUsedImage } from './blog_images.js';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -14,6 +14,10 @@ async function dfsPost(endpoint, body) {
         headers: { 'Authorization': `Basic ${credentials}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`DataForSEO API error (${res.status}): ${text}`);
+    }
     return res.json();
 }
 
@@ -55,6 +59,12 @@ const currentTarget = TARGETS[dayOfYear % TARGETS.length];
 
 async function fetchKeywords(target) {
     console.log(`🔍 Fetching keywords from DataForSEO for ${target.location} (${target.language})...`);
+    
+    if (!process.env.DATAFORSEO_LOGIN || !process.env.DATAFORSEO_PASSWORD) {
+        console.warn(`⚠️ DataForSEO credentials are missing. Skipping API and falling back to static keywords.`);
+        return FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"];
+    }
+
     try {
         const seedKeywords = [
             "upload original music",
@@ -133,19 +143,22 @@ async function generateBlogPost(keyword, target, pubDate) {
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-1.5-flash',
             contents: prompt,
         });
 
         let markdown = response.text;
+        if (!markdown) throw new Error("Gemini returned empty response");
 
-        if (markdown.startsWith('```markdown')) {
-            markdown = markdown.replace(/^```markdown\n/, '').replace(/\n```$/, '');
-        } else if (markdown.startsWith('```')) {
-            markdown = markdown.replace(/^```\n/, '').replace(/\n```$/, '');
+        // Clean up markdown block if present
+        markdown = markdown.trim();
+        if (markdown.includes('```markdown')) {
+            markdown = markdown.match(/```markdown\n([\s\S]*?)\n```/)?.[1] || markdown;
+        } else if (markdown.includes('```')) {
+            markdown = markdown.match(/```\n?([\s\S]*?)\n?```/)?.[1] || markdown;
         }
 
-        return markdown;
+        return markdown.trim();
     } catch (error) {
         console.error(`❌ Gemini Error for "${keyword}":`, error);
         return null;
@@ -153,8 +166,11 @@ async function generateBlogPost(keyword, target, pubDate) {
 }
 
 async function main() {
-    if (!process.env.DATAFORSEO_LOGIN || !process.env.DATAFORSEO_PASSWORD || !process.env.GEMINI_API_KEY) {
-        console.error("❌ Missing environment variables. Please check your .env file.");
+    const missingVars = [];
+    if (!process.env.GEMINI_API_KEY) missingVars.push("GEMINI_API_KEY");
+
+    if (missingVars.length > 0) {
+        console.error(`❌ Missing environment variables: ${missingVars.join(", ")}. Please check your .env file or repository secrets.`);
         process.exit(1);
     }
 
@@ -211,4 +227,9 @@ async function main() {
     console.log("🎉 All blog posts generated successfully!");
 }
 
-main();
+main().catch(error => {
+    console.error("🔥 FATAL ERROR DURING EXECUTION:");
+    console.error(error);
+    if (error.stack) console.error(error.stack);
+    process.exit(1);
+});
