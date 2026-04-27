@@ -91,6 +91,16 @@ const robotsContent = [
 
 		<!-- PostHog Analytics -->
 		<PostHog />
+
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-VBR70HS3PY"></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-VBR70HS3PY');
+		</script>
 	</head>
 	<body class="min-h-screen bg-muziboo-bg text-muziboo-text antialiased">
 		<a
