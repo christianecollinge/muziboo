@@ -1,0 +1,69 @@
+---
+import Layout from "../layouts/Layout.astro";
+import MuzibooHeader from "../components/MuzibooHeader.astro";
+import MuzibooFooter from "../components/MuzibooFooter.astro";
+import { content, defaultLang, type Lang } from "../i18n";
+import { SITE } from "../config/site.mjs";
+
+const t = content[defaultLang as Lang];
+---
+
+<Layout
+	title={`Privacy Policy | ${SITE.title}`}
+	description="Privacy Policy for Muziboo"
+	canonicalURL={Astro.url.href}
+	lang={defaultLang}
+>
+	<MuzibooHeader lang={defaultLang} content={t} />
+	<main id="main-content" role="main" class="max-w-4xl mx-auto px-4 py-16 prose prose-invert prose-p:text-muziboo-text-muted prose-headings:text-muziboo-text">
+		<h1>Privacy Policy</h1>
+		<p><strong>Last updated: May 2026</strong></p>
+
+		<h2>1. Introduction</h2>
+		<p>Welcome to Muziboo. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.</p>
+		<p>This policy complies with the General Data Protection Regulation (GDPR) and other applicable European data protection laws.</p>
+
+		<h2>2. The Data We Collect About You</h2>
+		<p>Personal data, or personal information, means any information about an individual from which that person can be identified. We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:</p>
+		<ul>
+			<li><strong>Identity Data:</strong> includes username and display name.</li>
+			<li><strong>Contact Data:</strong> includes email address.</li>
+			<li><strong>Technical Data:</strong> includes internet protocol (IP) address, your login data, browser type and version, time zone setting and location, browser plug-in types and versions, operating system and platform, and other technology on the devices you use to access this website.</li>
+			<li><strong>Profile Data:</strong> includes your username and password, uploads made by you, your feedback, and preferences.</li>
+			<li><strong>Usage Data:</strong> includes information about how you use our website and services.</li>
+		</ul>
+
+		<h2>3. How Is Your Personal Data Collected?</h2>
+		<p>We use different methods to collect data from and about you including through:</p>
+		<ul>
+			<li><strong>Direct interactions:</strong> You may give us your Identity and Contact Data by filling in forms or by corresponding with us. This includes personal data you provide when you create an account, upload music, or give feedback.</li>
+			<li><strong>Automated technologies or interactions:</strong> As you interact with our website, we will automatically collect Technical Data about your equipment, browsing actions and patterns. We collect this personal data by using cookies, server logs and other similar technologies.</li>
+			<li><strong>Third parties:</strong> We may receive personal data about you from various third parties, such as authentication providers (Google, Apple) when you log in using their services.</li>
+		</ul>
+
+		<h2>4. How We Use Your Personal Data</h2>
+		<p>We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:</p>
+		<ul>
+			<li>Where we need to perform the contract we are about to enter into or have entered into with you (e.g., providing the Muziboo service).</li>
+			<li>Where it is necessary for our legitimate interests (or those of a third party) and your interests and fundamental rights do not override those interests.</li>
+			<li>Where we need to comply with a legal obligation.</li>
+		</ul>
+
+		<h2>5. Data Security & Hosting</h2>
+		<p>We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorised way, altered or disclosed. Our databases and authentication are hosted by Supabase, and our application is hosted by Render and Cloudflare Pages. These providers adhere to strict security standards.</p>
+
+		<h2>6. Your Legal Rights</h2>
+		<p>Under certain circumstances, you have rights under data protection laws in relation to your personal data. You have the right to:</p>
+		<ul>
+			<li><strong>Request access</strong> to your personal data (commonly known as a "data subject access request").</li>
+			<li><strong>Request correction</strong> of the personal data that we hold about you.</li>
+			<li><strong>Request erasure</strong> of your personal data.</li>
+			<li><strong>Object to processing</strong> of your personal data.</li>
+			<li><strong>Request restriction of processing</strong> of your personal data.</li>
+			<li><strong>Request the transfer</strong> of your personal data to you or to a third party.</li>
+			<li><strong>Withdraw consent at any time</strong> where we are relying on consent to process your personal data.</li>
+		</ul>
+		<p>If you wish to exercise any of the rights set out above, please contact us.</p>
+	</main>
+	<MuzibooFooter content={t} lang={defaultLang} />
+</Layout>
