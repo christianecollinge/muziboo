@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"time"
 )
@@ -174,10 +173,10 @@ func (c *Client) Delete(table, filter string) error {
 
 // UploadFile uploads a file to a Supabase Storage bucket.
 // Returns the public URL of the uploaded file.
-func (c *Client) UploadFile(bucket, path string, file multipart.File, contentType string) (string, error) {
-	body, err := io.ReadAll(file)
+func (c *Client) UploadFile(bucket, path string, reader io.Reader, contentType string) (string, error) {
+	body, err := io.ReadAll(reader)
 	if err != nil {
-		return "", fmt.Errorf("reading file: %w", err)
+		return "", fmt.Errorf("reading data: %w", err)
 	}
 
 	url := fmt.Sprintf("%s/storage/v1/object/%s/%s", c.URL, bucket, path)

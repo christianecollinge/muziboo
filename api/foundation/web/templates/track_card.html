@@ -25,18 +25,80 @@
     </div>
     <!-- Info -->
     <div class="p-4">
-        <h3 class="font-semibold text-muziboo-text truncate mb-1">{{.Title}}</h3>
+        <div class="flex items-start justify-between gap-2 mb-1">
+            <h3 class="font-semibold text-muziboo-text truncate flex-1">{{.Title}}</h3>
+            <!-- Upvote Button -->
+            <button id="vote-btn-{{.ID}}" 
+                    onclick="handleVote('{{.ID}}', this)"
+                    data-voted="{{.HasVoted}}"
+                    class="flex flex-col items-center justify-center min-w-[40px] px-2 py-1 rounded-lg border transition-all {{if .HasVoted}}bg-muziboo-gold/10 border-muziboo-gold text-muziboo-gold{{else}}bg-muziboo-bg border-muziboo-border text-muziboo-text-muted hover:border-muziboo-gold/50{{end}}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 15-6-6-6 6"/>
+                </svg>
+                <span class="text-xs font-bold mt-0.5">{{.VoteCount}}</span>
+            </button>
+        </div>
+        
         {{if .ArtistName}}
-        <a href="/app/user/{{.ArtistUsername}}" class="flex items-center gap-2 group/artist">
+        <a href="/app/user/{{.ArtistUsername}}" class="flex items-center gap-2 group/artist mb-3">
             <div class="w-5 h-5 rounded-full bg-muziboo-gold/20 flex items-center justify-center">
                 <span class="text-xs text-muziboo-gold font-medium">{{slice .ArtistName 0 1}}</span>
             </div>
             <span class="text-sm text-muziboo-text-muted group-hover/artist:text-muziboo-gold transition-colors truncate">{{.ArtistName}}</span>
         </a>
         {{end}}
-        <div class="flex items-center justify-between mt-3">
-            <span class="text-xs text-muziboo-text-muted/60">{{.TimeAgo}}</span>
+
+        <div class="flex items-center justify-between mt-auto">
+            <span class="text-[10px] uppercase tracking-wider text-muziboo-text-muted/60 font-medium">{{.TimeAgo}}</span>
+            <div class="flex items-center gap-3">
+                <!-- Comments Count Link -->
+                <a href="/app/tracks/{{.ID}}" class="flex items-center gap-1 text-muziboo-text-muted hover:text-muziboo-text transition-colors">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span class="text-xs">{{.CommentCount}}</span>
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+if (typeof handleVote === 'undefined') {
+    window.handleVote = async function(trackId, btn) {
+        const token = await getToken();
+        if (!token) { window.location.href = '/app/login'; return; }
+
+        const originalHtml = btn.innerHTML;
+        const isVoted = btn.getAttribute('data-voted') === 'true';
+        
+        try {
+            const res = await fetch(`/api/tracks/${trackId}/vote`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            
+            if (!res.ok) throw new Error('Vote failed');
+            
+            const data = await res.json();
+            
+            // Update UI
+            const countEl = btn.querySelector('span');
+            countEl.textContent = data.count;
+            
+            if (data.active) {
+                btn.classList.add('bg-muziboo-gold/10', 'border-muziboo-gold', 'text-muziboo-gold');
+                btn.classList.remove('bg-muziboo-bg', 'border-muziboo-border', 'text-muziboo-text-muted');
+                btn.setAttribute('data-voted', 'true');
+            } else {
+                btn.classList.remove('bg-muziboo-gold/10', 'border-muziboo-gold', 'text-muziboo-gold');
+                btn.classList.add('bg-muziboo-bg', 'border-muziboo-border', 'text-muziboo-text-muted');
+                btn.setAttribute('data-voted', 'false');
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+}
+</script>
 {{end}}

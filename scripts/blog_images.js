@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 const USED_IMAGES_FILE = path.join(process.cwd(), 'scripts', 'used_images.json');
 const FOLDER_ID = "1NmHmkjOQjfgbHnLixvsKLyVX6YgNFQzM";
@@ -9,13 +10,13 @@ const FOLDER_ID = "1NmHmkjOQjfgbHnLixvsKLyVX6YgNFQzM";
  */
 export async function getAllImages() {
     // We use a simplified version of the gws command
-    const { execSync } = await import('child_process');
     try {
-        const output = execSync(`gws drive files list --params '{"q": "\\"${FOLDER_ID}\\" in parents and mimeType contains \\"image/\\""}'`).toString();
+        const query = `'${FOLDER_ID}' in parents and mimeType contains 'image/'`;
+        const output = execSync(`npx gws drive files list --params '{"q": "${query}"}'`).toString();
         const data = JSON.parse(output);
         return data.files || [];
     } catch (e) {
-        console.error("❌ Error listing Drive files:", e);
+        console.warn("⚠️ Error listing Drive files with gws. Image generation will be skipped.");
         return [];
     }
 }
@@ -72,21 +73,25 @@ export async function getRelevantImage(content, aiInstance) {
 
     try {
         const response = await aiInstance.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-1.5-flash',
             contents: prompt,
         });
 
         let resultText = response.text;
+        if (!resultText) throw new Error("AI returned empty response");
+
         if (resultText.includes('```json')) {
-            resultText = resultText.match(/```json\n([\s\S]*?)\n```/)[1];
+            const match = resultText.match(/```json\n?([\s\S]*?)\n?```/);
+            if (match) resultText = match[1];
         } else if (resultText.includes('```')) {
-            resultText = resultText.match(/```\n([\s\S]*?)\n```/)[1];
+            const match = resultText.match(/```\n?([\s\S]*?)\n?```/);
+            if (match) resultText = match[1];
         }
         
-        const result = JSON.parse(resultText);
+        const result = JSON.parse(resultText.trim());
         const selected = available[result.index] || available[0];
         
-        return { image: selected, alt: result.alt };
+        return { image: selected, alt: result.alt || "Music creation and community" };
     } catch (e) {
         console.error("❌ Error selecting relevant image with AI:", e);
         // Fallback to random
@@ -127,7 +132,6 @@ export function injectImageIntoMarkdown(markdown, imageUrl, imageName) {
  * Downloads an image from Google Drive to the local public folder
  */
 export async function downloadImage(fileId, filename) {
-    const { execSync } = await import('child_process');
     const localDir = path.join(process.cwd(), 'public', 'blog', 'images');
     if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
 
@@ -137,10 +141,10 @@ export async function downloadImage(fileId, filename) {
 
     try {
         console.log(`📥 Downloading image to local: ${safeName}...`);
-        execSync(`gws drive files get --params '{"fileId": "${fileId}", "alt": "media"}' --output "${localPath}"`);
+        execSync(`npx gws drive files get --params '{"fileId": "${fileId}", "alt": "media"}' --output "${localPath}"`);
         return `/blog/images/${safeName}`;
     } catch (e) {
-        console.error(`❌ Error downloading image ${fileId}:`, e);
+        console.error(`❌ Error downloading image ${fileId} with gws:`, e.message);
         return null;
     }
 }

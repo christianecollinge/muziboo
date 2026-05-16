@@ -7,14 +7,15 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/muziboo/api/business/tracks"
+	libraryAccess "github.com/muziboo/api/business/access/library"
+	libraryManager "github.com/muziboo/api/business/managers/library"
 	"github.com/muziboo/api/foundation/web"
 	"github.com/muziboo/api/middleware"
 )
 
 // Handlers holds dependencies for track handlers.
 type Handlers struct {
-	Tracks *tracks.Core
+	LibraryManager *libraryManager.Manager
 }
 
 // List returns all tracks (public).
@@ -33,7 +34,7 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	list, err := h.Tracks.List(limit, offset)
+	list, err := h.LibraryManager.ListTracks(limit, offset)
 	if err != nil {
 		web.RespondError(w, "failed to fetch tracks", http.StatusInternalServerError)
 		return
@@ -46,7 +47,7 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) GetByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	track, err := h.Tracks.GetByID(id)
+	track, err := h.LibraryManager.GetTrack(id)
 	if err != nil {
 		web.RespondError(w, "track not found", http.StatusNotFound)
 		return
@@ -63,7 +64,7 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nt tracks.NewTrack
+	var nt libraryAccess.NewTrack
 	if err := web.Decode(r, &nt); err != nil {
 		web.RespondError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -76,7 +77,7 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	track, err := h.Tracks.Create(nt)
+	track, err := h.LibraryManager.SaveTrack(nt)
 	if err != nil {
 		log.Printf("Track creation failed: %v", err)
 		web.RespondError(w, "failed to create track", http.StatusInternalServerError)
@@ -96,7 +97,7 @@ func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	if err := h.Tracks.Delete(id, userID); err != nil {
+	if err := h.LibraryManager.DeleteTrack(id, userID); err != nil {
 		web.RespondError(w, "failed to delete track", http.StatusInternalServerError)
 		return
 	}

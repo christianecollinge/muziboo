@@ -29,23 +29,32 @@ func GetUser(ctx context.Context) (*supabase.User, bool) {
 	return user, ok
 }
 
-// Auth validates the Supabase token and injects the user ID into the context.
+// Auth validates the Supabase token (from Header or Cookie) and injects the user ID into the context.
 func Auth(supa *supabase.Client) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var tokenString string
+
+			// 1. Try Authorization header
 			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
-				web.RespondError(w, "missing authorization header", http.StatusUnauthorized)
-				return
+			if authHeader != "" {
+				parts := strings.SplitN(authHeader, " ", 2)
+				if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" {
+					tokenString = parts[1]
+				}
 			}
 
-			parts := strings.SplitN(authHeader, " ", 2)
-			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-				web.RespondError(w, "invalid authorization format", http.StatusUnauthorized)
-				return
+			// 2. Fallback to cookie
+			if tokenString == "" {
+				if cookie, err := r.Cookie("sb-access-token"); err == nil {
+					tokenString = cookie.Value
+				}
 			}
 
-			tokenString := parts[1]
+			if tokenString == "" {
+				web.RespondError(w, "missing authorization", http.StatusUnauthorized)
+				return
+			}
 
 			// Verify the token by fetching the user profile from Supabase
 			user, err := supa.GetUser(tokenString)
@@ -73,19 +82,30 @@ func Auth(supa *supabase.Client) func(http.Handler) http.Handler {
 func OptionalAuth(supa *supabase.Client) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var tokenString string
+
+			// 1. Try Authorization header
 			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
+			if authHeader != "" {
+				parts := strings.SplitN(authHeader, " ", 2)
+				if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" {
+					tokenString = parts[1]
+				}
+			}
+
+			// 2. Fallback to cookie
+			if tokenString == "" {
+				if cookie, err := r.Cookie("sb-access-token"); err == nil {
+					tokenString = cookie.Value
+				}
+			}
+
+			if tokenString == "" {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			parts := strings.SplitN(authHeader, " ", 2)
-			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			user, err := supa.GetUser(parts[1])
+			user, err := supa.GetUser(tokenString)
 			if err != nil || user == nil || user.ID == "" {
 				next.ServeHTTP(w, r)
 				return

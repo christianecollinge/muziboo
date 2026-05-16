@@ -13,8 +13,14 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/muziboo/api/business/profiles"
-	"github.com/muziboo/api/business/tracks"
+	blobAccess "github.com/muziboo/api/business/access/blob"
+	engagementAccess "github.com/muziboo/api/business/access/engagement"
+	libraryAccess "github.com/muziboo/api/business/access/library"
+	profileAccess "github.com/muziboo/api/business/access/profiles"
+	contentEngine "github.com/muziboo/api/business/engines/content"
+	engagementEngine "github.com/muziboo/api/business/engines/engagement"
+	libraryManager "github.com/muziboo/api/business/managers/library"
+	socialManager "github.com/muziboo/api/business/managers/social"
 	"github.com/muziboo/api/foundation/supabase"
 	"github.com/muziboo/api/handlers/pagegrp"
 	"github.com/muziboo/api/handlers/profilegrp"
@@ -37,30 +43,40 @@ func main() {
 	// Initialize Supabase client
 	supa := supabase.New(supabaseURL, supabaseAnon, supabaseService)
 
-	// Initialize business cores
-	profileCore := profiles.NewCore(supa)
-	trackCore := tracks.NewCore(supa)
+	// Initialize Accessors
+	profileAcc := profileAccess.NewAccess(supa)
+	libraryAcc := libraryAccess.NewAccess(supa)
+	blobAcc := blobAccess.NewAccess(supa)
+	engagementAcc := engagementAccess.NewAccess(supa)
+
+	// Initialize Engines
+	contentEng := contentEngine.NewEngine()
+	engagementEng := engagementEngine.NewEngine()
+
+	// Initialize Managers
+	libraryMgr := libraryManager.NewManager(libraryAcc, blobAcc, contentEng)
+	socialMgr := socialManager.NewManager(profileAcc, libraryAcc, engagementAcc, engagementEng)
 
 	// Load HTML templates
 	tmpl := loadTemplates()
 
 	// Initialize handlers
 	profileHandlers := &profilegrp.Handlers{
-		Profiles: profileCore,
-		Tracks:   trackCore,
+		SocialManager: socialMgr,
 	}
 
 	trackHandlers := &trackgrp.Handlers{
-		Tracks: trackCore,
+		LibraryManager: libraryMgr,
 	}
 
 	uploadHandlers := &uploadgrp.Handlers{
-		Supabase: supa,
+		LibraryManager: libraryMgr,
+		SocialManager:  socialMgr,
 	}
 
 	pageHandlers := &pagegrp.Handlers{
-		Profiles:        profileCore,
-		Tracks:          trackCore,
+		LibraryManager:  libraryMgr,
+		SocialManager:   socialMgr,
 		Templates:       tmpl,
 		SupabaseURL:     supabaseURL,
 		SupabaseAnonKey: supabaseAnon,
@@ -94,10 +110,13 @@ func main() {
 
 		r.Post("/api/tracks", trackHandlers.Create)
 		r.Delete("/api/tracks/{id}", trackHandlers.Delete)
+		r.Post("/api/tracks/{id}/vote", profileHandlers.Vote)
+		r.Post("/api/tracks/{id}/comments", profileHandlers.Comment)
 
 		r.Get("/api/me", profileHandlers.Me)
 		r.Put("/api/profiles", profileHandlers.Update)
 
+		r.Post("/api/upload/track", uploadHandlers.UploadTrack)
 		r.Post("/api/upload/audio", uploadHandlers.UploadAudio)
 		r.Post("/api/upload/artwork", uploadHandlers.UploadArtwork)
 	})
@@ -106,10 +125,26 @@ func main() {
 	// HTML App routes (Go templates + HTMX)
 	// =====================================================================
 
+	// Serve static files from Astro public directory (for local dev)
+	_, filename, _, _ := runtime.Caller(0)
+	apiRoot := filepath.Join(filepath.Dir(filename), "..", "..")
+	publicDir := filepath.Join(apiRoot, "..", "public")
+	
+	r.Get("/*", func(w http.ResponseWriter, req *http.Request) {
+		path := req.URL.Path
+		fullPath := filepath.Join(publicDir, path)
+		if _, err := os.Stat(fullPath); err == nil {
+			http.ServeFile(w, req, fullPath)
+			return
+		}
+		http.NotFound(w, req)
+	})
+
 	// Public pages (no auth required)
 	r.Get("/app/login", pageHandlers.Login)
 	r.Get("/app/signup", pageHandlers.Signup)
 	r.Get("/app/explore", pageHandlers.Explore)
+	r.Get("/app/tracks/{id}", pageHandlers.TrackDetail)
 	r.Get("/app/user/{username}", pageHandlers.UserProfile)
 
 	// Authenticated pages
@@ -118,11 +153,6 @@ func main() {
 
 		r.Get("/app/dashboard", pageHandlers.Dashboard)
 		r.Get("/app/upload", pageHandlers.Upload)
-	})
-
-	// Redirect root to explore
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/app/explore", http.StatusSeeOther)
 	})
 
 	// Start server
@@ -150,7 +180,7 @@ func loadTemplates() map[string]*template.Template {
 	base := filepath.Join(templateDir, "base.html")
 	partials := filepath.Join(templateDir, "track_card.html")
 
-	pages := []string{"login", "signup", "dashboard", "explore", "upload", "profile"}
+	pages := []string{"login", "signup", "dashboard", "explore", "upload", "profile", "track_detail"}
 	templates := make(map[string]*template.Template, len(pages))
 
 	for _, page := range pages {

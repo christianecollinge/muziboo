@@ -2,48 +2,144 @@
 package uploadgrp
 
 import (
-	"fmt"
+	"io"
 	"net/http"
-	"path/filepath"
 	"strings"
 
-	"github.com/google/uuid"
-	"github.com/muziboo/api/foundation/supabase"
+	"github.com/muziboo/api/business/managers/library"
+	"github.com/muziboo/api/business/managers/social"
 	"github.com/muziboo/api/foundation/web"
 	"github.com/muziboo/api/middleware"
 )
 
 // Handlers holds dependencies for upload handlers.
 type Handlers struct {
-	Supabase *supabase.Client
+	LibraryManager *library.Manager
+	SocialManager  *social.Manager
 }
 
-// allowedAudioTypes are the permitted audio MIME types.
-var allowedAudioTypes = map[string]bool{
-	"audio/mpeg":      true, // mp3
-	"audio/wav":       true,
-	"audio/x-wav":     true,
-	"audio/flac":      true,
-	"audio/x-flac":    true,
-	"audio/mp4":       true, // m4a
-	"audio/x-m4a":     true,
-	"audio/ogg":       true,
-	"audio/aac":       true,
-	"audio/webm":      true,
+// UploadTrack handles the complete track upload including files and metadata.
+func (h *Handlers) UploadTrack(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.GetUserID(r.Context())
+	if !ok {
+		web.RespondError(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// 1. Parse Multipart Form
+	if err := r.ParseMultipartForm(64 << 20); err != nil { // 64 MB max
+		web.RespondError(w, "error parsing form", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Extract Data
+	title := r.FormValue("title")
+	description := r.FormValue("description")
+	genre := r.FormValue("genre")
+
+	// Audio file (required)
+	audioFile, audioHeader, err := r.FormFile("audio")
+	if err != nil {
+		web.RespondError(w, "audio file is required", http.StatusBadRequest)
+		return
+	}
+	defer audioFile.Close()
+
+	// Artwork file (optional)
+	var artworkFile io.Reader
+	var artworkName, artworkType string
+	var artworkSize int64
+
+	art, artHeader, err := r.FormFile("artwork")
+	if err == nil {
+		defer art.Close()
+		artworkFile = art
+		artworkName = artHeader.Filename
+		artworkType = artHeader.Header.Get("Content-Type")
+		artworkSize = artHeader.Size
+	}
+
+	isColab := r.FormValue("is_colab") == "true"
+	parentTrackID := r.FormValue("parent_track_id")
+
+	invitedUsersRaw := r.FormValue("invited_users")
+	var invitedUsers []string
+	if invitedUsersRaw != "" {
+		usernames := strings.Split(invitedUsersRaw, ",")
+		for _, un := range usernames {
+			un = strings.TrimSpace(un)
+			if un == "" {
+				continue
+			}
+			// Resolve username to profile ID
+			if p, _, err := h.SocialManager.GetProfileWithTracks(un); err == nil {
+				invitedUsers = append(invitedUsers, p.ID)
+			}
+		}
+	}
+
+	var stems []library.UploadStemRequest
+	for key, fileHeaders := range r.MultipartForm.File {
+		if strings.HasPrefix(key, "stem_") && strings.HasSuffix(key, "_audio") {
+			if len(fileHeaders) == 0 {
+				continue
+			}
+			fh := fileHeaders[0]
+			idxStr := strings.TrimSuffix(strings.TrimPrefix(key, "stem_"), "_audio")
+			stemName := r.FormValue("stem_" + idxStr + "_name")
+			if stemName == "" {
+				stemName = fh.Filename
+			}
+			f, err := fh.Open()
+			if err != nil {
+				continue
+			}
+			stems = append(stems, library.UploadStemRequest{
+				Name:      stemName,
+				Audio:     f,
+				AudioName: fh.Filename,
+				AudioType: fh.Header.Get("Content-Type"),
+				AudioSize: fh.Size,
+			})
+		}
+	}
+
+	defer func() {
+		for _, s := range stems {
+			if closer, ok := s.Audio.(io.ReadCloser); ok {
+				closer.Close()
+			}
+		}
+	}()
+
+	// 3. Call Manager
+	track, err := h.LibraryManager.UploadTrack(library.UploadTrackRequest{
+		UserID:        userID,
+		Title:         title,
+		Description:   description,
+		Genre:         genre,
+		Audio:         audioFile,
+		AudioName:     audioHeader.Filename,
+		AudioType:     audioHeader.Header.Get("Content-Type"),
+		AudioSize:     audioHeader.Size,
+		Artwork:       artworkFile,
+		ArtworkName:   artworkName,
+		ArtworkType:   artworkType,
+		ArtworkSize:   artworkSize,
+		IsColab:       isColab,
+		ParentTrackID: parentTrackID,
+		Stems:         stems,
+		InvitedUsers:  invitedUsers,
+	})
+	if err != nil {
+		web.RespondError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	web.Respond(w, track, http.StatusCreated)
 }
 
-// allowedImageTypes are the permitted image MIME types.
-var allowedImageTypes = map[string]bool{
-	"image/jpeg":    true,
-	"image/png":     true,
-	"image/webp":    true,
-	"image/gif":     true,
-}
-
-const maxAudioSize = 50 << 20  // 50 MB
-const maxImageSize = 10 << 20  // 10 MB
-
-// UploadAudio handles audio file uploads.
+// UploadAudio handles simple audio file uploads (legacy/partial).
 func (h *Handlers) UploadAudio(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r.Context())
 	if !ok {
@@ -51,13 +147,6 @@ func (h *Handlers) UploadAudio(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.Body = http.MaxBytesReader(w, r.Body, maxAudioSize)
-
-	if err := r.ParseMultipartForm(maxAudioSize); err != nil {
-		web.RespondError(w, "file too large (max 50MB)", http.StatusBadRequest)
-		return
-	}
-
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		web.RespondError(w, "missing file field", http.StatusBadRequest)
@@ -65,28 +154,23 @@ func (h *Handlers) UploadAudio(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	contentType := header.Header.Get("Content-Type")
-	if !allowedAudioTypes[contentType] {
-		web.RespondError(w, "invalid audio format. Allowed: mp3, wav, flac, m4a, ogg, aac", http.StatusBadRequest)
-		return
-	}
-
-	ext := filepath.Ext(header.Filename)
-	if ext == "" {
-		ext = ".mp3"
-	}
-	filename := fmt.Sprintf("%s/%s%s", userID, uuid.New().String(), ext)
-
-	publicURL, err := h.Supabase.UploadFile("audio", filename, file, contentType)
+	publicURL, err := h.LibraryManager.UploadMedia(
+		userID,
+		"audio",
+		header.Filename,
+		header.Size,
+		file,
+		header.Header.Get("Content-Type"),
+	)
 	if err != nil {
-		web.RespondError(w, "failed to upload audio", http.StatusInternalServerError)
+		web.RespondError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	web.Respond(w, map[string]string{"url": publicURL}, http.StatusOK)
 }
 
-// UploadArtwork handles artwork image uploads.
+// UploadArtwork handles artwork image uploads (legacy/partial).
 func (h *Handlers) UploadArtwork(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r.Context())
 	if !ok {
@@ -94,13 +178,6 @@ func (h *Handlers) UploadArtwork(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.Body = http.MaxBytesReader(w, r.Body, maxImageSize)
-
-	if err := r.ParseMultipartForm(maxImageSize); err != nil {
-		web.RespondError(w, "file too large (max 10MB)", http.StatusBadRequest)
-		return
-	}
-
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		web.RespondError(w, "missing file field", http.StatusBadRequest)
@@ -108,28 +185,22 @@ func (h *Handlers) UploadArtwork(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	contentType := header.Header.Get("Content-Type")
-	if !allowedImageTypes[contentType] {
-		web.RespondError(w, "invalid image format. Allowed: jpg, png, webp, gif", http.StatusBadRequest)
-		return
-	}
-
-	ext := filepath.Ext(header.Filename)
-	if ext == "" {
-		ext = ".jpg"
-	}
-
-	// Determine bucket based on query param
-	bucket := "artwork"
+	// Determine type based on query param
+	mediaType := "artwork"
 	if strings.ToLower(r.URL.Query().Get("type")) == "avatar" {
-		bucket = "avatars"
+		mediaType = "avatar"
 	}
 
-	filename := fmt.Sprintf("%s/%s%s", userID, uuid.New().String(), ext)
-
-	publicURL, err := h.Supabase.UploadFile(bucket, filename, file, contentType)
+	publicURL, err := h.LibraryManager.UploadMedia(
+		userID,
+		mediaType,
+		header.Filename,
+		header.Size,
+		file,
+		header.Header.Get("Content-Type"),
+	)
 	if err != nil {
-		web.RespondError(w, "failed to upload image", http.StatusInternalServerError)
+		web.RespondError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

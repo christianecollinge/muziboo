@@ -1,0 +1,183 @@
+{{define "content"}}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-8">
+        <!-- Sidebar: Track Card -->
+        <div class="w-full md:w-80 flex-shrink-0">
+            {{template "track_card" .Track}}
+            
+            <div class="mt-6 p-4 bg-muziboo-bg-softer rounded-xl border border-muziboo-border">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-muziboo-text-muted mb-3">About this track</h4>
+                <p class="text-sm text-muziboo-text/80 whitespace-pre-wrap">{{if .Track.Description}}{{.Track.Description}}{{else}}No description provided.{{end}}</p>
+            </div>
+
+            {{if .Track.IsColab}}
+            <div class="mt-6 p-4 bg-muziboo-bg-softer rounded-xl border border-muziboo-gold/20">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-muziboo-gold mb-3 flex items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H4.2"/></svg>
+                    Colab Project
+                </h4>
+                
+                {{if .IsInvitedColab}}
+                    <p class="text-sm text-muziboo-text-muted mb-4">You are invited to collaborate on this track.</p>
+                    
+                    {{if .Stems}}
+                    <div class="mb-4">
+                        <h5 class="text-xs font-semibold text-muziboo-text mb-2">Stems:</h5>
+                        <ul class="space-y-2">
+                            {{range .Stems}}
+                            <li>
+                                <a href="{{.AudioURL}}" download class="flex items-center gap-2 text-sm text-muziboo-gold hover:underline bg-muziboo-gold/10 px-3 py-2 rounded-lg">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    {{.Name}}
+                                </a>
+                            </li>
+                            {{end}}
+                        </ul>
+                    </div>
+                    {{end}}
+
+                    <a href="/app/upload?parent={{.Track.ID}}" class="block w-full text-center bg-muziboo-gold text-muziboo-bg font-semibold px-4 py-2 rounded-lg hover:bg-muziboo-text transition-colors">
+                        Upload Continuation
+                    </a>
+                {{else}}
+                    <p class="text-sm text-muziboo-text-muted">This is a private collaboration. Only invited musicians can access the stems and contribute.</p>
+                {{end}}
+            </div>
+            {{end}}
+
+            {{if .Continuations}}
+            <div class="mt-6">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-muziboo-text-muted mb-3">Continuations</h4>
+                <div class="space-y-3">
+                    {{range .Continuations}}
+                    <a href="/app/tracks/{{.ID}}" class="block p-3 bg-muziboo-bg rounded-lg border border-muziboo-border hover:border-muziboo-gold/50 transition-colors">
+                        <div class="text-sm font-semibold text-muziboo-text">{{.Title}}</div>
+                        <div class="text-xs text-muziboo-text-muted mt-1">by {{.ArtistName}}</div>
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+        </div>
+
+        <!-- Main: Comments -->
+        <div class="flex-1">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-2xl font-semibold text-muziboo-text">Discussion</h2>
+                <span class="text-sm text-muziboo-text-muted">{{len .Comments}} comments</span>
+            </div>
+
+            <!-- Comment Form -->
+            {{if .User}}
+            <div class="mb-8 p-4 bg-muziboo-bg-softer rounded-xl border border-muziboo-border">
+                <form id="comment-form" onsubmit="handleComment(event, '{{.Track.ID}}')">
+                    <textarea id="comment-content" required rows="3" 
+                              placeholder="What do you think? Share some constructive feedback..."
+                              class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors resize-none mb-3"></textarea>
+                    <div class="flex justify-end">
+                        <button type="submit" id="comment-btn"
+                                class="bg-muziboo-gold text-muziboo-bg font-semibold px-4 py-2 rounded-md hover:bg-muziboo-text transition-colors text-sm">
+                            Post Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {{else}}
+            <div class="mb-8 p-6 bg-muziboo-bg-softer rounded-xl border border-muziboo-border text-center">
+                <p class="text-muziboo-text-muted mb-3">Join the conversation to share your feedback.</p>
+                <a href="/app/login" class="inline-block bg-muziboo-gold/10 text-muziboo-gold border border-muziboo-gold/20 px-4 py-2 rounded-md font-semibold hover:bg-muziboo-gold/20 transition-colors text-sm">
+                    Log in to comment
+                </a>
+            </div>
+            {{end}}
+
+            <!-- Comment List -->
+            <div id="comment-list" class="space-y-6">
+                {{range .Comments}}
+                <div class="flex gap-4 group">
+                    <div class="w-10 h-10 rounded-full bg-muziboo-gold/10 flex-shrink-0 flex items-center justify-center border border-muziboo-gold/20">
+                        <span class="text-muziboo-gold font-bold text-sm">{{slice .Profile.DisplayName 0 1}}</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <a href="/app/user/{{.Profile.Username}}" class="text-sm font-semibold text-muziboo-text hover:text-muziboo-gold transition-colors">
+                                {{.Profile.DisplayName}}
+                            </a>
+                            <span class="text-[10px] text-muziboo-text-muted/60 uppercase tracking-tighter">{{.CreatedAt}}</span>
+                        </div>
+                        <p class="text-muziboo-text/90 text-sm leading-relaxed">{{.Content}}</p>
+                    </div>
+                </div>
+                {{else}}
+                <div id="no-comments" class="text-center py-12 border-2 border-dashed border-muziboo-border rounded-xl">
+                    <p class="text-muziboo-text-muted">No comments yet. Be the first to start the conversation!</p>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function handleComment(e, trackId) {
+    e.preventDefault();
+    const contentEl = document.getElementById('comment-content');
+    const btn = document.getElementById('comment-btn');
+    const list = document.getElementById('comment-list');
+    const noComments = document.getElementById('no-comments');
+    
+    const content = contentEl.value.trim();
+    if (!content) return;
+
+    const token = await getToken();
+    if (!token) { window.location.href = '/app/login'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Posting…';
+
+    try {
+        const res = await fetch(`/api/tracks/${trackId}/comments`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content })
+        });
+
+        if (!res.ok) throw new Error('Failed to post comment');
+        
+        const comment = await res.json();
+        
+        // Append to list
+        if (noComments) noComments.remove();
+        
+        const commentHtml = `
+            <div class="flex gap-4 group animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div class="w-10 h-10 rounded-full bg-muziboo-gold/10 flex-shrink-0 flex items-center justify-center border border-muziboo-gold/20">
+                    <span class="text-muziboo-gold font-bold text-sm">${comment.profiles.display_name.charAt(0)}</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <a href="/app/user/${comment.profiles.username}" class="text-sm font-semibold text-muziboo-text hover:text-muziboo-gold transition-colors">
+                            ${comment.profiles.display_name}
+                        </a>
+                        <span class="text-[10px] text-muziboo-text-muted/60 uppercase tracking-tighter">just now</span>
+                    </div>
+                    <p class="text-muziboo-text/90 text-sm leading-relaxed">${comment.content}</p>
+                </div>
+            </div>
+        `;
+        
+        list.insertAdjacentHTML('beforeend', commentHtml);
+        contentEl.value = '';
+        
+    } catch (err) {
+        alert(err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Post Comment';
+    }
+}
+</script>
+{{end}}

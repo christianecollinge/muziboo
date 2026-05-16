@@ -23,7 +23,14 @@ export function calculateFleschReadingEase(text) {
     const sentences = plainText.split(/[.!?]+\s+/).filter(s => s.trim().length > 0);
     const words = plainText.split(/\s+/).filter(w => w.trim().length > 0);
     
-    if (sentences.length === 0 || words.length === 0) return 0;
+    if (sentences.length === 0 || words.length === 0) return {
+        score: 0,
+        sentences: 0,
+        words: 0,
+        syllables: 0,
+        avgSentenceLength: 0,
+        avgSyllablesPerWord: 0
+    };
 
     let totalSyllables = 0;
     for (const word of words) {

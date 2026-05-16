@@ -54,33 +54,33 @@
       hx-swap="innerHTML transition:true">
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-muziboo-bg/95 backdrop-blur-sm border-b border-muziboo-border">
-        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/" class="text-muziboo-gold font-bold text-xl tracking-tight">muziboo</a>
+    <header class="w-full py-4 px-4 border-b border-muziboo-border bg-muziboo-bg/95 backdrop-blur sticky top-0 z-50" role="banner">
+        <nav class="max-w-4xl mx-auto flex items-center justify-between" aria-label="Main navigation">
+            <a href="/" class="flex items-center gap-3 text-muziboo-gold hover:text-muziboo-gold-muted transition-colors" aria-label="Muziboo — Home" hx-boost="false">
+                <img src="/logo.png" alt="" width="40" height="40" class="w-10 h-10 object-contain" />
+                <span class="text-xl font-semibold tracking-tight">muziboo</span>
+            </a>
+
             <div class="flex items-center gap-6">
-                <a href="/blog"
-                   class="text-sm text-muziboo-text-muted hover:text-muziboo-text transition-colors">
-                    Blog
-                </a>
-                <div id="nav-user" class="flex items-center gap-2">
-                    {{if .User}}
-                    <a href="/app/upload"
-                       class="text-sm {{if eq .CurrentPage "/app/upload"}}text-muziboo-text{{else}}text-muziboo-text-muted hover:text-muziboo-text{{end}} transition-colors">
-                        Upload
-                    </a>
-                    <a href="/app/dashboard"
-                       class="w-8 h-8 rounded-full bg-muziboo-gold/20 flex items-center justify-center text-sm font-semibold text-muziboo-gold hover:bg-muziboo-gold/30 transition-colors"
-                       title="{{.User.DisplayName}}">
-                        {{slice .User.DisplayName 0 1}}
-                    </a>
-                    <button onclick="logout()" class="text-xs text-muziboo-text-muted hover:text-muziboo-text transition-colors">
-                        Logout
-                    </button>
-                    {{end}}
-                </div>
+                <a href="/#features" hx-boost="false" class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm">What</a>
+                <a href="/#manifesto" hx-boost="false" class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm">Manifesto</a>
+                <a href="/blog" hx-boost="false" class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium">Blog</a>
+
+                <div class="w-px bg-muziboo-border h-4 hidden sm:block"></div>
+
+                <a href="/app/explore" class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm">Explore</a>
+
+                {{if .User}}
+                    <a href="/app/dashboard" class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors">Dashboard</a>
+                {{else}}
+                    <div class="flex items-center gap-3">
+                        <a href="/app/login" class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium px-2">Log In</a>
+                        <a href="/app/signup" class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors">Sign Up</a>
+                    </div>
+                {{end}}
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <!-- Main Content Area — HTMX swaps this -->
     <main class="flex-1">
@@ -88,6 +88,57 @@
             {{block "content" .}}{{end}}
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-12 px-4 bg-muziboo-bg border-t border-muziboo-border" role="contentinfo">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-12">
+            <div class="flex flex-col gap-4 max-w-xs">
+                <a href="/" class="flex items-center gap-2 text-muziboo-gold" hx-boost="false">
+                    <img src="/logo.png" alt="" width="32" height="32" class="w-8 h-8 object-contain" />
+                    <span class="text-xl font-bold tracking-tight">muziboo</span>
+                </a>
+                <p class="text-muziboo-text-muted text-sm leading-relaxed">
+                    muziboo · EST. 2007 · REBORN 2026
+                </p>
+                <div class="flex items-center gap-2 mt-2" role="group" aria-label="Language">
+                    <a href="/" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-gold bg-muziboo-gold/10 ring-1 ring-muziboo-gold/20" aria-current="true" aria-label="Switch to EN">EN</a>
+                    <a href="/es" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border" aria-label="Switch to ES">ES</a>
+                    <a href="/de" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border" aria-label="Switch to DE">DE</a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-12 text-sm">
+                <div class="flex flex-col gap-4">
+                    <h3 class="text-muziboo-text font-bold text-sm">Features</h3>
+                    <nav class="flex flex-col gap-2 text-muziboo-text-muted">
+                        <a href="/#features" hx-boost="false" class="hover:text-muziboo-gold transition-colors">What</a>
+                        <a href="/#manifesto" hx-boost="false" class="hover:text-muziboo-gold transition-colors">Manifesto</a>
+                    </nav>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <h3 class="text-muziboo-text font-bold text-sm">Resources</h3>
+                    <nav class="flex flex-col gap-2 text-muziboo-text-muted">
+                        <a href="/blog" hx-boost="false" class="hover:text-muziboo-gold transition-colors">Blog</a>
+                        <a href="https://www.facebook.com/muziboo" target="_blank" rel="noopener noreferrer" class="hover:text-muziboo-gold transition-colors">Facebook</a>
+                    </nav>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <h3 class="text-muziboo-text font-bold text-sm">Legal</h3>
+                    <nav class="flex flex-col gap-2 text-muziboo-text-muted">
+                        <a href="#" class="hover:text-muziboo-gold transition-colors">PRIVACY</a>
+                        <a href="#" class="hover:text-muziboo-gold transition-colors">TERMS</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-muziboo-border flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-muziboo-text-muted uppercase tracking-[0.2em]">
+            <div>© 2026 MUZIBOO</div>
+            <div>Crafted with soul for hobby musicians</div>
+        </div>
+    </footer>
 
     <!-- Persistent Audio Player -->
     <div id="global-player" class="fixed bottom-0 left-0 right-0 bg-muziboo-bg-softer border-t border-muziboo-border z-50 hidden">
@@ -113,67 +164,67 @@
 
     <script>
     // =========================================================================
-    // Supabase Auth Helper
+    // Supabase Auth Helper & Handlers
     // =========================================================================
-    const SUPABASE_URL = '{{.SupabaseURL}}';
-    const SUPABASE_ANON_KEY = '{{.SupabaseAnonKey}}';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Pass Go variables to JS without manual quotes — Go's html/template handles it safely.
+    const SUPABASE_URL = {{.SupabaseURL}};
+    const SUPABASE_ANON_KEY = {{.SupabaseAnonKey}};
+    
+    function getSupabase() {
+        if (window.muzibooSupabase) return window.muzibooSupabase;
+        if (window.supabase && window.supabase.createClient) {
+            window.muzibooSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            return window.muzibooSupabase;
+        }
+        return null;
+    }
 
-    async function getToken() {
-        const { data: { session } } = await supabase.auth.getSession();
+    // Explicitly global for inline onsubmit/onclick handlers
+    window.getToken = async function() {
+        const client = getSupabase();
+        if (!client) return null;
+        const { data: { session } } = await client.auth.getSession();
         return session?.access_token || null;
     }
 
-    async function logout() {
-        await supabase.auth.signOut();
+    window.logout = async function() {
+        const client = getSupabase();
+        if (client) await client.auth.signOut();
+        document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
         window.location.href = '/app/login';
     }
 
-    function showAuthError(msg) {
-        const el = document.getElementById('login-error') || document.getElementById('signup-error');
-        if (el) { el.textContent = msg; el.classList.remove('hidden'); }
-        else { alert(msg); }
-    }
+    window.signInWithProvider = async function(provider, btn) {
+        const client = getSupabase();
+        if (!client) { alert('Auth service still loading...'); return; }
 
-    async function signInWithProvider(provider, btn) {
         const originalText = btn.innerHTML;
         btn.disabled = true;
         btn.textContent = 'Redirecting…';
         
-        // Hide previous errors just in case
-        const errEl = document.getElementById('login-error') || document.getElementById('signup-error');
-        if (errEl) errEl.classList.add('hidden');
-
         try {
-            const { error } = await supabase.auth.signInWithOAuth({
+            const { error } = await client.auth.signInWithOAuth({
                 provider: provider,
                 options: { redirectTo: window.location.origin + '/app/dashboard' }
             });
-            
             if (error) throw error;
         } catch (error) {
-            showAuthError(error.message || `Failed to sign in with ${provider}`);
+            alert(error.message || `Failed to sign in with ${provider}`);
             btn.disabled = false;
             btn.innerHTML = originalText;
         }
     }
 
-    // Inject auth header into all HTMX requests
-    document.addEventListener('htmx:configRequest', async function(evt) {
-        const token = await getToken();
-        if (token) {
-            evt.detail.headers['Authorization'] = 'Bearer ' + token;
-        }
-    });
-
-    // =========================================================================
-    // Auth Forms (Inline Handlers)
-    // =========================================================================
-    
-    async function handleLogin(form) {
+    window.handleLogin = async function(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const form = e.currentTarget || e.target;
+        const client = getSupabase();
+        if (!client) { alert('Auth service still loading...'); return; }
+        
         const btn = form.querySelector('button[type="submit"]');
         const errEl = document.getElementById('login-error');
-        errEl.classList.add('hidden');
+        if (errEl) errEl.classList.add('hidden');
         btn.disabled = true;
         btn.textContent = 'Logging in…';
 
@@ -181,23 +232,34 @@
         const password = form.querySelector('#password').value;
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await client.auth.signInWithPassword({ email, password });
             if (error) throw error;
             window.location.href = '/app/dashboard';
         } catch (err) {
-            errEl.textContent = err.message || 'An unexpected error occurred.';
-            errEl.classList.remove('hidden');
+            if (errEl) {
+                errEl.textContent = err.message || 'An unexpected error occurred.';
+                errEl.classList.remove('hidden');
+            } else {
+                alert(err.message || 'Login failed');
+            }
             btn.disabled = false;
             btn.textContent = 'Log In';
         }
     }
 
-    async function handleSignup(form) {
+    window.handleSignup = async function(e) {
+        console.log('Signup triggered');
+        if (e && e.preventDefault) e.preventDefault();
+        const form = e.currentTarget || e.target;
+        console.log('Form:', form);
+        const client = getSupabase();
+        if (!client) { alert('Auth service still loading...'); return; }
+
         const btn = form.querySelector('button[type="submit"]');
         const errEl = document.getElementById('signup-error');
         const successEl = document.getElementById('signup-success');
-        errEl.classList.add('hidden');
-        successEl.classList.add('hidden');
+        if (errEl) errEl.classList.add('hidden');
+        if (successEl) successEl.classList.add('hidden');
         btn.disabled = true;
         btn.textContent = 'Creating account…';
 
@@ -206,35 +268,47 @@
         const password = form.querySelector('#password').value;
 
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await client.auth.signUp({
                 email,
                 password,
                 options: { data: { username: username, display_name: username } }
             });
             if (error) throw error;
 
-            // Supabase returns a fake user with empty identities for already-registered emails
             if (data.user && data.user.identities && data.user.identities.length === 0) {
                 throw new Error('An account with this email already exists. Please log in instead.');
             }
 
             if (data.user && !data.session) {
-                successEl.textContent = 'Check your email to confirm your account, then log in.';
-                successEl.classList.remove('hidden');
+                if (successEl) {
+                    successEl.textContent = 'Check your email to confirm your account, then log in.';
+                    successEl.classList.remove('hidden');
+                } else {
+                    alert('Check your email to confirm your account, then log in.');
+                }
                 btn.disabled = false;
                 btn.textContent = 'Create Account';
                 return;
             }
             window.location.href = '/app/dashboard';
         } catch (err) {
-            errEl.textContent = err.message || 'An unexpected error occurred.';
-            errEl.classList.remove('hidden');
+            if (errEl) {
+                errEl.textContent = err.message || 'An unexpected error occurred.';
+                errEl.classList.remove('hidden');
+            } else {
+                alert(err.message || 'Signup failed');
+            }
             btn.disabled = false;
             btn.textContent = 'Create Account';
         }
     }
 
-    async function handleMagic(form, page) {
+    window.handleMagic = async function(e, page) {
+        if (e && e.preventDefault) e.preventDefault();
+        const form = e.currentTarget || e.target;
+        const client = getSupabase();
+        if (!client) { alert('Auth service still loading...'); return; }
+
         const btn = form.querySelector('button[type="submit"]');
         const email = form.querySelector('#magic-email').value;
         const errEl = document.getElementById(page + '-error');
@@ -246,7 +320,7 @@
         btn.textContent = 'Sending…';
 
         try {
-            const { error } = await supabase.auth.signInWithOtp({
+            const { error } = await client.auth.signInWithOtp({
                 email,
                 options: { emailRedirectTo: window.location.origin + '/app/dashboard' }
             });
@@ -266,6 +340,29 @@
             btn.textContent = 'Send Magic Link';
         }
     }
+
+    // Sync session to cookie for the Go backend
+    const initialClient = getSupabase();
+    if (initialClient) {
+        initialClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                const token = session?.access_token;
+                if (token) {
+                    document.cookie = `sb-access-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+                }
+            } else if (event === 'SIGNED_OUT') {
+                document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
+            }
+        });
+    }
+
+    // Inject auth header into all HTMX requests
+    document.addEventListener('htmx:configRequest', async function(evt) {
+        const token = await window.getToken();
+        if (token) {
+            evt.detail.headers['Authorization'] = 'Bearer ' + token;
+        }
+    });
 
     // =========================================================================
     // Global Audio Player

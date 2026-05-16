@@ -15,6 +15,10 @@ const contentEn = {
 	nav: {
 		features: "What",
 		manifesto: "Manifesto",
+		explore: "Explore",
+		login: "Log In",
+		signup: "Sign Up",
+		dashboard: "Dashboard",
 	},
 	hero: {
 		line1: "Real Music.",
@@ -104,6 +108,10 @@ const contentDe: Content = {
 	nav: {
 		features: "Was",
 		manifesto: "Manifest",
+		explore: "Entdecken",
+		login: "Anmelden",
+		signup: "Registrieren",
+		dashboard: "Dashboard",
 	},
 	hero: {
 		line1: "Real Music.",
@@ -199,6 +207,10 @@ const contentEs: Content = {
 	nav: {
 		features: "Que",
 		manifesto: "Manifiesto",
+		explore: "Explorar",
+		login: "Entrar",
+		signup: "Registrarse",
+		dashboard: "Dashboard",
 	},
 	hero: {
 		line1: "Música real.",

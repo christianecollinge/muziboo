@@ -13,11 +13,11 @@
             </p>
         </div>
 
-        <form id="upload-form" class="space-y-6" onsubmit="handleUpload(event)">
+        <form id="upload-form" class="space-y-6" onsubmit="handleUpload(event)" hx-disable>
             <!-- Audio file -->
             <div>
                 <label class="block text-sm font-medium text-muziboo-text mb-2">Audio File *</label>
-                <input id="audio-file" type="file" accept="audio/*" class="hidden" onchange="updateAudioLabel(this)" />
+                <input id="audio-file" name="audio" type="file" accept="audio/*" class="hidden" onchange="updateAudioLabel(this)" />
                 <button type="button" onclick="document.getElementById('audio-file').click()"
                         id="audio-drop"
                         class="w-full border-2 border-dashed border-muziboo-border rounded-xl py-8 px-4 text-center hover:border-muziboo-gold/50 transition-colors group">
@@ -32,7 +32,7 @@
             <!-- Artwork -->
             <div>
                 <label class="block text-sm font-medium text-muziboo-text mb-2">Artwork (optional)</label>
-                <input id="artwork-file" type="file" accept="image/*" class="hidden" onchange="previewArtwork(this)" />
+                <input id="artwork-file" name="artwork" type="file" accept="image/*" class="hidden" onchange="previewArtwork(this)" />
                 <button type="button" onclick="document.getElementById('artwork-file').click()"
                         class="border-2 border-dashed border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold/50 transition-colors group w-40 h-40">
                     <div id="artwork-preview-container" class="w-full h-full flex flex-col items-center justify-center">
@@ -47,14 +47,14 @@
             <!-- Title -->
             <div>
                 <label for="title" class="block text-sm font-medium text-muziboo-text mb-1.5">Title *</label>
-                <input id="title" type="text" required placeholder="What's this track called?"
+                <input id="title" name="title" type="text" required placeholder="What's this track called?"
                        class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
             </div>
 
             <!-- Genre -->
             <div>
                 <label for="genre" class="block text-sm font-medium text-muziboo-text mb-1.5">Genre</label>
-                <select id="genre"
+                <select id="genre" name="genre"
                         class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text focus:outline-none focus:border-muziboo-gold transition-colors">
                     <option value="">Select genre (optional)</option>
                     <option>Rock</option><option>Jazz</option><option>Classical</option>
@@ -68,9 +68,40 @@
             <!-- Description -->
             <div>
                 <label for="description" class="block text-sm font-medium text-muziboo-text mb-1.5">Description</label>
-                <textarea id="description" rows="3"
+                <textarea id="description" name="description" rows="3"
                           placeholder="Tell us about this track... What's the story? What gear did you use?"
                           class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors resize-none"></textarea>
+            </div>
+
+            <!-- Colab Features -->
+            <div class="border-t border-muziboo-border pt-6 mt-6">
+                <div class="flex items-center mb-4">
+                    <input type="checkbox" id="is-colab" class="w-5 h-5 rounded border-muziboo-border text-muziboo-gold focus:ring-muziboo-gold bg-muziboo-bg" onchange="toggleColabOptions(this.checked)">
+                    <label for="is-colab" class="ml-3 block text-base font-medium text-muziboo-text">Enable Colab</label>
+                </div>
+                <p class="text-sm text-muziboo-text-muted mb-6">Allow invited musicians to download stems and upload continuations of this track.</p>
+
+                <div id="colab-options" class="hidden space-y-6 pl-8 border-l-2 border-muziboo-gold/20">
+                    <input type="hidden" id="parent-track-id" name="parent_track_id" value="">
+                    
+                    <!-- Stems -->
+                    <div>
+                        <label class="block text-sm font-medium text-muziboo-text mb-2">Stems</label>
+                        <div id="stems-list" class="space-y-3 mb-3"></div>
+                        <button type="button" onclick="addStemInput()" class="text-sm text-muziboo-gold hover:text-muziboo-gold/80 font-medium flex items-center gap-1">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add Stem
+                        </button>
+                    </div>
+
+                    <!-- Invites -->
+                    <div>
+                        <label for="invited-users" class="block text-sm font-medium text-muziboo-text mb-1.5">Invite Collaborators</label>
+                        <input id="invited-users" type="text" placeholder="e.g. username1, username2"
+                               class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
+                        <p class="text-xs text-muziboo-text-muted mt-1.5">Comma-separated list of usernames who can download your stems.</p>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" id="upload-btn"
@@ -104,78 +135,151 @@ function previewArtwork(input) {
     }
 }
 
+// Colab UI Logic
+let stemCount = 0;
+
+function toggleColabOptions(show) {
+    const opts = document.getElementById('colab-options');
+    if (show) opts.classList.remove('hidden');
+    else opts.classList.add('hidden');
+}
+
+function addStemInput() {
+    stemCount++;
+    const id = stemCount;
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-3 bg-muziboo-bg p-3 rounded-lg border border-muziboo-border';
+    div.id = 'stem-row-' + id;
+    
+    div.innerHTML = `
+        <input type="text" id="stem-name-${id}" placeholder="Stem Name (e.g. Drums)" class="flex-1 bg-transparent border-none focus:outline-none text-sm text-muziboo-text placeholder:text-muziboo-text-muted/50">
+        <input type="file" id="stem-file-${id}" accept="audio/*" class="text-sm text-muziboo-text-muted file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-muziboo-gold/10 file:text-muziboo-gold hover:file:bg-muziboo-gold/20">
+        <button type="button" onclick="document.getElementById('stem-row-${id}').remove()" class="text-muziboo-text-muted hover:text-muziboo-red p-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    `;
+    document.getElementById('stems-list').appendChild(div);
+}
+
+// Parse URL params for continuations
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const parentId = params.get('parent');
+    if (parentId) {
+        document.getElementById('parent-track-id').value = parentId;
+        const colabCheck = document.getElementById('is-colab');
+        colabCheck.checked = true;
+        toggleColabOptions(true);
+    }
+});
+
 async function handleUpload(e) {
-    e.preventDefault();
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
     const btn = document.getElementById('upload-btn');
     const errEl = document.getElementById('upload-error');
     const successEl = document.getElementById('upload-success');
+    
+    // Reset UI state
     errEl.classList.add('hidden');
     successEl.classList.add('hidden');
     btn.disabled = true;
-
-    const token = await getToken();
-    if (!token) { window.location.href = '/app/login'; return; }
-
-    const audioFile = document.getElementById('audio-file').files[0];
-    const artworkFile = document.getElementById('artwork-file').files[0];
-    const title = document.getElementById('title').value;
-    const genre = document.getElementById('genre').value;
-    const description = document.getElementById('description').value;
-
-    if (!audioFile) {
-        errEl.textContent = 'Please select an audio file';
-        errEl.classList.remove('hidden');
-        btn.disabled = false;
-        return;
-    }
+    const originalBtnText = btn.textContent;
+    btn.textContent = 'Uploading track…';
 
     try {
-        // 1. Upload audio
-        btn.textContent = 'Uploading audio…';
-        const audioForm = new FormData();
-        audioForm.append('file', audioFile);
-        const audioRes = await fetch(API_URL + '/api/upload/audio', {
-            method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: audioForm
-        });
-        if (!audioRes.ok) throw new Error('Audio upload failed');
-        const audioData = await audioRes.json();
+        const token = await getToken();
+        if (!token) { 
+            window.location.href = '/app/login'; 
+            return; 
+        }
 
-        // 2. Upload artwork (optional)
-        let artworkUrl = '';
+        const audioFile = document.getElementById('audio-file').files[0];
+        const artworkFile = document.getElementById('artwork-file').files[0];
+        const title = document.getElementById('title').value;
+        const genre = document.getElementById('genre').value;
+        const description = document.getElementById('description').value;
+
+        if (!audioFile) {
+            throw new Error('Please select an audio file');
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('genre', genre);
+        formData.append('audio', audioFile);
         if (artworkFile) {
-            btn.textContent = 'Uploading artwork…';
-            const artForm = new FormData();
-            artForm.append('file', artworkFile);
-            const artRes = await fetch(API_URL + '/api/upload/artwork', {
-                method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: artForm
-            });
-            if (artRes.ok) {
-                const artData = await artRes.json();
-                artworkUrl = artData.url;
+            formData.append('artwork', artworkFile);
+        }
+
+        const isColab = document.getElementById('is-colab').checked;
+        if (isColab) {
+            formData.append('is_colab', 'true');
+            const parentId = document.getElementById('parent-track-id').value;
+            if (parentId) formData.append('parent_track_id', parentId);
+            
+            const invites = document.getElementById('invited-users').value;
+            if (invites) formData.append('invited_users', invites);
+
+            let stemIndex = 1;
+            for (let i = 1; i <= stemCount; i++) {
+                const row = document.getElementById('stem-row-' + i);
+                if (!row) continue;
+                
+                const fileInput = document.getElementById('stem-file-' + i);
+                const nameInput = document.getElementById('stem-name-' + i);
+                
+                if (fileInput.files.length > 0) {
+                    formData.append('stem_' + stemIndex + '_audio', fileInput.files[0]);
+                    if (nameInput.value) {
+                        formData.append('stem_' + stemIndex + '_name', nameInput.value);
+                    }
+                    stemIndex++;
+                }
             }
         }
 
-        // 3. Create track record
-        btn.textContent = 'Creating track…';
-        const trackRes = await fetch(API_URL + '/api/tracks', {
+        const response = await fetch(API_URL + '/api/upload/track', {
             method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description, genre, audio_url: audioData.url, artwork_url: artworkUrl })
+            headers: { 'Authorization': 'Bearer ' + token },
+            body: formData
         });
-        if (!trackRes.ok) throw new Error('Track creation failed');
 
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Upload failed');
+        }
+
+        // SUCCESS STATE
+        console.log('Upload successful:', data);
+        
+        // 1. Show success message
         successEl.classList.remove('hidden');
+        
+        // 2. Scroll to message
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // 3. Reset form manually
         document.getElementById('upload-form').reset();
         document.getElementById('audio-label').textContent = 'Click to select audio file';
+        document.getElementById('audio-label').classList.remove('text-muziboo-text');
         document.getElementById('artwork-preview-container').innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-text-muted/50 mb-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-text-muted/50 mb-1 group-hover:text-muziboo-gold transition-colors">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
             </svg>
-            <span class="text-xs text-muziboo-text-muted/50">Add artwork</span>
+            <span class="text-xs text-muziboo-text-muted/50 group-hover:text-muziboo-text-muted transition-colors">Add artwork</span>
         `;
+        
     } catch (err) {
+        console.error('Upload error:', err);
         errEl.textContent = err.message || 'Upload failed';
         errEl.classList.remove('hidden');
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } finally {
         btn.disabled = false;
         btn.textContent = 'Upload Track';

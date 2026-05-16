@@ -52,6 +52,21 @@ export async function api<T = any>(
 }
 
 /**
+ * Upload a complete track with metadata and files.
+ */
+export async function uploadTrack(
+	formData: FormData,
+	token: string
+): Promise<any> {
+	return api("/api/upload/track", {
+		method: "POST",
+		body: formData,
+		token,
+		isFormData: true,
+	});
+}
+
+/**
  * Upload a file to the Go backend.
  */
 export async function uploadFile(

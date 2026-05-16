@@ -7,33 +7,53 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   generate-posts:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
-          # Removed cache: 'npm' as package-lock.json is not tracked.
+          node-version: '24'
           
       - name: Install Dependencies
         run: npm install
 
+      - name: Verify Environment
+        run: |
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
+            echo "❌ Error: GEMINI_API_KEY is not set in repository secrets."
+            exit 1
+          fi
+          if [ -z "${{ secrets.DATAFORSEO_LOGIN }}" ] || [ -z "${{ secrets.DATAFORSEO_PASSWORD }}" ]; then
+            echo "⚠️ Warning: DataForSEO credentials are missing. Falling back to static keywords."
+          fi
+
       - name: Run SEO Agent Generator
+        id: seo_gen
         env:
           DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
           DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run seo:generate
 
+      - name: Notify on Failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "⚠️ SEO Agent Automation Failed" \
+            --body "The daily SEO blog generation failed on $(date). Please check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details." \
+            --label "bug,automation"
+
       - name: Commit and Push New Posts
+        if: success()
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

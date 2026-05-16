@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { getAccessToken } from "../lib/supabase";
-import { uploadFile, api } from "../lib/api";
+import { uploadTrack } from "../lib/api";
 
 export default function UploadForm() {
 	const [title, setTitle] = useState("");
@@ -12,7 +12,6 @@ export default function UploadForm() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState(false);
-	const [uploadProgress, setUploadProgress] = useState("");
 
 	const audioInputRef = useRef<HTMLInputElement>(null);
 	const artworkInputRef = useRef<HTMLInputElement>(null);
@@ -46,39 +45,18 @@ export default function UploadForm() {
 				return;
 			}
 
-			// 1. Upload audio
-			setUploadProgress("Uploading audio...");
-			const audioResult = await uploadFile(
-				"/api/upload/audio",
-				audioFile,
-				token
-			);
-
-			// 2. Upload artwork (optional)
-			let artworkUrl = "";
+			// Orchestration has moved to the Manager in the backend.
+			// The client only sends the "Intent" (the full form data).
+			const formData = new FormData();
+			formData.append("title", title);
+			formData.append("description", description);
+			formData.append("genre", genre);
+			formData.append("audio", audioFile);
 			if (artworkFile) {
-				setUploadProgress("Uploading artwork...");
-				const artworkResult = await uploadFile(
-					"/api/upload/artwork",
-					artworkFile,
-					token
-				);
-				artworkUrl = artworkResult.url;
+				formData.append("artwork", artworkFile);
 			}
 
-			// 3. Create track record
-			setUploadProgress("Creating track...");
-			await api("/api/tracks", {
-				method: "POST",
-				token,
-				body: {
-					title,
-					description,
-					genre,
-					audio_url: audioResult.url,
-					artwork_url: artworkUrl,
-				},
-			});
+			await uploadTrack(formData, token);
 
 			setSuccess(true);
 			setTitle("");
@@ -87,10 +65,8 @@ export default function UploadForm() {
 			setAudioFile(null);
 			setArtworkFile(null);
 			setArtworkPreview("");
-			setUploadProgress("");
 		} catch (err: any) {
 			setError(err.message || "Upload failed");
-			setUploadProgress("");
 		} finally {
 			setLoading(false);
 		}
@@ -333,7 +309,7 @@ export default function UploadForm() {
 						disabled={loading || !audioFile || !title}
 						className="w-full bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-3.5 rounded-lg hover:bg-muziboo-text hover:text-muziboo-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{loading ? uploadProgress || "Uploading..." : "Upload Track"}
+						{loading ? "Uploading..." : "Upload Track"}
 					</button>
 				</form>
 			</div>

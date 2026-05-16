@@ -1,4 +1,4 @@
-// Package profiles provides business logic for user profiles.
+// Package profiles provides resource access to profile data.
 package profiles
 
 import (
@@ -35,19 +35,19 @@ type UpdateProfile struct {
 	Username    *string `json:"username,omitempty"`
 }
 
-// Core manages profile operations.
-type Core struct {
+// Access manages profile operations.
+type Access struct {
 	client *supabase.Client
 }
 
-// NewCore creates a new profiles Core.
-func NewCore(client *supabase.Client) *Core {
-	return &Core{client: client}
+// NewAccess creates a new profiles Access.
+func NewAccess(client *supabase.Client) *Access {
+	return &Access{client: client}
 }
 
 // Create inserts a new profile row.
-func (c *Core) Create(np NewProfile) (Profile, error) {
-	data, err := c.client.Insert("profiles", np)
+func (a *Access) Create(np NewProfile) (Profile, error) {
+	data, err := a.client.Insert("profiles", np)
 	if err != nil {
 		return Profile{}, fmt.Errorf("creating profile: %w", err)
 	}
@@ -65,10 +65,10 @@ func (c *Core) Create(np NewProfile) (Profile, error) {
 }
 
 // GetByUsername retrieves a profile by username.
-func (c *Core) GetByUsername(username string) (Profile, error) {
+func (a *Access) GetByUsername(username string) (Profile, error) {
 	query := fmt.Sprintf("select=*&username=eq.%s", url.QueryEscape(username))
 
-	data, err := c.client.Query("profiles", query)
+	data, err := a.client.Query("profiles", query)
 	if err != nil {
 		return Profile{}, fmt.Errorf("querying profile: %w", err)
 	}
@@ -86,10 +86,10 @@ func (c *Core) GetByUsername(username string) (Profile, error) {
 }
 
 // GetByID retrieves a profile by user ID.
-func (c *Core) GetByID(id string) (Profile, error) {
+func (a *Access) GetByID(id string) (Profile, error) {
 	query := fmt.Sprintf("select=*&id=eq.%s", url.QueryEscape(id))
 
-	data, err := c.client.Query("profiles", query)
+	data, err := a.client.Query("profiles", query)
 	if err != nil {
 		return Profile{}, fmt.Errorf("querying profile: %w", err)
 	}
@@ -107,10 +107,10 @@ func (c *Core) GetByID(id string) (Profile, error) {
 }
 
 // Update updates a user's profile.
-func (c *Core) Update(userID string, up UpdateProfile) (Profile, error) {
+func (a *Access) Update(userID string, up UpdateProfile) (Profile, error) {
 	filter := fmt.Sprintf("id=eq.%s", url.QueryEscape(userID))
 
-	data, err := c.client.Update("profiles", filter, up)
+	data, err := a.client.Update("profiles", filter, up)
 	if err != nil {
 		return Profile{}, fmt.Errorf("updating profile: %w", err)
 	}

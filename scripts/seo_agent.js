@@ -62,23 +62,20 @@ async function fetchKeywords(target) {
     
     if (!process.env.DATAFORSEO_LOGIN || !process.env.DATAFORSEO_PASSWORD) {
         console.warn(`⚠️ DataForSEO credentials are missing. Skipping API and falling back to static keywords.`);
-        return FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"];
+        return (FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"]).slice(0, 1);
     }
 
     try {
         const seedKeywords = [
             "upload original music",
-            "get feedback on unfinished songs",
-            "where to share bedroom pop demos",
-            "community for hobby musicians",
-            "indie musician feedback forum"
+            "get feedback on unfinished songs"
         ];
 
         const post_array = seedKeywords.map(kw => ({
             "location_name": target.location,
             "language_name": target.language,
             "keyword": kw,
-            "limit": 2
+            "limit": 1
         }));
 
         const response = await dfsPost("/v3/dataforseo_labs/google/keyword_suggestions/live", post_array);
@@ -87,63 +84,41 @@ async function fetchKeywords(target) {
             const task = response.tasks[0];
             if (task.result && task.result.length > 0 && task.result[0].items && task.result[0].items.length > 0) {
                 const items = task.result[0].items || [];
-                return items.slice(0, 10).map(item => item.keyword);
+                // Only take 1 keyword to stay under free tier daily limits
+                return items.slice(0, 1).map(item => item.keyword);
             }
         }
         
-        console.warn(`⚠️ DataForSEO returned no results for ${target.location}. Using static fallback keywords.`);
-        return FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"];
+        console.warn(`⚠️ DataForSEO returned no results. Using 1 fallback keyword.`);
+        return (FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"]).slice(0, 1);
 
     } catch (error) {
         console.error("❌ DataForSEO Fetch/Parse Error:", error);
-        console.warn(`⚠️ Falling back to static keywords due to error.`);
-        return FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"];
+        return (FALLBACK_KEYWORDS[target.language] || FALLBACK_KEYWORDS["English"]).slice(0, 1);
     }
 }
 
-async function generateBlogPost(keyword, target, pubDate) {
-    console.log(`✍️ Generating blog post for keyword: "${keyword}" in ${target.language}...`);
+async function generateBlogPost(keyword, target, pubDate, retryCount = 0) {
+    console.log(`✍️ Generating blog post for keyword: "${keyword}"... (Attempt ${retryCount + 1})`);
 
     const prompt = `
-    You are an expert music industry blogger writing for 'Muziboo'.
-
+    Write a 500-word SEO blog post for 'Muziboo' about: "${keyword}".
     ${target.instructions}
 
-    Muziboo is a workshop for real music and real people—not a streaming platform or a talent show. It is a space for hobby musicians, bedroom producers, and anyone who makes music with their own hands. Users share demos, fragments, late-night recordings, and unfinished songs to get constructive feedback from people who care about craft, not metrics, likes, or ranking games.
+    Muziboo is a workshop for real music and real people to share demos and get human feedback. 
 
-    Write an SEO-optimized, engaging blog post targeting the core keyword: "${keyword}".
+    RULES:
+    - Flesch Reading Ease: 60+ (Simple language).
+    - Format: Prose paragraphs with H2/H3 subheadings.
+    - NO bullet points or lists.
+    - Mention Muziboo as the best place for human feedback on unpolished music.
 
-    IMPORTANT READABILITY RULES (Flesch-Kincaid):
-    - Target a Flesch Reading Ease score of 60.0 or higher.
-    - Use clear, simple language and avoid unnecessary jargon.
-    - Keep sentences relatively short (average 15-20 words).
-    - Use simple, short words where possible.
-    - Aim for a grade level around 8th or 9th grade (Grade Level 8-9).
-
-    IMPORTANT FORMATTING RULES:
-    - Do NOT use bullet points or numbered lists anywhere in the post.
-    - Write in flowing prose paragraphs only.
-    - Use H2 and H3 subheadings to break up sections.
-
-    Output the response STRICTLY as a Markdown file with YAML frontmatter. Do not include any text outside of the Markdown block.
-
-    Structure the markdown exactly like this:
-    ---
-    title: "Catchy SEO title including the keyword"
-    description: "A short 160-character SEO description."
-    pubDate: ${pubDate}
-    author: "Muziboo Team"
-    tags: ["music", "creators", "community"]
-    ---
-    
-    [Blog post starting with flowing prose paragraphs and subheadings — NO bullet points. DO NOT INCLUDE AN H1 IN THE BODY.]
-
-    Make sure to mention Muziboo respectfully throughout the post as the best workshop to upload unpolished music and get real human feedback. The content should be at least 600 words long.
+    Output as Markdown with YAML frontmatter (title, description, pubDate: ${pubDate}, author: "Muziboo Team", tags: ["music", "creators"]).
     `;
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-1.5-flash',
+            model: 'models/gemini-2.0-flash',
             contents: prompt,
         });
 
@@ -160,6 +135,12 @@ async function generateBlogPost(keyword, target, pubDate) {
 
         return markdown.trim();
     } catch (error) {
+        if ((error.status === 429 || error.message?.includes('quota')) && retryCount < 3) {
+            const waitTime = 300000; // 5 minutes
+            console.warn(`⚠️ Rate limit hit for "${keyword}". Waiting 5 minutes before retry...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            return generateBlogPost(keyword, target, pubDate, retryCount + 1);
+        }
         console.error(`❌ Gemini Error for "${keyword}":`, error);
         return null;
     }
@@ -220,8 +201,8 @@ async function main() {
             console.log(`   Readability: ${readability.score} (Ease), Grade Level: ${gradeLevel}`);
         }
 
-        // Wait 4 seconds between posts to respect rate limits
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        // Wait 15 seconds between posts to respect rate limits
+        await new Promise(resolve => setTimeout(resolve, 15000));
     }
 
     console.log("🎉 All blog posts generated successfully!");

@@ -8,6 +8,10 @@ interface Props {
 }
 
 const { lang, content } = Astro.props;
+
+// Check if user is logged in via Supabase cookie
+const accessToken = Astro.cookies.get("sb-access-token");
+const isLoggedIn = !!accessToken;
 ---
 
 <header
@@ -54,6 +58,39 @@ const { lang, content } = Astro.props;
 			</a>
 
 			<div class="w-px bg-muziboo-border h-4 hidden sm:block"></div>
+
+			<a
+				href="/app/explore"
+				class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
+			>
+				{content.nav.explore}
+			</a>
+
+			{
+				isLoggedIn ? (
+					<a
+						href="/app/dashboard"
+						class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors"
+					>
+						{content.nav.dashboard}
+					</a>
+				) : (
+					<div class="flex items-center gap-3">
+						<a
+							href="/app/login"
+							class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium px-2"
+						>
+							{content.nav.login}
+						</a>
+						<a
+							href="/app/signup"
+							class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors"
+						>
+							{content.nav.signup}
+						</a>
+					</div>
+				)
+			}
 		</div>
 	</nav>
 </header>
