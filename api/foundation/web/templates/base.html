@@ -348,10 +348,13 @@
     const initialClient = getSupabase();
     if (initialClient) {
         initialClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
                 const token = session?.access_token;
                 if (token) {
                     document.cookie = `sb-access-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+                    if (window.location.pathname === '/app/login' || window.location.pathname === '/app/signup') {
+                        window.location.href = '/app/dashboard';
+                    }
                 }
             } else if (event === 'SIGNED_OUT') {
                 document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
