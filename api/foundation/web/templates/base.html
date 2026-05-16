@@ -204,11 +204,14 @@
         btn.textContent = 'Redirecting…';
         
         try {
-            const { error } = await client.auth.signInWithOAuth({
+            const { data, error } = await client.auth.signInWithOAuth({
                 provider: provider,
                 options: { redirectTo: window.location.origin + '/app/dashboard' }
             });
             if (error) throw error;
+            if (data && data.url) {
+                window.location.href = data.url;
+            }
         } catch (error) {
             alert(error.message || `Failed to sign in with ${provider}`);
             btn.disabled = false;
