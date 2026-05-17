@@ -98,8 +98,8 @@ const contentEn = {
 		reborn: "REBORN 2026",
 		facebook: "FACEBOOK",
 		blog: "BLOG",
-		privacy: "PRIVACY",
-		terms: "TERMS",
+		privacy: "Privacy",
+		terms: "Terms",
 		copyright: "© 2026 MUZIBOO",
 	},
 };
@@ -197,8 +197,8 @@ const contentDe: Content = {
 		reborn: "REBORN 2026",
 		facebook: "FACEBOOK",
 		blog: "BLOG",
-		privacy: "DATENSCHUTZ",
-		terms: "NUTZUNGSBEDINGUNGEN",
+		privacy: "Datenschutz",
+		terms: "Nutzungsbedingungen",
 		copyright: "© 2026 MUZIBOO",
 	},
 };
@@ -322,8 +322,8 @@ const contentEs: Content = {
 		reborn: "REBORN 2026",
 		facebook: "FACEBOOK",
 		blog: "BLOG",
-		privacy: "PRIVACIDAD",
-		terms: "TÉRMINOS",
+		privacy: "Privacidad",
+		terms: "Terminos",
 		copyright: "© 2026 MUZIBOO",
 	},
 };
