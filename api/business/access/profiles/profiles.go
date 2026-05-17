@@ -16,6 +16,7 @@ type Profile struct {
 	DisplayName string `json:"display_name"`
 	Bio         string `json:"bio"`
 	AvatarURL   string `json:"avatar_url"`
+	BannerURL   string `json:"banner_url"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
 }

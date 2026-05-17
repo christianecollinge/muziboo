@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	engagementAccess "github.com/muziboo/api/business/access/engagement"
 	libraryAccess "github.com/muziboo/api/business/access/library"
+	msgAccess "github.com/muziboo/api/business/access/messages"
 	profileAccess "github.com/muziboo/api/business/access/profiles"
 	libraryManager "github.com/muziboo/api/business/managers/library"
 	socialManager "github.com/muziboo/api/business/managers/social"
@@ -47,6 +48,9 @@ type TemplateData struct {
 	Stems          []libraryAccess.Stem
 	Continuations  []TrackCardData
 	IsInvitedColab bool
+	// Messages
+	Messages        []msgAccess.Message
+	OtherUser       *profileAccess.Profile
 }
 
 // UserInfo is a simplified user struct for the nav bar.
@@ -60,6 +64,7 @@ type UserInfo struct {
 type TrackCardData struct {
 	ID             string
 	Title          string
+	Description    string
 	Genre          string
 	AudioURL       string
 	ArtworkURL     string
@@ -285,6 +290,7 @@ func (h *Handlers) TrackDetail(w http.ResponseWriter, r *http.Request) {
 	card := TrackCardData{
 		ID:             track.ID,
 		Title:          track.Title,
+		Description:    track.Description,
 		Genre:          track.Genre,
 		AudioURL:       track.AudioURL,
 		ArtworkURL:     track.ArtworkURL,
@@ -426,6 +432,41 @@ func (h *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 		Profile:     &profile,
 		Tracks:      tracks,
 		TrackCards:  cards,
+	})
+}
+
+// Messages renders the direct message conversation page with another user.
+func (h *Handlers) Messages(w http.ResponseWriter, r *http.Request) {
+	myID, ok := middleware.GetUserID(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/app/login", http.StatusSeeOther)
+		return
+	}
+
+	username := chi.URLParam(r, "username")
+	otherProfile, err := h.SocialManager.GetProfileByUsername(username)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	msgs, err := h.SocialManager.GetConversation(myID, otherProfile.ID)
+	if err != nil {
+		msgs = nil // non-fatal, show empty thread
+	}
+
+	var myProfile *UserInfo
+	if p, err := h.SocialManager.GetProfileByID(myID); err == nil {
+		myProfile = &UserInfo{ID: p.ID, Username: p.Username, DisplayName: p.DisplayName}
+	}
+
+	h.render(w, "messages", TemplateData{
+		Title:       "Message " + otherProfile.DisplayName,
+		Description: "Direct messages with " + otherProfile.DisplayName,
+		CurrentPage: "/app/messages/" + username,
+		User:        myProfile,
+		OtherUser:   &otherProfile,
+		Messages:    msgs,
 	})
 }
 

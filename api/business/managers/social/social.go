@@ -6,6 +6,7 @@ import (
 
 	engAccess "github.com/muziboo/api/business/access/engagement"
 	"github.com/muziboo/api/business/access/library"
+	msgAccess "github.com/muziboo/api/business/access/messages"
 	"github.com/muziboo/api/business/access/profiles"
 	engEngine "github.com/muziboo/api/business/engines/engagement"
 )
@@ -16,15 +17,17 @@ type Manager struct {
 	libraryAccess    *library.Access
 	engagementAccess *engAccess.Access
 	engagementEngine *engEngine.Engine
+	messagesAccess   *msgAccess.Access
 }
 
 // NewManager creates a new social Manager.
-func NewManager(p *profiles.Access, l *library.Access, eAcc *engAccess.Access, eEng *engEngine.Engine) *Manager {
+func NewManager(p *profiles.Access, l *library.Access, eAcc *engAccess.Access, eEng *engEngine.Engine, mAcc *msgAccess.Access) *Manager {
 	return &Manager{
 		profileAccess:    p,
 		libraryAccess:    l,
 		engagementAccess: eAcc,
 		engagementEngine: eEng,
+		messagesAccess:   mAcc,
 	}
 }
 
@@ -72,6 +75,11 @@ func (m *Manager) GetOrCreateProfile(userID, email, metadataUsername, metadataDi
 // GetProfileByID retrieves a profile by user ID.
 func (m *Manager) GetProfileByID(userID string) (profiles.Profile, error) {
 	return m.profileAccess.GetByID(userID)
+}
+
+// GetProfileByUsername retrieves a profile by username.
+func (m *Manager) GetProfileByUsername(username string) (profiles.Profile, error) {
+	return m.profileAccess.GetByUsername(username)
 }
 
 // UpdateProfile updates the profile data.
@@ -142,4 +150,21 @@ func (m *Manager) GetTrackEngagement(trackID string) ([]engAccess.Vote, []engAcc
 		return votes, nil, nil
 	}
 	return votes, comments, nil
+}
+
+// SendMessage sends a direct message from one user to another.
+func (m *Manager) SendMessage(senderID, recipientID, content string) (msgAccess.Message, error) {
+	if content == "" {
+		return msgAccess.Message{}, fmt.Errorf("message content cannot be empty")
+	}
+	return m.messagesAccess.Send(msgAccess.NewMessage{
+		SenderID:    senderID,
+		RecipientID: recipientID,
+		Content:     content,
+	})
+}
+
+// GetConversation retrieves messages between two users.
+func (m *Manager) GetConversation(userA, userB string) ([]msgAccess.Message, error) {
+	return m.messagesAccess.GetConversation(userA, userB)
 }

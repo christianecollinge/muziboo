@@ -16,12 +16,14 @@ import (
 	blobAccess "github.com/muziboo/api/business/access/blob"
 	engagementAccess "github.com/muziboo/api/business/access/engagement"
 	libraryAccess "github.com/muziboo/api/business/access/library"
+	messageAccess "github.com/muziboo/api/business/access/messages"
 	profileAccess "github.com/muziboo/api/business/access/profiles"
 	contentEngine "github.com/muziboo/api/business/engines/content"
 	engagementEngine "github.com/muziboo/api/business/engines/engagement"
 	libraryManager "github.com/muziboo/api/business/managers/library"
 	socialManager "github.com/muziboo/api/business/managers/social"
 	"github.com/muziboo/api/foundation/supabase"
+	"github.com/muziboo/api/handlers/messagegrp"
 	"github.com/muziboo/api/handlers/pagegrp"
 	"github.com/muziboo/api/handlers/profilegrp"
 	"github.com/muziboo/api/handlers/trackgrp"
@@ -48,6 +50,7 @@ func main() {
 	libraryAcc := libraryAccess.NewAccess(supa)
 	blobAcc := blobAccess.NewAccess(supa)
 	engagementAcc := engagementAccess.NewAccess(supa)
+	messageAcc := messageAccess.NewAccess(supa)
 
 	// Initialize Engines
 	contentEng := contentEngine.NewEngine()
@@ -55,7 +58,7 @@ func main() {
 
 	// Initialize Managers
 	libraryMgr := libraryManager.NewManager(libraryAcc, blobAcc, contentEng)
-	socialMgr := socialManager.NewManager(profileAcc, libraryAcc, engagementAcc, engagementEng)
+	socialMgr := socialManager.NewManager(profileAcc, libraryAcc, engagementAcc, engagementEng, messageAcc)
 
 	// Load HTML templates
 	tmpl := loadTemplates()
@@ -72,6 +75,10 @@ func main() {
 	uploadHandlers := &uploadgrp.Handlers{
 		LibraryManager: libraryMgr,
 		SocialManager:  socialMgr,
+	}
+
+	messageHandlers := &messagegrp.Handlers{
+		SocialManager: socialMgr,
 	}
 
 	pageHandlers := &pagegrp.Handlers{
@@ -119,6 +126,10 @@ func main() {
 		r.Post("/api/upload/track", uploadHandlers.UploadTrack)
 		r.Post("/api/upload/audio", uploadHandlers.UploadAudio)
 		r.Post("/api/upload/artwork", uploadHandlers.UploadArtwork)
+
+		// Messaging
+		r.Post("/api/messages", messageHandlers.Send)
+		r.Get("/api/messages/{userID}", messageHandlers.GetConversation)
 	})
 
 	// =====================================================================
@@ -153,6 +164,7 @@ func main() {
 
 		r.Get("/app/dashboard", pageHandlers.Dashboard)
 		r.Get("/app/upload", pageHandlers.Upload)
+		r.Get("/app/messages/{username}", pageHandlers.Messages)
 	})
 
 	// Start server
@@ -180,7 +192,7 @@ func loadTemplates() map[string]*template.Template {
 	base := filepath.Join(templateDir, "base.html")
 	partials := filepath.Join(templateDir, "track_card.html")
 
-	pages := []string{"login", "signup", "dashboard", "explore", "upload", "profile", "track_detail"}
+	pages := []string{"login", "signup", "dashboard", "explore", "upload", "profile", "track_detail", "messages"}
 	templates := make(map[string]*template.Template, len(pages))
 
 	for _, page := range pages {

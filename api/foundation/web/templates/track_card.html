@@ -29,8 +29,9 @@
             <h3 class="font-semibold text-muziboo-text truncate flex-1">{{.Title}}</h3>
             <!-- Upvote Button -->
             <button id="vote-btn-{{.ID}}" 
-                    onclick="handleVote('{{.ID}}', this)"
+                    onclick="event.stopPropagation(); handleVote('{{.ID}}', this)"
                     data-voted="{{.HasVoted}}"
+                    hx-boost="false"
                     class="flex flex-col items-center justify-center min-w-[40px] px-2 py-1 rounded-lg border transition-all {{if .HasVoted}}bg-muziboo-gold/10 border-muziboo-gold text-muziboo-gold{{else}}bg-muziboo-bg border-muziboo-border text-muziboo-text-muted hover:border-muziboo-gold/50{{end}}">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m18 15-6-6-6 6"/>
