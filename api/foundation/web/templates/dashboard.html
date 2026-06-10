@@ -6,6 +6,7 @@
             <div>
                 <h1 class="text-3xl font-semibold text-muziboo-text">{{.Profile.DisplayName}}</h1>
                 <p class="text-muziboo-text-muted">@{{.Profile.Username}} · {{len .Tracks}} track{{if ne (len .Tracks) 1}}s{{end}}</p>
+                <p class="text-muziboo-text-muted/70 text-sm mt-1">This is your private workshop. Drafts are visible only to you until you set them live.</p>
             </div>
             <div class="flex gap-3">
                 <a href="/app/upload" class="bg-muziboo-gold text-muziboo-bg font-semibold px-5 py-2.5 rounded-lg hover:bg-muziboo-text transition-colors text-sm">

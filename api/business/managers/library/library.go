@@ -81,6 +81,7 @@ type UploadTrackRequest struct {
 	ArtworkSize   int64
 	IsColab       bool
 	ParentTrackID string
+	IsPublic      bool
 	Stems         []UploadStemRequest
 	InvitedUsers  []string // profile IDs of invited users
 }
@@ -126,6 +127,7 @@ func (m *Manager) UploadTrack(req UploadTrackRequest) (library.Track, error) {
 		ArtworkURL:    artworkURL,
 		IsColab:       req.IsColab,
 		ParentTrackID: req.ParentTrackID,
+		IsPublic:      req.IsPublic,
 	})
 	if err != nil {
 		return library.Track{}, fmt.Errorf("saving metadata: %w", err)
@@ -163,9 +165,24 @@ func (m *Manager) SaveTrack(nt library.NewTrack) (library.Track, error) {
 	return m.libraryAccess.Create(nt)
 }
 
-// GetTrack retrieves a track by its ID.
-func (m *Manager) GetTrack(id string) (library.TrackWithProfile, error) {
-	return m.libraryAccess.GetByID(id)
+// GetTrack retrieves a track by its ID. Drafts are only returned to their
+// owner; for everyone else they behave as if they don't exist.
+func (m *Manager) GetTrack(id, viewerID string) (library.TrackWithProfile, error) {
+	track, err := m.libraryAccess.GetByID(id)
+	if err != nil {
+		return library.TrackWithProfile{}, err
+	}
+
+	if !track.IsPublic && track.UserID != viewerID {
+		return library.TrackWithProfile{}, fmt.Errorf("track not found")
+	}
+
+	return track, nil
+}
+
+// SetTrackVisibility publishes or unpublishes a track owned by userID.
+func (m *Manager) SetTrackVisibility(trackID, userID string, isPublic bool) (library.Track, error) {
+	return m.libraryAccess.SetVisibility(trackID, userID, isPublic)
 }
 
 // ListTracks returns a list of tracks.

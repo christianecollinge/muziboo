@@ -1,5 +1,5 @@
 {{define "track_card"}}
-<div class="group rounded-xl overflow-hidden bg-muziboo-bg-softer border border-muziboo-border hover:border-muziboo-gold/40 transition-all duration-300">
+<div class="track-card-item group rounded-xl overflow-hidden bg-muziboo-bg-softer border border-muziboo-border hover:border-muziboo-gold/40 transition-all duration-300">
     <!-- Artwork -->
     <div class="relative aspect-square overflow-hidden cursor-pointer"
          onclick="playTrack('{{.AudioURL}}', '{{.Title}}', '{{.ArtistName}}')">
@@ -21,6 +21,13 @@
         </div>
         {{if .Genre}}
         <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-medium rounded-full bg-black/60 text-muziboo-text backdrop-blur-sm">{{.Genre}}</span>
+        {{end}}
+        {{if .IsOwner}}
+            {{if .IsPublic}}
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full bg-muziboo-teal/80 text-muziboo-text backdrop-blur-sm">Live</span>
+            {{else}}
+            <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full bg-black/70 text-muziboo-text-muted backdrop-blur-sm border border-muziboo-border">Draft · only you</span>
+            {{end}}
         {{end}}
     </div>
     <!-- Info -->
@@ -61,6 +68,14 @@
                 </a>
             </div>
         </div>
+
+        {{if .IsOwner}}
+        <button onclick="handleVisibility('{{.ID}}', {{if .IsPublic}}false{{else}}true{{end}}, this)"
+                hx-boost="false"
+                class="mt-3 w-full text-xs font-semibold px-3 py-2 rounded-lg border transition-colors {{if .IsPublic}}border-muziboo-border text-muziboo-text-muted hover:border-muziboo-red/50 hover:text-muziboo-red{{else}}border-muziboo-teal/40 bg-muziboo-teal/10 text-muziboo-teal-light hover:bg-muziboo-teal/20{{end}}">
+            {{if .IsPublic}}Make Private{{else}}Set Live{{end}}
+        </button>
+        {{end}}
     </div>
 </div>
 
@@ -98,6 +113,35 @@ if (typeof handleVote === 'undefined') {
             }
         } catch (err) {
             console.error(err);
+        }
+    };
+}
+
+if (typeof handleVisibility === 'undefined') {
+    window.handleVisibility = async function(trackId, makePublic, btn) {
+        const token = await getToken();
+        if (!token) { window.location.href = '/app/login'; return; }
+
+        btn.disabled = true;
+        btn.textContent = makePublic ? 'Publishing…' : 'Unpublishing…';
+
+        try {
+            const res = await fetch(`/api/tracks/${trackId}/visibility`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_public: makePublic })
+            });
+
+            if (!res.ok) throw new Error('Failed to update visibility');
+
+            window.location.reload();
+        } catch (err) {
+            console.error(err);
+            btn.disabled = false;
+            btn.textContent = makePublic ? 'Set Live' : 'Make Private';
         }
     };
 }

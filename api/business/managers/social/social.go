@@ -3,6 +3,7 @@ package social
 
 import (
 	"fmt"
+	"strings"
 
 	engAccess "github.com/muziboo/api/business/access/engagement"
 	"github.com/muziboo/api/business/access/library"
@@ -31,14 +32,16 @@ func NewManager(p *profiles.Access, l *library.Access, eAcc *engAccess.Access, e
 	}
 }
 
-// GetProfileWithTracks retrieves a profile and all tracks associated with it.
-func (m *Manager) GetProfileWithTracks(username string) (profiles.Profile, []library.Track, error) {
+// GetProfileWithTracks retrieves a profile and its tracks. Drafts are
+// included only when the viewer is the profile owner.
+func (m *Manager) GetProfileWithTracks(username, viewerID string) (profiles.Profile, []library.Track, error) {
 	profile, err := m.profileAccess.GetByUsername(username)
 	if err != nil {
 		return profiles.Profile{}, nil, fmt.Errorf("profile access: %w", err)
 	}
 
-	tracks, err := m.libraryAccess.GetByUserID(profile.ID)
+	onlyPublic := viewerID == "" || viewerID != profile.ID
+	tracks, err := m.libraryAccess.GetByUserID(profile.ID, onlyPublic)
 	if err != nil {
 		return profile, []library.Track{}, nil // Non-fatal if tracks fail
 	}
@@ -66,7 +69,21 @@ func (m *Manager) GetOrCreateProfile(userID, email, metadataUsername, metadataDi
 		DisplayName: displayName,
 	})
 	if err != nil {
-		return profiles.Profile{}, fmt.Errorf("creating profile: %w", err)
+		// The username may already be taken (e.g. same email prefix as
+		// another user). Retry with a suffix derived from the user ID so
+		// signup never fails on a collision.
+		suffix := strings.ReplaceAll(userID, "-", "")
+		if len(suffix) > 6 {
+			suffix = suffix[:6]
+		}
+		newProfile, err = m.profileAccess.Create(profiles.NewProfile{
+			ID:          userID,
+			Username:    username + "_" + suffix,
+			DisplayName: displayName,
+		})
+		if err != nil {
+			return profiles.Profile{}, fmt.Errorf("creating profile: %w", err)
+		}
 	}
 
 	return newProfile, nil

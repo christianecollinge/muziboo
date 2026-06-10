@@ -49,8 +49,8 @@ type TemplateData struct {
 	Continuations  []TrackCardData
 	IsInvitedColab bool
 	// Messages
-	Messages        []msgAccess.Message
-	OtherUser       *profileAccess.Profile
+	Messages  []msgAccess.Message
+	OtherUser *profileAccess.Profile
 }
 
 // UserInfo is a simplified user struct for the nav bar.
@@ -75,6 +75,8 @@ type TrackCardData struct {
 	CommentCount   int
 	HasVoted       bool
 	IsColab        bool
+	IsPublic       bool
+	IsOwner        bool
 }
 
 // =========================================================================
@@ -124,7 +126,7 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, tracks, err := h.SocialManager.GetProfileWithTracks(profile.Username)
+	_, tracks, err := h.SocialManager.GetProfileWithTracks(profile.Username, userID)
 	if err != nil {
 		tracks = []libraryAccess.Track{}
 	}
@@ -153,6 +155,8 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 			CommentCount:   len(comments),
 			HasVoted:       hasVoted,
 			IsColab:        t.IsColab,
+			IsPublic:       t.IsPublic,
+			IsOwner:        true,
 		}
 	}
 
@@ -172,7 +176,7 @@ func (h *Handlers) Explore(w http.ResponseWriter, r *http.Request) {
 	limit := 20
 	offset := 0
 	if o := r.URL.Query().Get("offset"); o != "" {
-		if v, err := strconv.Atoi(o); err == nil {
+		if v, err := strconv.Atoi(o); err == nil && v >= 0 {
 			offset = v
 		}
 	}
@@ -264,18 +268,18 @@ func (h *Handlers) Upload(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) TrackDetail(w http.ResponseWriter, r *http.Request) {
 	trackID := chi.URLParam(r, "id")
 
-	track, err := h.LibraryManager.GetTrack(trackID)
+	var currentUserID string
+	if userID, ok := middleware.GetUserID(r.Context()); ok {
+		currentUserID = userID
+	}
+
+	track, err := h.LibraryManager.GetTrack(trackID, currentUserID)
 	if err != nil {
 		http.Error(w, "Track not found", http.StatusNotFound)
 		return
 	}
 
 	votes, comments, _ := h.SocialManager.GetTrackEngagement(trackID)
-
-	var currentUserID string
-	if userID, ok := middleware.GetUserID(r.Context()); ok {
-		currentUserID = userID
-	}
 
 	hasVoted := false
 	if currentUserID != "" {
@@ -301,6 +305,8 @@ func (h *Handlers) TrackDetail(w http.ResponseWriter, r *http.Request) {
 		CommentCount:   len(comments),
 		HasVoted:       hasVoted,
 		IsColab:        track.IsColab,
+		IsPublic:       track.IsPublic,
+		IsOwner:        currentUserID != "" && track.UserID == currentUserID,
 	}
 
 	var userInfo *UserInfo
@@ -377,15 +383,15 @@ func (h *Handlers) TrackDetail(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	profile, tracks, err := h.SocialManager.GetProfileWithTracks(username)
-	if err != nil {
-		http.Error(w, "User not found", http.StatusNotFound)
-		return
-	}
-
 	var currentUserID string
 	if userID, ok := middleware.GetUserID(r.Context()); ok {
 		currentUserID = userID
+	}
+
+	profile, tracks, err := h.SocialManager.GetProfileWithTracks(username, currentUserID)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
 	}
 
 	cards := make([]TrackCardData, len(tracks))
@@ -414,6 +420,8 @@ func (h *Handlers) UserProfile(w http.ResponseWriter, r *http.Request) {
 			CommentCount:   len(comments),
 			HasVoted:       hasVoted,
 			IsColab:        t.IsColab,
+			IsPublic:       t.IsPublic,
+			IsOwner:        currentUserID != "" && t.UserID == currentUserID,
 		}
 	}
 

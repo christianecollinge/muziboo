@@ -106,10 +106,15 @@ func main() {
 	// JSON API routes (unchanged)
 	// =====================================================================
 
-	// Public API routes
-	r.Get("/api/tracks", trackHandlers.List)
-	r.Get("/api/tracks/{id}", trackHandlers.GetByID)
-	r.Get("/api/profiles/{username}", profileHandlers.GetByUsername)
+	// Public API routes. OptionalAuth identifies the viewer so owners can
+	// see their own drafts; unauthenticated requests still work.
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.OptionalAuth(supa))
+
+		r.Get("/api/tracks", trackHandlers.List)
+		r.Get("/api/tracks/{id}", trackHandlers.GetByID)
+		r.Get("/api/profiles/{username}", profileHandlers.GetByUsername)
+	})
 
 	// Authenticated API routes
 	r.Group(func(r chi.Router) {
@@ -117,6 +122,7 @@ func main() {
 
 		r.Post("/api/tracks", trackHandlers.Create)
 		r.Delete("/api/tracks/{id}", trackHandlers.Delete)
+		r.Post("/api/tracks/{id}/visibility", trackHandlers.SetVisibility)
 		r.Post("/api/tracks/{id}/vote", profileHandlers.Vote)
 		r.Post("/api/tracks/{id}/comments", profileHandlers.Comment)
 
@@ -140,7 +146,7 @@ func main() {
 	_, filename, _, _ := runtime.Caller(0)
 	apiRoot := filepath.Join(filepath.Dir(filename), "..", "..")
 	publicDir := filepath.Join(apiRoot, "..", "public")
-	
+
 	r.Get("/*", func(w http.ResponseWriter, req *http.Request) {
 		path := req.URL.Path
 		fullPath := filepath.Join(publicDir, path)
@@ -151,16 +157,17 @@ func main() {
 		http.NotFound(w, req)
 	})
 
-	// Public pages (no auth required)
-	r.Get("/app/login", pageHandlers.Login)
-	r.Get("/app/signup", pageHandlers.Signup)
-	r.Get("/app/explore", pageHandlers.Explore)
-	r.Get("/app/tracks/{id}", pageHandlers.TrackDetail)
-	r.Get("/app/user/{username}", pageHandlers.UserProfile)
-
-	// Authenticated pages
+	// App pages. OptionalAuth makes the viewer available everywhere
+	// (nav state, own drafts, vote highlighting); pages that require a
+	// login redirect to /app/login themselves.
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.OptionalAuth(supa))
+
+		r.Get("/app/login", pageHandlers.Login)
+		r.Get("/app/signup", pageHandlers.Signup)
+		r.Get("/app/explore", pageHandlers.Explore)
+		r.Get("/app/tracks/{id}", pageHandlers.TrackDetail)
+		r.Get("/app/user/{username}", pageHandlers.UserProfile)
 
 		r.Get("/app/dashboard", pageHandlers.Dashboard)
 		r.Get("/app/upload", pageHandlers.Upload)

@@ -40,10 +40,12 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetByUsername returns a public profile with their tracks.
+// Drafts are included only when the requester is the profile owner.
 func (h *Handlers) GetByUsername(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
+	viewerID, _ := middleware.GetUserID(r.Context())
 
-	profile, tracks, err := h.SocialManager.GetProfileWithTracks(username)
+	profile, tracks, err := h.SocialManager.GetProfileWithTracks(username, viewerID)
 	if err != nil {
 		web.RespondError(w, "user not found", http.StatusNotFound)
 		return

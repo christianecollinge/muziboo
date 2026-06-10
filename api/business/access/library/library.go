@@ -11,17 +11,18 @@ import (
 
 // Track represents a music track.
 type Track struct {
-	ID          string `json:"id"`
-	UserID      string `json:"user_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Genre       string `json:"genre"`
-	AudioURL    string `json:"audio_url"`
-	ArtworkURL  string `json:"artwork_url"`
-	Duration    int    `json:"duration"`
-	CreatedAt   string `json:"created_at"`
+	ID            string `json:"id"`
+	UserID        string `json:"user_id"`
+	Title         string `json:"title"`
+	Description   string `json:"description"`
+	Genre         string `json:"genre"`
+	AudioURL      string `json:"audio_url"`
+	ArtworkURL    string `json:"artwork_url"`
+	Duration      int    `json:"duration"`
+	CreatedAt     string `json:"created_at"`
 	IsColab       bool   `json:"is_colab"`
 	ParentTrackID string `json:"parent_track_id,omitempty"`
+	IsPublic      bool   `json:"is_public"`
 }
 
 // TrackWithProfile is a track with its owner's profile info.
@@ -39,15 +40,16 @@ type TrackProfile struct {
 
 // NewTrack is the data needed to create a track.
 type NewTrack struct {
-	UserID      string `json:"user_id"`
-	Title       string `json:"title"`
-	Description string `json:"description,omitempty"`
-	Genre       string `json:"genre,omitempty"`
-	AudioURL    string `json:"audio_url"`
-	ArtworkURL  string `json:"artwork_url,omitempty"`
+	UserID        string `json:"user_id"`
+	Title         string `json:"title"`
+	Description   string `json:"description,omitempty"`
+	Genre         string `json:"genre,omitempty"`
+	AudioURL      string `json:"audio_url"`
+	ArtworkURL    string `json:"artwork_url,omitempty"`
 	Duration      int    `json:"duration,omitempty"`
 	IsColab       bool   `json:"is_colab"`
 	ParentTrackID string `json:"parent_track_id,omitempty"`
+	IsPublic      bool   `json:"is_public"`
 }
 
 // Stem represents an individual audio layer of a Colab project.
@@ -90,10 +92,10 @@ func NewAccess(client *supabase.Client) *Access {
 	return &Access{client: client}
 }
 
-// List returns all tracks ordered by newest first, with profile info.
+// List returns all live tracks ordered by newest first, with profile info.
 func (a *Access) List(limit, offset int) ([]TrackWithProfile, error) {
 	query := fmt.Sprintf(
-		"select=*,profiles(username,display_name,avatar_url)&order=created_at.desc&limit=%d&offset=%d",
+		"select=*,profiles(username,display_name,avatar_url)&is_public=eq.true&order=created_at.desc&limit=%d&offset=%d",
 		limit, offset,
 	)
 
@@ -134,11 +136,16 @@ func (a *Access) GetByID(id string) (TrackWithProfile, error) {
 	return tracks[0], nil
 }
 
-// GetByUserID returns all tracks for a specific user.
-func (a *Access) GetByUserID(userID string) ([]Track, error) {
+// GetByUserID returns tracks for a specific user. When onlyPublic is true,
+// drafts are excluded (use for anyone who is not the owner).
+func (a *Access) GetByUserID(userID string, onlyPublic bool) ([]Track, error) {
+	visibility := ""
+	if onlyPublic {
+		visibility = "&is_public=eq.true"
+	}
 	query := fmt.Sprintf(
-		"select=*&user_id=eq.%s&order=created_at.desc",
-		url.QueryEscape(userID),
+		"select=*&user_id=eq.%s%s&order=created_at.desc",
+		url.QueryEscape(userID), visibility,
 	)
 
 	data, err := a.client.Query("tracks", query)
@@ -185,6 +192,31 @@ func (a *Access) Delete(trackID, userID string) error {
 	}
 
 	return nil
+}
+
+// SetVisibility updates the is_public flag of a track owned by userID.
+// Returns an error if the track doesn't exist or isn't owned by the user.
+func (a *Access) SetVisibility(trackID, userID string, isPublic bool) (Track, error) {
+	filter := fmt.Sprintf("id=eq.%s&user_id=eq.%s",
+		url.QueryEscape(trackID),
+		url.QueryEscape(userID),
+	)
+
+	data, err := a.client.Update("tracks", filter, map[string]bool{"is_public": isPublic})
+	if err != nil {
+		return Track{}, fmt.Errorf("updating track visibility: %w", err)
+	}
+
+	var tracks []Track
+	if err := json.Unmarshal(data, &tracks); err != nil {
+		return Track{}, fmt.Errorf("decoding track: %w", err)
+	}
+
+	if len(tracks) == 0 {
+		return Track{}, fmt.Errorf("track not found")
+	}
+
+	return tracks[0], nil
 }
 
 // GetStems returns stems for a specific track.
@@ -241,10 +273,10 @@ func (a *Access) AddInvites(ni []NewTrackInvite) error {
 	return nil
 }
 
-// GetContinuations returns tracks that branched off a specific track.
+// GetContinuations returns live tracks that branched off a specific track.
 func (a *Access) GetContinuations(parentTrackID string) ([]TrackWithProfile, error) {
 	query := fmt.Sprintf(
-		"select=*,profiles(username,display_name,avatar_url)&parent_track_id=eq.%s&order=created_at.desc",
+		"select=*,profiles(username,display_name,avatar_url)&parent_track_id=eq.%s&is_public=eq.true&order=created_at.desc",
 		url.QueryEscape(parentTrackID),
 	)
 
@@ -259,4 +291,3 @@ func (a *Access) GetContinuations(parentTrackID string) ([]TrackWithProfile, err
 	}
 	return tracks, nil
 }
-

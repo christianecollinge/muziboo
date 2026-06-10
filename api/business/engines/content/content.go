@@ -19,16 +19,16 @@ func NewEngine() *Engine {
 
 // AllowedAudioTypes are the permitted audio MIME types.
 var allowedAudioTypes = map[string]bool{
-	"audio/mpeg":      true,
-	"audio/wav":       true,
-	"audio/x-wav":     true,
-	"audio/flac":      true,
-	"audio/x-flac":    true,
-	"audio/mp4":       true,
-	"audio/x-m4a":     true,
-	"audio/ogg":       true,
-	"audio/aac":       true,
-	"audio/webm":      true,
+	"audio/mpeg":   true,
+	"audio/wav":    true,
+	"audio/x-wav":  true,
+	"audio/flac":   true,
+	"audio/x-flac": true,
+	"audio/mp4":    true,
+	"audio/x-m4a":  true,
+	"audio/ogg":    true,
+	"audio/aac":    true,
+	"audio/webm":   true,
 }
 
 // AllowedImageTypes are the permitted image MIME types.

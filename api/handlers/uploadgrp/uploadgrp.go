@@ -61,6 +61,7 @@ func (h *Handlers) UploadTrack(w http.ResponseWriter, r *http.Request) {
 
 	isColab := r.FormValue("is_colab") == "true"
 	parentTrackID := r.FormValue("parent_track_id")
+	isPublic := r.FormValue("is_public") == "true"
 
 	invitedUsersRaw := r.FormValue("invited_users")
 	var invitedUsers []string
@@ -72,7 +73,7 @@ func (h *Handlers) UploadTrack(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			// Resolve username to profile ID
-			if p, _, err := h.SocialManager.GetProfileWithTracks(un); err == nil {
+			if p, err := h.SocialManager.GetProfileByUsername(un); err == nil {
 				invitedUsers = append(invitedUsers, p.ID)
 			}
 		}
@@ -128,6 +129,7 @@ func (h *Handlers) UploadTrack(w http.ResponseWriter, r *http.Request) {
 		ArtworkSize:   artworkSize,
 		IsColab:       isColab,
 		ParentTrackID: parentTrackID,
+		IsPublic:      isPublic,
 		Stems:         stems,
 		InvitedUsers:  invitedUsers,
 	})

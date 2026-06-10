@@ -8,7 +8,7 @@
         <div id="upload-success" class="hidden mb-6 bg-muziboo-teal/10 border border-muziboo-teal/30 rounded-lg px-4 py-3">
             <p class="text-muziboo-teal-light font-medium">Track uploaded!</p>
             <p class="text-muziboo-text-muted text-sm mt-1">
-                Your track is now live.
+                <span id="upload-success-detail">Your track was saved as a private draft. Set it live from your dashboard whenever you're ready.</span>
                 <a href="/app/dashboard" class="text-muziboo-gold hover:underline">View your dashboard</a>
             </p>
         </div>
@@ -71,6 +71,15 @@
                 <textarea id="description" name="description" rows="3"
                           placeholder="Tell us about this track... What's the story? What gear did you use?"
                           class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors resize-none"></textarea>
+            </div>
+
+            <!-- Visibility -->
+            <div class="border-t border-muziboo-border pt-6 mt-6">
+                <div class="flex items-center">
+                    <input type="checkbox" id="is-public" class="w-5 h-5 rounded border-muziboo-border text-muziboo-gold focus:ring-muziboo-gold bg-muziboo-bg">
+                    <label for="is-public" class="ml-3 block text-base font-medium text-muziboo-text">Set live immediately</label>
+                </div>
+                <p class="text-sm text-muziboo-text-muted mt-2">Leave unchecked to keep this track as a private draft only you can see. You can set it live from your dashboard at any time.</p>
             </div>
 
             <!-- Colab Features -->
@@ -216,6 +225,9 @@ async function handleUpload(e) {
             formData.append('artwork', artworkFile);
         }
 
+        const isPublic = document.getElementById('is-public').checked;
+        formData.append('is_public', isPublic ? 'true' : 'false');
+
         const isColab = document.getElementById('is-colab').checked;
         if (isColab) {
             formData.append('is_colab', 'true');
@@ -259,6 +271,9 @@ async function handleUpload(e) {
         console.log('Upload successful:', data);
         
         // 1. Show success message
+        document.getElementById('upload-success-detail').textContent = isPublic
+            ? 'Your track is now live for everyone to hear.'
+            : "Your track was saved as a private draft. Set it live from your dashboard whenever you're ready.";
         successEl.classList.remove('hidden');
         
         // 2. Scroll to message

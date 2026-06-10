@@ -352,7 +352,9 @@
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
                 const token = session?.access_token;
                 if (token) {
-                    document.cookie = `sb-access-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+                    // Secure is omitted on plain-HTTP localhost so local dev keeps working.
+                    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+                    document.cookie = `sb-access-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secure}`;
                     if (window.location.pathname === '/app/login' || window.location.pathname === '/app/signup') {
                         window.location.href = '/app/dashboard';
                     }

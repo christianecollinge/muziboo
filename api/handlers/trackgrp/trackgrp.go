@@ -43,11 +43,40 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 	web.Respond(w, list, http.StatusOK)
 }
 
-// GetByID returns a single track (public).
+// GetByID returns a single track (public; drafts only for their owner).
 func (h *Handlers) GetByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	track, err := h.LibraryManager.GetTrack(id)
+	viewerID, _ := middleware.GetUserID(r.Context())
+
+	track, err := h.LibraryManager.GetTrack(id, viewerID)
+	if err != nil {
+		web.RespondError(w, "track not found", http.StatusNotFound)
+		return
+	}
+
+	web.Respond(w, track, http.StatusOK)
+}
+
+// SetVisibility publishes or unpublishes a track (authenticated, owner only).
+func (h *Handlers) SetVisibility(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.GetUserID(r.Context())
+	if !ok {
+		web.RespondError(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var body struct {
+		IsPublic bool `json:"is_public"`
+	}
+	if err := web.Decode(r, &body); err != nil {
+		web.RespondError(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	track, err := h.LibraryManager.SetTrackVisibility(id, userID, body.IsPublic)
 	if err != nil {
 		web.RespondError(w, "track not found", http.StatusNotFound)
 		return
