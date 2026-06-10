@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -204,6 +205,80 @@ func (c *Client) UploadFile(bucket, path string, reader io.Reader, contentType s
 
 	publicURL := fmt.Sprintf("%s/storage/v1/object/public/%s/%s", c.URL, bucket, path)
 	return publicURL, nil
+}
+
+// SignedURLTTL is how long signed media URLs remain valid, in seconds.
+// Long enough for a listening session, short enough that shared links die.
+const SignedURLTTL = 6 * 60 * 60
+
+type signedURLResult struct {
+	Path      string `json:"path"`
+	SignedURL string `json:"signedURL"`
+}
+
+// SignURLs creates time-limited download URLs for objects in a bucket.
+// Returns a map of object path -> absolute signed URL. Paths that fail to
+// sign are simply absent from the map.
+func (c *Client) SignURLs(bucket string, paths []string, expiresIn int) (map[string]string, error) {
+	if len(paths) == 0 {
+		return map[string]string{}, nil
+	}
+
+	payload, err := json.Marshal(map[string]any{
+		"expiresIn": expiresIn,
+		"paths":     paths,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("marshaling sign request: %w", err)
+	}
+
+	url := fmt.Sprintf("%s/storage/v1/object/sign/%s", c.URL, bucket)
+
+	req, err := http.NewRequest("POST", url, bytes.NewReader(payload))
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+
+	req.Header.Set("apikey", c.ServiceRoleKey)
+	req.Header.Set("Authorization", "Bearer "+c.ServiceRoleKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("executing request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response: %w", err)
+	}
+
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("storage sign error (%d): %s", resp.StatusCode, string(body))
+	}
+
+	var results []signedURLResult
+	if err := json.Unmarshal(body, &results); err != nil {
+		return nil, fmt.Errorf("decoding sign response: %w", err)
+	}
+
+	signed := make(map[string]string, len(results))
+	for _, r := range results {
+		if r.SignedURL == "" {
+			continue
+		}
+		u := r.SignedURL
+		if !strings.HasPrefix(u, "http") {
+			if !strings.HasPrefix(u, "/") {
+				u = "/" + u
+			}
+			u = c.URL + "/storage/v1" + u
+		}
+		signed[r.Path] = u
+	}
+
+	return signed, nil
 }
 
 // DeleteFile deletes a file from a Supabase Storage bucket.

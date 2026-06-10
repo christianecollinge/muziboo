@@ -4,7 +4,9 @@ package library
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/url"
+	"strings"
 
 	"github.com/muziboo/api/foundation/supabase"
 )
@@ -92,6 +94,66 @@ func NewAccess(client *supabase.Client) *Access {
 	return &Access{client: client}
 }
 
+// objectPath extracts the bucket-relative object path from a stored
+// public-form storage URL. Returns "" if the URL doesn't point at the bucket.
+func objectPath(rawURL, bucket string) string {
+	marker := "/storage/v1/object/public/" + bucket + "/"
+	idx := strings.Index(rawURL, marker)
+	if idx < 0 {
+		return ""
+	}
+	return rawURL[idx+len(marker):]
+}
+
+// signURLs replaces stored public-form storage URLs with time-limited signed
+// URLs so files in private buckets stay playable. URLs that don't point at
+// the bucket are left untouched; on signing failure the originals remain
+// (playback will fail, but pages still render).
+func (a *Access) signURLs(bucket string, urls []*string) {
+	ptrsByPath := make(map[string][]*string)
+	var paths []string
+	for _, u := range urls {
+		if u == nil || *u == "" {
+			continue
+		}
+		p := objectPath(*u, bucket)
+		if p == "" {
+			continue
+		}
+		if _, seen := ptrsByPath[p]; !seen {
+			paths = append(paths, p)
+		}
+		ptrsByPath[p] = append(ptrsByPath[p], u)
+	}
+
+	if len(paths) == 0 {
+		return
+	}
+
+	signed, err := a.client.SignURLs(bucket, paths, supabase.SignedURLTTL)
+	if err != nil {
+		log.Printf("signing %s urls: %v", bucket, err)
+		return
+	}
+
+	for p, ptrs := range ptrsByPath {
+		if s, ok := signed[p]; ok {
+			for _, ptr := range ptrs {
+				*ptr = s
+			}
+		}
+	}
+}
+
+// signTrackAudio signs the audio URLs of a slice of tracks in one call.
+func (a *Access) signTrackAudio(tracks []Track) {
+	urls := make([]*string, 0, len(tracks))
+	for i := range tracks {
+		urls = append(urls, &tracks[i].AudioURL)
+	}
+	a.signURLs("audio", urls)
+}
+
 // List returns all live tracks ordered by newest first, with profile info.
 func (a *Access) List(limit, offset int) ([]TrackWithProfile, error) {
 	query := fmt.Sprintf(
@@ -108,6 +170,12 @@ func (a *Access) List(limit, offset int) ([]TrackWithProfile, error) {
 	if err := json.Unmarshal(data, &tracks); err != nil {
 		return nil, fmt.Errorf("decoding tracks: %w", err)
 	}
+
+	urls := make([]*string, 0, len(tracks))
+	for i := range tracks {
+		urls = append(urls, &tracks[i].AudioURL)
+	}
+	a.signURLs("audio", urls)
 
 	return tracks, nil
 }
@@ -132,6 +200,8 @@ func (a *Access) GetByID(id string) (TrackWithProfile, error) {
 	if len(tracks) == 0 {
 		return TrackWithProfile{}, fmt.Errorf("track not found")
 	}
+
+	a.signURLs("audio", []*string{&tracks[0].AudioURL})
 
 	return tracks[0], nil
 }
@@ -158,6 +228,8 @@ func (a *Access) GetByUserID(userID string, onlyPublic bool) ([]Track, error) {
 		return nil, fmt.Errorf("decoding tracks: %w", err)
 	}
 
+	a.signTrackAudio(tracks)
+
 	return tracks, nil
 }
 
@@ -176,6 +248,8 @@ func (a *Access) Create(nt NewTrack) (Track, error) {
 	if len(tracks) == 0 {
 		return Track{}, fmt.Errorf("no track returned after insert")
 	}
+
+	a.signTrackAudio(tracks[:1])
 
 	return tracks[0], nil
 }
@@ -231,6 +305,13 @@ func (a *Access) GetStems(trackID string) ([]Stem, error) {
 	if err := json.Unmarshal(data, &stems); err != nil {
 		return nil, fmt.Errorf("decoding stems: %w", err)
 	}
+
+	urls := make([]*string, 0, len(stems))
+	for i := range stems {
+		urls = append(urls, &stems[i].AudioURL)
+	}
+	a.signURLs("stems", urls)
+
 	return stems, nil
 }
 
@@ -289,5 +370,12 @@ func (a *Access) GetContinuations(parentTrackID string) ([]TrackWithProfile, err
 	if err := json.Unmarshal(data, &tracks); err != nil {
 		return nil, fmt.Errorf("decoding continuations: %w", err)
 	}
+
+	urls := make([]*string, 0, len(tracks))
+	for i := range tracks {
+		urls = append(urls, &tracks[i].AudioURL)
+	}
+	a.signURLs("audio", urls)
+
 	return tracks, nil
 }
