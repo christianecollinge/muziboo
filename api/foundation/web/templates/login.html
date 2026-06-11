@@ -53,6 +53,7 @@
                 <input id="password" type="password" required placeholder="Your password"
                        class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
             </div>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADi2hWWWt3MZySzl" data-action="turnstile-spin-v1" data-theme="dark"></div>
             <button type="submit" id="login-btn"
                     class="w-full bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-3.5 rounded-lg hover:bg-muziboo-text hover:text-muziboo-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Log In
@@ -66,6 +67,7 @@
                 <input id="magic-email" type="email" required placeholder="you@example.com"
                        class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
             </div>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADi2hWWWt3MZySzl" data-action="turnstile-spin-v1" data-theme="dark"></div>
             <button type="submit" id="magic-btn"
                     class="w-full bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-3.5 rounded-lg hover:bg-muziboo-text hover:text-muziboo-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Send Magic Link
@@ -82,6 +84,7 @@
     </div>
 </div>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
 window.showMagicLink = function() {
     document.getElementById('login-form').classList.add('hidden');

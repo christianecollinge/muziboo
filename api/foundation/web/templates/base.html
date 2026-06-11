@@ -220,26 +220,45 @@
         }
     }
 
+    // Turnstile tokens are single-use: read one per submit, reset the widget on failure.
+    window.getCaptchaToken = function(form) {
+        const input = form.querySelector('input[name="cf-turnstile-response"]');
+        return input ? input.value : '';
+    }
+    window.resetCaptcha = function(form) {
+        const widget = form.querySelector('.cf-turnstile');
+        if (widget && window.turnstile) window.turnstile.reset(widget);
+    }
+
     window.handleLogin = async function(e) {
         if (e && e.preventDefault) e.preventDefault();
         const form = e.currentTarget || e.target;
         const client = getSupabase();
         if (!client) { alert('Auth service still loading...'); return; }
-        
+
         const btn = form.querySelector('button[type="submit"]');
         const errEl = document.getElementById('login-error');
         if (errEl) errEl.classList.add('hidden');
-        btn.disabled = true;
-        btn.textContent = 'Logging in…';
 
         const email = form.querySelector('#email').value;
         const password = form.querySelector('#password').value;
+        const captchaToken = getCaptchaToken(form);
+        if (!captchaToken) {
+            if (errEl) {
+                errEl.textContent = 'Please complete the verification challenge first.';
+                errEl.classList.remove('hidden');
+            }
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Logging in…';
 
         try {
-            const { error } = await client.auth.signInWithPassword({ email, password });
+            const { error } = await client.auth.signInWithPassword({ email, password, options: { captchaToken } });
             if (error) throw error;
             window.location.href = '/app/dashboard';
         } catch (err) {
+            resetCaptcha(form);
             if (errEl) {
                 errEl.textContent = err.message || 'An unexpected error occurred.';
                 errEl.classList.remove('hidden');
@@ -264,18 +283,26 @@
         const successEl = document.getElementById('signup-success');
         if (errEl) errEl.classList.add('hidden');
         if (successEl) successEl.classList.add('hidden');
-        btn.disabled = true;
-        btn.textContent = 'Creating account…';
 
         const username = form.querySelector('#username').value;
         const email = form.querySelector('#email').value;
         const password = form.querySelector('#password').value;
+        const captchaToken = getCaptchaToken(form);
+        if (!captchaToken) {
+            if (errEl) {
+                errEl.textContent = 'Please complete the verification challenge first.';
+                errEl.classList.remove('hidden');
+            }
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Creating account…';
 
         try {
             const { data, error } = await client.auth.signUp({
                 email,
                 password,
-                options: { data: { username: username, display_name: username } }
+                options: { data: { username: username, display_name: username }, captchaToken }
             });
             if (error) throw error;
 
@@ -296,6 +323,7 @@
             }
             window.location.href = '/app/dashboard';
         } catch (err) {
+            resetCaptcha(form);
             if (errEl) {
                 errEl.textContent = err.message || 'An unexpected error occurred.';
                 errEl.classList.remove('hidden');
@@ -320,15 +348,25 @@
 
         if (errEl) errEl.classList.add('hidden');
         if (successEl) successEl.classList.add('hidden');
+
+        const captchaToken = getCaptchaToken(form);
+        if (!captchaToken) {
+            if (errEl) {
+                errEl.textContent = 'Please complete the verification challenge first.';
+                errEl.classList.remove('hidden');
+            }
+            return;
+        }
         btn.disabled = true;
         btn.textContent = 'Sending…';
 
         try {
             const { error } = await client.auth.signInWithOtp({
                 email,
-                options: { emailRedirectTo: window.location.origin + '/app/dashboard' }
+                options: { emailRedirectTo: window.location.origin + '/app/dashboard', captchaToken }
             });
             if (error) throw error;
+            resetCaptcha(form);
             if (successEl) {
                 successEl.textContent = '✓ Magic link sent! Check your email inbox.';
                 successEl.classList.remove('hidden');
@@ -336,6 +374,7 @@
             btn.disabled = false;
             btn.textContent = 'Send Magic Link';
         } catch (err) {
+            resetCaptcha(form);
             if (errEl) {
                 errEl.textContent = err.message || 'Failed to send magic link.';
                 errEl.classList.remove('hidden');
