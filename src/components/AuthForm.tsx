@@ -144,7 +144,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 				<p className="mt-6 text-center text-muziboo-text-muted text-sm">
 					{mode === "login" ? (
 						<>
-							Don't have an account?{" "}
+							Don&apos;t have an account?{" "}
 							<a
 								href="/signup"
 								className="text-muziboo-gold hover:text-muziboo-text transition-colors"

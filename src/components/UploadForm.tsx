@@ -97,8 +97,8 @@ export default function UploadForm() {
 					Upload a Track
 				</h1>
 				<p className="text-muziboo-text-muted mb-8">
-					Share what you're working on. Demos, fragments, works in progress —
-					everything is welcome.
+					Share what you&apos;re working on. Demos, fragments, works in progress
+					— everything is welcome.
 				</p>
 
 				{success && (
