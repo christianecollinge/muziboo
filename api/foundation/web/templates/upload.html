@@ -1,304 +1,484 @@
 {{define "content"}}
 <div class="max-w-2xl mx-auto px-4 py-8">
-    <div class="bg-muziboo-bg-softer rounded-xl p-8 border border-muziboo-border">
-        <h1 class="text-3xl font-semibold text-muziboo-text mb-2">Upload a Track</h1>
-        <p class="text-muziboo-text-muted mb-8">Share what you're working on. Demos, fragments, works in progress — everything is welcome.</p>
+	<div class="bg-muziboo-bg-softer rounded-xl p-8 border border-muziboo-border">
+		<h1 class="text-3xl font-semibold text-muziboo-text mb-2">
+			Upload a Track
+		</h1>
+		<p class="text-muziboo-text-muted mb-8">
+			Share what you're working on. Demos, fragments, works in progress —
+			everything is welcome.
+		</p>
 
-        <div id="upload-error" class="hidden mb-4 text-muziboo-red text-sm bg-muziboo-red/10 rounded-lg px-4 py-3"></div>
-        <div id="upload-success" class="hidden mb-6 bg-muziboo-teal/10 border border-muziboo-teal/30 rounded-lg px-4 py-3">
-            <p class="text-muziboo-teal-light font-medium">Track uploaded!</p>
-            <p class="text-muziboo-text-muted text-sm mt-1">
-                <span id="upload-success-detail">Your track was saved as a private draft. Set it live from your dashboard whenever you're ready.</span>
-                <a href="/app/dashboard" class="text-muziboo-gold hover:underline">View your dashboard</a>
-            </p>
-        </div>
+		<div
+			id="upload-error"
+			class="hidden mb-4 text-muziboo-red text-sm bg-muziboo-red/10 rounded-lg px-4 py-3"
+		></div>
+		<div
+			id="upload-success"
+			class="hidden mb-6 bg-muziboo-teal/10 border border-muziboo-teal/30 rounded-lg px-4 py-3"
+		>
+			<p class="text-muziboo-teal-light font-medium">Track uploaded!</p>
+			<p class="text-muziboo-text-muted text-sm mt-1">
+				<span id="upload-success-detail"
+					>Your track was saved as a private draft. Set it live from your
+					dashboard whenever you're ready.</span
+				>
+				<a href="/app/dashboard" class="text-muziboo-gold hover:underline"
+					>View your dashboard</a
+				>
+			</p>
+		</div>
 
-        <form id="upload-form" class="space-y-6" onsubmit="handleUpload(event)" hx-disable>
-            <!-- Audio file -->
-            <div>
-                <label class="block text-sm font-medium text-muziboo-text mb-2">Audio File *</label>
-                <input id="audio-file" name="audio" type="file" accept="audio/*" class="hidden" onchange="updateAudioLabel(this)" />
-                <button type="button" onclick="document.getElementById('audio-file').click()"
-                        id="audio-drop"
-                        class="w-full border-2 border-dashed border-muziboo-border rounded-xl py-8 px-4 text-center hover:border-muziboo-gold/50 transition-colors group">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto text-muziboo-text-muted/50 mb-2 group-hover:text-muziboo-gold transition-colors">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                    <p id="audio-label" class="text-muziboo-text-muted group-hover:text-muziboo-text transition-colors">Click to select audio file</p>
-                    <p class="text-muziboo-text-muted/50 text-sm mt-1">MP3, WAV, FLAC, M4A, OGG · Max 50 MB</p>
-                </button>
-            </div>
+		<form
+			id="upload-form"
+			class="space-y-6"
+			onsubmit="handleUpload(event)"
+			hx-disable
+		>
+			<!-- Audio file -->
+			<div>
+				<label class="block text-sm font-medium text-muziboo-text mb-2"
+					>Audio File *</label
+				>
+				<input
+					id="audio-file"
+					name="audio"
+					type="file"
+					accept="audio/*"
+					class="hidden"
+					onchange="updateAudioLabel(this)"
+				/>
+				<button
+					type="button"
+					onclick="document.getElementById('audio-file').click()"
+					id="audio-drop"
+					class="w-full border-2 border-dashed border-muziboo-border rounded-xl py-8 px-4 text-center hover:border-muziboo-gold/50 transition-colors group"
+				>
+					<svg
+						width="32"
+						height="32"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						class="mx-auto text-muziboo-text-muted/50 mb-2 group-hover:text-muziboo-gold transition-colors"
+					>
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+						<polyline points="17 8 12 3 7 8" />
+						<line x1="12" y1="3" x2="12" y2="15" />
+					</svg>
+					<p
+						id="audio-label"
+						class="text-muziboo-text-muted group-hover:text-muziboo-text transition-colors"
+					>
+						Click to select audio file
+					</p>
+					<p class="text-muziboo-text-muted/50 text-sm mt-1">
+						MP3, WAV, FLAC, M4A, OGG · Max 50 MB
+					</p>
+				</button>
+			</div>
 
-            <!-- Artwork -->
-            <div>
-                <label class="block text-sm font-medium text-muziboo-text mb-2">Artwork (optional)</label>
-                <input id="artwork-file" name="artwork" type="file" accept="image/*" class="hidden" onchange="previewArtwork(this)" />
-                <button type="button" onclick="document.getElementById('artwork-file').click()"
-                        class="border-2 border-dashed border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold/50 transition-colors group w-40 h-40">
-                    <div id="artwork-preview-container" class="w-full h-full flex flex-col items-center justify-center">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-text-muted/50 mb-1 group-hover:text-muziboo-gold transition-colors">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
-                        </svg>
-                        <span class="text-xs text-muziboo-text-muted/50 group-hover:text-muziboo-text-muted transition-colors">Add artwork</span>
-                    </div>
-                </button>
-            </div>
+			<!-- Artwork -->
+			<div>
+				<label class="block text-sm font-medium text-muziboo-text mb-2"
+					>Artwork (optional)</label
+				>
+				<input
+					id="artwork-file"
+					name="artwork"
+					type="file"
+					accept="image/*"
+					class="hidden"
+					onchange="previewArtwork(this)"
+				/>
+				<button
+					type="button"
+					onclick="document.getElementById('artwork-file').click()"
+					class="border-2 border-dashed border-muziboo-border rounded-xl overflow-hidden hover:border-muziboo-gold/50 transition-colors group w-40 h-40"
+				>
+					<div
+						id="artwork-preview-container"
+						class="w-full h-full flex flex-col items-center justify-center"
+					>
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							class="text-muziboo-text-muted/50 mb-1 group-hover:text-muziboo-gold transition-colors"
+						>
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+							<circle cx="8.5" cy="8.5" r="1.5" />
+							<polyline points="21 15 16 10 5 21" />
+						</svg>
+						<span
+							class="text-xs text-muziboo-text-muted/50 group-hover:text-muziboo-text-muted transition-colors"
+							>Add artwork</span
+						>
+					</div>
+				</button>
+			</div>
 
-            <!-- Title -->
-            <div>
-                <label for="title" class="block text-sm font-medium text-muziboo-text mb-1.5">Title *</label>
-                <input id="title" name="title" type="text" required placeholder="What's this track called?"
-                       class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
-            </div>
+			<!-- Title -->
+			<div>
+				<label
+					for="title"
+					class="block text-sm font-medium text-muziboo-text mb-1.5"
+					>Title *</label
+				>
+				<input
+					id="title"
+					name="title"
+					type="text"
+					required
+					placeholder="What's this track called?"
+					class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors"
+				/>
+			</div>
 
-            <!-- Genre -->
-            <div>
-                <label for="genre" class="block text-sm font-medium text-muziboo-text mb-1.5">Genre</label>
-                <select id="genre" name="genre"
-                        class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text focus:outline-none focus:border-muziboo-gold transition-colors">
-                    <option value="">Select genre (optional)</option>
-                    <option>Rock</option><option>Jazz</option><option>Classical</option>
-                    <option>Electronic</option><option>Hip Hop</option><option>Folk</option>
-                    <option>Blues</option><option>Metal</option><option>Punk</option>
-                    <option>Ambient</option><option>Experimental</option><option>World</option>
-                    <option>Singer-Songwriter</option><option>Lo-Fi</option><option>Other</option>
-                </select>
-            </div>
+			<!-- Genre -->
+			<div>
+				<label
+					for="genre"
+					class="block text-sm font-medium text-muziboo-text mb-1.5"
+					>Genre</label
+				>
+				<select
+					id="genre"
+					name="genre"
+					class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text focus:outline-none focus:border-muziboo-gold transition-colors"
+				>
+					<option value="">Select genre (optional)</option>
+					<option>Rock</option>
+					<option>Jazz</option>
+					<option>Classical</option>
+					<option>Electronic</option>
+					<option>Hip Hop</option>
+					<option>Folk</option>
+					<option>Blues</option>
+					<option>Metal</option>
+					<option>Punk</option>
+					<option>Ambient</option>
+					<option>Experimental</option>
+					<option>World</option>
+					<option>Singer-Songwriter</option>
+					<option>Lo-Fi</option>
+					<option>Other</option>
+				</select>
+			</div>
 
-            <!-- Description -->
-            <div>
-                <label for="description" class="block text-sm font-medium text-muziboo-text mb-1.5">Description</label>
-                <textarea id="description" name="description" rows="3"
-                          placeholder="Tell us about this track... What's the story? What gear did you use?"
-                          class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors resize-none"></textarea>
-            </div>
+			<!-- Description -->
+			<div>
+				<label
+					for="description"
+					class="block text-sm font-medium text-muziboo-text mb-1.5"
+					>Description</label
+				>
+				<textarea
+					id="description"
+					name="description"
+					rows="3"
+					placeholder="Tell us about this track... What's the story? What gear did you use?"
+					class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors resize-none"
+				></textarea>
+			</div>
 
-            <!-- Visibility -->
-            <div class="border-t border-muziboo-border pt-6 mt-6">
-                <div class="flex items-center">
-                    <input type="checkbox" id="is-public" class="w-5 h-5 rounded border-muziboo-border text-muziboo-gold focus:ring-muziboo-gold bg-muziboo-bg">
-                    <label for="is-public" class="ml-3 block text-base font-medium text-muziboo-text">Set live immediately</label>
-                </div>
-                <p class="text-sm text-muziboo-text-muted mt-2">Leave unchecked to keep this track as a private draft only you can see. You can set it live from your dashboard at any time.</p>
-            </div>
+			<!-- Visibility -->
+			<div class="border-t border-muziboo-border pt-6 mt-6">
+				<div class="flex items-center">
+					<input
+						type="checkbox"
+						id="is-public"
+						class="w-5 h-5 rounded border-muziboo-border text-muziboo-gold focus:ring-muziboo-gold bg-muziboo-bg"
+					/>
+					<label
+						for="is-public"
+						class="ml-3 block text-base font-medium text-muziboo-text"
+						>Set live immediately</label
+					>
+				</div>
+				<p class="text-sm text-muziboo-text-muted mt-2">
+					Leave unchecked to keep this track as a private draft only you can
+					see. You can set it live from your dashboard at any time.
+				</p>
+			</div>
 
-            <!-- Colab Features -->
-            <div class="border-t border-muziboo-border pt-6 mt-6">
-                <div class="flex items-center mb-4">
-                    <input type="checkbox" id="is-colab" class="w-5 h-5 rounded border-muziboo-border text-muziboo-gold focus:ring-muziboo-gold bg-muziboo-bg" onchange="toggleColabOptions(this.checked)">
-                    <label for="is-colab" class="ml-3 block text-base font-medium text-muziboo-text">Enable Colab</label>
-                </div>
-                <p class="text-sm text-muziboo-text-muted mb-6">Allow invited musicians to download stems and upload continuations of this track.</p>
+			<!-- Colab Features -->
+			<div class="border-t border-muziboo-border pt-6 mt-6">
+				<div class="flex items-center mb-4">
+					<input
+						type="checkbox"
+						id="is-colab"
+						class="w-5 h-5 rounded border-muziboo-border text-muziboo-gold focus:ring-muziboo-gold bg-muziboo-bg"
+						onchange="toggleColabOptions(this.checked)"
+					/>
+					<label
+						for="is-colab"
+						class="ml-3 block text-base font-medium text-muziboo-text"
+						>Enable Colab</label
+					>
+				</div>
+				<p class="text-sm text-muziboo-text-muted mb-6">
+					Allow invited musicians to download stems and upload continuations of
+					this track.
+				</p>
 
-                <div id="colab-options" class="hidden space-y-6 pl-8 border-l-2 border-muziboo-gold/20">
-                    <input type="hidden" id="parent-track-id" name="parent_track_id" value="">
-                    
-                    <!-- Stems -->
-                    <div>
-                        <label class="block text-sm font-medium text-muziboo-text mb-2">Stems</label>
-                        <div id="stems-list" class="space-y-3 mb-3"></div>
-                        <button type="button" onclick="addStemInput()" class="text-sm text-muziboo-gold hover:text-muziboo-gold/80 font-medium flex items-center gap-1">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            Add Stem
-                        </button>
-                    </div>
+				<div
+					id="colab-options"
+					class="hidden space-y-6 pl-8 border-l-2 border-muziboo-gold/20"
+				>
+					<input
+						type="hidden"
+						id="parent-track-id"
+						name="parent_track_id"
+						value=""
+					/>
 
-                    <!-- Invites -->
-                    <div>
-                        <label for="invited-users" class="block text-sm font-medium text-muziboo-text mb-1.5">Invite Collaborators</label>
-                        <input id="invited-users" type="text" placeholder="e.g. username1, username2"
-                               class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors" />
-                        <p class="text-xs text-muziboo-text-muted mt-1.5">Comma-separated list of usernames who can download your stems.</p>
-                    </div>
-                </div>
-            </div>
+					<!-- Stems -->
+					<div>
+						<label class="block text-sm font-medium text-muziboo-text mb-2"
+							>Stems</label
+						>
+						<div id="stems-list" class="space-y-3 mb-3"></div>
+						<button
+							type="button"
+							onclick="addStemInput()"
+							class="text-sm text-muziboo-gold hover:text-muziboo-gold/80 font-medium flex items-center gap-1"
+						>
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
+								<line x1="12" y1="5" x2="12" y2="19"></line>
+								<line x1="5" y1="12" x2="19" y2="12"></line>
+							</svg>
+							Add Stem
+						</button>
+					</div>
 
-            <button type="submit" id="upload-btn"
-                    class="w-full bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-3.5 rounded-lg hover:bg-muziboo-text hover:text-muziboo-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                Upload Track
-            </button>
-        </form>
-    </div>
+					<!-- Invites -->
+					<div>
+						<label
+							for="invited-users"
+							class="block text-sm font-medium text-muziboo-text mb-1.5"
+							>Invite Collaborators</label
+						>
+						<input
+							id="invited-users"
+							type="text"
+							placeholder="e.g. username1, username2"
+							class="w-full px-4 py-3 bg-muziboo-bg border border-muziboo-border rounded-lg text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors"
+						/>
+						<p class="text-xs text-muziboo-text-muted mt-1.5">
+							Comma-separated list of usernames who can download your stems.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<button
+				type="submit"
+				id="upload-btn"
+				class="w-full bg-muziboo-gold text-muziboo-bg font-semibold px-6 py-3.5 rounded-lg hover:bg-muziboo-text hover:text-muziboo-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+			>
+				Upload Track
+			</button>
+		</form>
+	</div>
 </div>
 
 <script>
-const API_URL = window.location.origin;
+	const API_URL = window.location.origin;
 
-function updateAudioLabel(input) {
-    const label = document.getElementById('audio-label');
-    if (input.files[0]) {
-        const f = input.files[0];
-        label.textContent = f.name + ' (' + (f.size / (1024*1024)).toFixed(1) + ' MB)';
-        label.classList.add('text-muziboo-text');
-    }
-}
+	function updateAudioLabel(input) {
+		const label = document.getElementById("audio-label");
+		if (input.files[0]) {
+			const f = input.files[0];
+			label.textContent =
+				f.name + " (" + (f.size / (1024 * 1024)).toFixed(1) + " MB)";
+			label.classList.add("text-muziboo-text");
+		}
+	}
 
-function previewArtwork(input) {
-    if (input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const c = document.getElementById('artwork-preview-container');
-            c.innerHTML = '<img src="' + e.target.result + '" class="w-full h-full object-cover" />';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+	function previewArtwork(input) {
+		if (input.files[0]) {
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				const c = document.getElementById("artwork-preview-container");
+				c.innerHTML =
+					'<img src="' +
+					e.target.result +
+					'" class="w-full h-full object-cover" />';
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
 
-// Colab UI Logic
-let stemCount = 0;
+	// Colab UI Logic
+	let stemCount = 0;
 
-function toggleColabOptions(show) {
-    const opts = document.getElementById('colab-options');
-    if (show) opts.classList.remove('hidden');
-    else opts.classList.add('hidden');
-}
+	function toggleColabOptions(show) {
+		const opts = document.getElementById("colab-options");
+		if (show) opts.classList.remove("hidden");
+		else opts.classList.add("hidden");
+	}
 
-function addStemInput() {
-    stemCount++;
-    const id = stemCount;
-    const div = document.createElement('div');
-    div.className = 'flex items-center gap-3 bg-muziboo-bg p-3 rounded-lg border border-muziboo-border';
-    div.id = 'stem-row-' + id;
-    
-    div.innerHTML = `
+	function addStemInput() {
+		stemCount++;
+		const id = stemCount;
+		const div = document.createElement("div");
+		div.className =
+			"flex items-center gap-3 bg-muziboo-bg p-3 rounded-lg border border-muziboo-border";
+		div.id = "stem-row-" + id;
+
+		div.innerHTML = `
         <input type="text" id="stem-name-${id}" placeholder="Stem Name (e.g. Drums)" class="flex-1 bg-transparent border-none focus:outline-none text-sm text-muziboo-text placeholder:text-muziboo-text-muted/50">
         <input type="file" id="stem-file-${id}" accept="audio/*" class="text-sm text-muziboo-text-muted file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-muziboo-gold/10 file:text-muziboo-gold hover:file:bg-muziboo-gold/20">
         <button type="button" onclick="document.getElementById('stem-row-${id}').remove()" class="text-muziboo-text-muted hover:text-muziboo-red p-1">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
     `;
-    document.getElementById('stems-list').appendChild(div);
-}
+		document.getElementById("stems-list").appendChild(div);
+	}
 
-// Parse URL params for continuations
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const parentId = params.get('parent');
-    if (parentId) {
-        document.getElementById('parent-track-id').value = parentId;
-        const colabCheck = document.getElementById('is-colab');
-        colabCheck.checked = true;
-        toggleColabOptions(true);
-    }
-});
+	// Parse URL params for continuations
+	document.addEventListener("DOMContentLoaded", () => {
+		const params = new URLSearchParams(window.location.search);
+		const parentId = params.get("parent");
+		if (parentId) {
+			document.getElementById("parent-track-id").value = parentId;
+			const colabCheck = document.getElementById("is-colab");
+			colabCheck.checked = true;
+			toggleColabOptions(true);
+		}
+	});
 
-async function handleUpload(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    const btn = document.getElementById('upload-btn');
-    const errEl = document.getElementById('upload-error');
-    const successEl = document.getElementById('upload-success');
-    
-    // Reset UI state
-    errEl.classList.add('hidden');
-    successEl.classList.add('hidden');
-    btn.disabled = true;
-    const originalBtnText = btn.textContent;
-    btn.textContent = 'Uploading track…';
+	async function handleUpload(e) {
+		if (e) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
 
-    try {
-        const token = await getToken();
-        if (!token) { 
-            window.location.href = '/app/login'; 
-            return; 
-        }
+		const btn = document.getElementById("upload-btn");
+		const errEl = document.getElementById("upload-error");
+		const successEl = document.getElementById("upload-success");
 
-        const audioFile = document.getElementById('audio-file').files[0];
-        const artworkFile = document.getElementById('artwork-file').files[0];
-        const title = document.getElementById('title').value;
-        const genre = document.getElementById('genre').value;
-        const description = document.getElementById('description').value;
+		// Reset UI state
+		errEl.classList.add("hidden");
+		successEl.classList.add("hidden");
+		btn.disabled = true;
+		const originalBtnText = btn.textContent;
+		btn.textContent = "Uploading track…";
 
-        if (!audioFile) {
-            throw new Error('Please select an audio file');
-        }
+		try {
+			const token = await getToken();
+			if (!token) {
+				window.location.href = "/app/login";
+				return;
+			}
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('genre', genre);
-        formData.append('audio', audioFile);
-        if (artworkFile) {
-            formData.append('artwork', artworkFile);
-        }
+			const audioFile = document.getElementById("audio-file").files[0];
+			const artworkFile = document.getElementById("artwork-file").files[0];
+			const title = document.getElementById("title").value;
+			const genre = document.getElementById("genre").value;
+			const description = document.getElementById("description").value;
 
-        const isPublic = document.getElementById('is-public').checked;
-        formData.append('is_public', isPublic ? 'true' : 'false');
+			if (!audioFile) {
+				throw new Error("Please select an audio file");
+			}
 
-        const isColab = document.getElementById('is-colab').checked;
-        if (isColab) {
-            formData.append('is_colab', 'true');
-            const parentId = document.getElementById('parent-track-id').value;
-            if (parentId) formData.append('parent_track_id', parentId);
-            
-            const invites = document.getElementById('invited-users').value;
-            if (invites) formData.append('invited_users', invites);
+			const formData = new FormData();
+			formData.append("title", title);
+			formData.append("description", description);
+			formData.append("genre", genre);
+			formData.append("audio", audioFile);
+			if (artworkFile) {
+				formData.append("artwork", artworkFile);
+			}
 
-            let stemIndex = 1;
-            for (let i = 1; i <= stemCount; i++) {
-                const row = document.getElementById('stem-row-' + i);
-                if (!row) continue;
-                
-                const fileInput = document.getElementById('stem-file-' + i);
-                const nameInput = document.getElementById('stem-name-' + i);
-                
-                if (fileInput.files.length > 0) {
-                    formData.append('stem_' + stemIndex + '_audio', fileInput.files[0]);
-                    if (nameInput.value) {
-                        formData.append('stem_' + stemIndex + '_name', nameInput.value);
-                    }
-                    stemIndex++;
-                }
-            }
-        }
+			const isPublic = document.getElementById("is-public").checked;
+			formData.append("is_public", isPublic ? "true" : "false");
 
-        const response = await fetch(API_URL + '/api/upload/track', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token },
-            body: formData
-        });
+			const isColab = document.getElementById("is-colab").checked;
+			if (isColab) {
+				formData.append("is_colab", "true");
+				const parentId = document.getElementById("parent-track-id").value;
+				if (parentId) formData.append("parent_track_id", parentId);
 
-        const data = await response.json().catch(() => ({}));
+				const invites = document.getElementById("invited-users").value;
+				if (invites) formData.append("invited_users", invites);
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Upload failed');
-        }
+				let stemIndex = 1;
+				for (let i = 1; i <= stemCount; i++) {
+					const row = document.getElementById("stem-row-" + i);
+					if (!row) continue;
 
-        // SUCCESS STATE
-        console.log('Upload successful:', data);
-        
-        // 1. Show success message
-        document.getElementById('upload-success-detail').textContent = isPublic
-            ? 'Your track is now live for everyone to hear.'
-            : "Your track was saved as a private draft. Set it live from your dashboard whenever you're ready.";
-        successEl.classList.remove('hidden');
-        
-        // 2. Scroll to message
-        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 3. Reset form manually
-        document.getElementById('upload-form').reset();
-        document.getElementById('audio-label').textContent = 'Click to select audio file';
-        document.getElementById('audio-label').classList.remove('text-muziboo-text');
-        document.getElementById('artwork-preview-container').innerHTML = `
+					const fileInput = document.getElementById("stem-file-" + i);
+					const nameInput = document.getElementById("stem-name-" + i);
+
+					if (fileInput.files.length > 0) {
+						formData.append("stem_" + stemIndex + "_audio", fileInput.files[0]);
+						if (nameInput.value) {
+							formData.append("stem_" + stemIndex + "_name", nameInput.value);
+						}
+						stemIndex++;
+					}
+				}
+			}
+
+			const response = await fetch(API_URL + "/api/upload/track", {
+				method: "POST",
+				headers: { Authorization: "Bearer " + token },
+				body: formData,
+			});
+
+			const data = await response.json().catch(() => ({}));
+
+			if (!response.ok) {
+				throw new Error(data.error || "Upload failed");
+			}
+
+			// SUCCESS STATE
+			console.log("Upload successful:", data);
+
+			// 1. Show success message
+			document.getElementById("upload-success-detail").textContent = isPublic
+				? "Your track is now live for everyone to hear."
+				: "Your track was saved as a private draft. Set it live from your dashboard whenever you're ready.";
+			successEl.classList.remove("hidden");
+
+			// 2. Scroll to message
+			successEl.scrollIntoView({ behavior: "smooth", block: "center" });
+
+			// 3. Reset form manually
+			document.getElementById("upload-form").reset();
+			document.getElementById("audio-label").textContent =
+				"Click to select audio file";
+			document
+				.getElementById("audio-label")
+				.classList.remove("text-muziboo-text");
+			document.getElementById("artwork-preview-container").innerHTML = `
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-text-muted/50 mb-1 group-hover:text-muziboo-gold transition-colors">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
             </svg>
             <span class="text-xs text-muziboo-text-muted/50 group-hover:text-muziboo-text-muted transition-colors">Add artwork</span>
         `;
-        
-    } catch (err) {
-        console.error('Upload error:', err);
-        errEl.textContent = err.message || 'Upload failed';
-        errEl.classList.remove('hidden');
-        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Upload Track';
-    }
-}
+		} catch (err) {
+			console.error("Upload error:", err);
+			errEl.textContent = err.message || "Upload failed";
+			errEl.classList.remove("hidden");
+			errEl.scrollIntoView({ behavior: "smooth", block: "center" });
+		} finally {
+			btn.disabled = false;
+			btn.textContent = "Upload Track";
+		}
+	}
 </script>
 {{end}}

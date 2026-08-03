@@ -1,141 +1,196 @@
 {{define "content"}}
 <div class="max-w-2xl mx-auto px-4 py-8 h-full flex flex-col">
-    <!-- Header -->
-    <div class="flex items-center gap-4 mb-6 pb-4 border-b border-muziboo-border">
-        <a href="/app/user/{{.OtherUser.Username}}" class="hover:opacity-80 transition-opacity flex-shrink-0">
-            {{if .OtherUser.AvatarURL}}
-            <img src="{{.OtherUser.AvatarURL}}" alt="{{.OtherUser.DisplayName}}"
-                 class="w-12 h-12 rounded-full object-cover border border-muziboo-border" />
-            {{else}}
-            <div class="w-12 h-12 rounded-full bg-muziboo-gold/20 flex items-center justify-center border border-muziboo-border">
-                <span class="text-lg text-muziboo-gold font-semibold">{{slice .OtherUser.DisplayName 0 1}}</span>
-            </div>
-            {{end}}
-        </a>
-        <div>
-            <h1 class="text-lg font-semibold text-muziboo-text">{{.OtherUser.DisplayName}}</h1>
-            <a href="/app/user/{{.OtherUser.Username}}" class="text-sm text-muziboo-text-muted hover:text-muziboo-gold transition-colors">@{{.OtherUser.Username}}</a>
-        </div>
-    </div>
+	<!-- Header -->
+	<div class="flex items-center gap-4 mb-6 pb-4 border-b border-muziboo-border">
+		<a
+			href="/app/user/{{.OtherUser.Username}}"
+			class="hover:opacity-80 transition-opacity flex-shrink-0"
+		>
+			{{if .OtherUser.AvatarURL}}
+			<img
+				src="{{.OtherUser.AvatarURL}}"
+				alt="{{.OtherUser.DisplayName}}"
+				class="w-12 h-12 rounded-full object-cover border border-muziboo-border"
+			/>
+			{{else}}
+			<div
+				class="w-12 h-12 rounded-full bg-muziboo-gold/20 flex items-center justify-center border border-muziboo-border"
+			>
+				<span class="text-lg text-muziboo-gold font-semibold"
+					>{{slice .OtherUser.DisplayName 0 1}}</span
+				>
+			</div>
+			{{end}}
+		</a>
+		<div>
+			<h1 class="text-lg font-semibold text-muziboo-text">
+				{{.OtherUser.DisplayName}}
+			</h1>
+			<a
+				href="/app/user/{{.OtherUser.Username}}"
+				class="text-sm text-muziboo-text-muted hover:text-muziboo-gold transition-colors"
+				>@{{.OtherUser.Username}}</a
+			>
+		</div>
+	</div>
 
-    <!-- Message thread -->
-    <div id="message-thread" class="flex-1 space-y-4 mb-6 overflow-y-auto min-h-[300px] max-h-[60vh] pr-1">
-        {{if .Messages}}
-        {{range .Messages}}
-        {{if eq .SenderID $.User.ID}}
-        <!-- My message (right) -->
-        <div class="flex justify-end">
-            <div class="max-w-[70%] bg-muziboo-gold text-muziboo-bg rounded-2xl rounded-tr-sm px-4 py-2.5">
-                <p class="text-sm leading-relaxed">{{.Content}}</p>
-                <p class="text-[10px] opacity-60 mt-1 text-right">{{.CreatedAt}}</p>
-            </div>
-        </div>
-        {{else}}
-        <!-- Their message (left) -->
-        <div class="flex justify-start gap-2">
-            {{if $.OtherUser.AvatarURL}}
-            <img src="{{$.OtherUser.AvatarURL}}" class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1" />
-            {{else}}
-            <div class="w-7 h-7 rounded-full bg-muziboo-gold/20 flex items-center justify-center flex-shrink-0 mt-1">
-                <span class="text-xs text-muziboo-gold font-semibold">{{slice $.OtherUser.DisplayName 0 1}}</span>
-            </div>
-            {{end}}
-            <div class="max-w-[70%] bg-muziboo-bg-softer border border-muziboo-border rounded-2xl rounded-tl-sm px-4 py-2.5">
-                <p class="text-sm text-muziboo-text leading-relaxed">{{.Content}}</p>
-                <p class="text-[10px] text-muziboo-text-muted/60 mt-1">{{.CreatedAt}}</p>
-            </div>
-        </div>
-        {{end}}
-        {{end}}
-        {{else}}
-        <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-16 h-16 rounded-full bg-muziboo-gold/10 flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muziboo-gold/60">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-            </div>
-            <p class="text-muziboo-text-muted text-sm">No messages yet.</p>
-            <p class="text-muziboo-text-muted/60 text-xs mt-1">Send a message to start the conversation!</p>
-        </div>
-        {{end}}
-    </div>
+	<!-- Message thread -->
+	<div
+		id="message-thread"
+		class="flex-1 space-y-4 mb-6 overflow-y-auto min-h-[300px] max-h-[60vh] pr-1"
+	>
+		{{if .Messages}} {{range .Messages}} {{if eq .SenderID $.User.ID}}
+		<!-- My message (right) -->
+		<div class="flex justify-end">
+			<div
+				class="max-w-[70%] bg-muziboo-gold text-muziboo-bg rounded-2xl rounded-tr-sm px-4 py-2.5"
+			>
+				<p class="text-sm leading-relaxed">{{.Content}}</p>
+				<p class="text-[10px] opacity-60 mt-1 text-right">{{.CreatedAt}}</p>
+			</div>
+		</div>
+		{{else}}
+		<!-- Their message (left) -->
+		<div class="flex justify-start gap-2">
+			{{if $.OtherUser.AvatarURL}}
+			<img
+				src="{{$.OtherUser.AvatarURL}}"
+				class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1"
+			/>
+			{{else}}
+			<div
+				class="w-7 h-7 rounded-full bg-muziboo-gold/20 flex items-center justify-center flex-shrink-0 mt-1"
+			>
+				<span class="text-xs text-muziboo-gold font-semibold"
+					>{{slice $.OtherUser.DisplayName 0 1}}</span
+				>
+			</div>
+			{{end}}
+			<div
+				class="max-w-[70%] bg-muziboo-bg-softer border border-muziboo-border rounded-2xl rounded-tl-sm px-4 py-2.5"
+			>
+				<p class="text-sm text-muziboo-text leading-relaxed">{{.Content}}</p>
+				<p class="text-[10px] text-muziboo-text-muted/60 mt-1">
+					{{.CreatedAt}}
+				</p>
+			</div>
+		</div>
+		{{end}} {{end}} {{else}}
+		<div class="flex flex-col items-center justify-center py-16 text-center">
+			<div
+				class="w-16 h-16 rounded-full bg-muziboo-gold/10 flex items-center justify-center mb-4"
+			>
+				<svg
+					width="28"
+					height="28"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					class="text-muziboo-gold/60"
+				>
+					<path
+						d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+					/>
+				</svg>
+			</div>
+			<p class="text-muziboo-text-muted text-sm">No messages yet.</p>
+			<p class="text-muziboo-text-muted/60 text-xs mt-1">
+				Send a message to start the conversation!
+			</p>
+		</div>
+		{{end}}
+	</div>
 
-    <!-- Compose box -->
-    <div class="border-t border-muziboo-border pt-4">
-        <form id="message-form" class="flex gap-3" onsubmit="sendMessage(event)">
-            <input type="hidden" id="recipient-id" value="{{.OtherUser.ID}}" />
-            <input id="message-input" type="text" required
-                   placeholder="Write a message…"
-                   autocomplete="off"
-                   class="flex-1 px-4 py-3 bg-muziboo-bg-softer border border-muziboo-border rounded-xl text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors text-sm" />
-            <button type="submit" id="send-btn"
-                    class="flex items-center justify-center w-12 h-12 bg-muziboo-gold text-muziboo-bg rounded-xl hover:bg-muziboo-text transition-colors flex-shrink-0 disabled:opacity-50">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-            </button>
-        </form>
-    </div>
+	<!-- Compose box -->
+	<div class="border-t border-muziboo-border pt-4">
+		<form id="message-form" class="flex gap-3" onsubmit="sendMessage(event)">
+			<input type="hidden" id="recipient-id" value="{{.OtherUser.ID}}" />
+			<input
+				id="message-input"
+				type="text"
+				required
+				placeholder="Write a message…"
+				autocomplete="off"
+				class="flex-1 px-4 py-3 bg-muziboo-bg-softer border border-muziboo-border rounded-xl text-muziboo-text placeholder:text-muziboo-text-muted/50 focus:outline-none focus:border-muziboo-gold transition-colors text-sm"
+			/>
+			<button
+				type="submit"
+				id="send-btn"
+				class="flex items-center justify-center w-12 h-12 bg-muziboo-gold text-muziboo-bg rounded-xl hover:bg-muziboo-text transition-colors flex-shrink-0 disabled:opacity-50"
+			>
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+					<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+				</svg>
+			</button>
+		</form>
+	</div>
 </div>
 
 <script>
-const myID = '{{.User.ID}}';
-const recipientID = document.getElementById('recipient-id').value;
-const otherDisplayName = '{{.OtherUser.DisplayName}}';
-const otherAvatarURL = '{{.OtherUser.AvatarURL}}';
-const thread = document.getElementById('message-thread');
+	const myID = "{{.User.ID}}";
+	const recipientID = document.getElementById("recipient-id").value;
+	const otherDisplayName = "{{.OtherUser.DisplayName}}";
+	const otherAvatarURL = "{{.OtherUser.AvatarURL}}";
+	const thread = document.getElementById("message-thread");
 
-// Scroll to bottom on load
-thread.scrollTop = thread.scrollHeight;
+	// Scroll to bottom on load
+	thread.scrollTop = thread.scrollHeight;
 
-window.sendMessage = async function(e) {
-    e.preventDefault();
-    const input = document.getElementById('message-input');
-    const btn = document.getElementById('send-btn');
-    const content = input.value.trim();
-    if (!content) return;
+	window.sendMessage = async function (e) {
+		e.preventDefault();
+		const input = document.getElementById("message-input");
+		const btn = document.getElementById("send-btn");
+		const content = input.value.trim();
+		if (!content) return;
 
-    const token = await getToken();
-    if (!token) { window.location.href = '/app/login'; return; }
+		const token = await getToken();
+		if (!token) {
+			window.location.href = "/app/login";
+			return;
+		}
 
-    btn.disabled = true;
+		btn.disabled = true;
 
-    try {
-        const res = await fetch('/api/messages', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ recipient_id: recipientID, content })
-        });
+		try {
+			const res = await fetch("/api/messages", {
+				method: "POST",
+				headers: {
+					Authorization: "Bearer " + token,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ recipient_id: recipientID, content }),
+			});
 
-        if (!res.ok) throw new Error('Failed to send message');
+			if (!res.ok) throw new Error("Failed to send message");
 
-        // Remove empty state if present
-        const emptyState = thread.querySelector('.text-center');
-        if (emptyState) emptyState.remove();
+			// Remove empty state if present
+			const emptyState = thread.querySelector(".text-center");
+			if (emptyState) emptyState.remove();
 
-        // Append new message bubble
-        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const bubble = document.createElement('div');
-        bubble.className = 'flex justify-end';
-        bubble.innerHTML = `
+			// Append new message bubble
+			const now = new Date().toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+			});
+			const bubble = document.createElement("div");
+			bubble.className = "flex justify-end";
+			bubble.innerHTML = `
             <div class="max-w-[70%] bg-muziboo-gold text-muziboo-bg rounded-2xl rounded-tr-sm px-4 py-2.5">
                 <p class="text-sm leading-relaxed">${content}</p>
                 <p class="text-[10px] opacity-60 mt-1 text-right">just now</p>
             </div>`;
-        thread.appendChild(bubble);
-        thread.scrollTop = thread.scrollHeight;
+			thread.appendChild(bubble);
+			thread.scrollTop = thread.scrollHeight;
 
-        input.value = '';
-    } catch (err) {
-        console.error(err);
-        alert('Failed to send message. Please try again.');
-    } finally {
-        btn.disabled = false;
-        input.focus();
-    }
-};
+			input.value = "";
+		} catch (err) {
+			console.error(err);
+			alert("Failed to send message. Please try again.");
+		} finally {
+			btn.disabled = false;
+			input.focus();
+		}
+	};
 </script>
 {{end}}

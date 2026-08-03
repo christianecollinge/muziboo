@@ -1,61 +1,73 @@
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
+import fs from "fs";
+import path from "path";
+import { execSync } from "child_process";
 
-const USED_IMAGES_FILE = path.join(process.cwd(), 'scripts', 'used_images.json');
+const USED_IMAGES_FILE = path.join(
+	process.cwd(),
+	"scripts",
+	"used_images.json"
+);
 const FOLDER_ID = "1NmHmkjOQjfgbHnLixvsKLyVX6YgNFQzM";
 
 /**
  * Get all available images from the Drive folder via gws CLI
  */
 export async function getAllImages() {
-    // We use a simplified version of the gws command
-    try {
-        const query = `'${FOLDER_ID}' in parents and mimeType contains 'image/'`;
-        const output = execSync(`npx gws drive files list --params '{"q": "${query}"}'`).toString();
-        const data = JSON.parse(output);
-        return data.files || [];
-    } catch (e) {
-        console.warn("⚠️ Error listing Drive files with gws. Image generation will be skipped.");
-        return [];
-    }
+	// We use a simplified version of the gws command
+	try {
+		const query = `'${FOLDER_ID}' in parents and mimeType contains 'image/'`;
+		const output = execSync(
+			`npx gws drive files list --params '{"q": "${query}"}'`
+		).toString();
+		const data = JSON.parse(output);
+		return data.files || [];
+	} catch (e) {
+		console.warn(
+			"⚠️ Error listing Drive files with gws. Image generation will be skipped."
+		);
+		return [];
+	}
 }
 
 export function getUsedImages() {
-    if (fs.existsSync(USED_IMAGES_FILE)) {
-        return JSON.parse(fs.readFileSync(USED_IMAGES_FILE, 'utf-8'));
-    }
-    return [];
+	if (fs.existsSync(USED_IMAGES_FILE)) {
+		return JSON.parse(fs.readFileSync(USED_IMAGES_FILE, "utf-8"));
+	}
+	return [];
 }
 
 export function saveUsedImage(fileId) {
-    const used = getUsedImages();
-    if (!used.includes(fileId)) {
-        used.push(fileId);
-        fs.writeFileSync(USED_IMAGES_FILE, JSON.stringify(used, null, 2));
-    }
+	const used = getUsedImages();
+	if (!used.includes(fileId)) {
+		used.push(fileId);
+		fs.writeFileSync(USED_IMAGES_FILE, JSON.stringify(used, null, 2));
+	}
 }
 
 /**
  * Returns a relevant image based on the post content and available filenames
  */
 export async function getRelevantImage(content, aiInstance) {
-    const allImages = await getAllImages();
-    const usedIds = getUsedImages();
-    const available = allImages.filter(img => !usedIds.includes(img.id));
-    
-    if (available.length === 0) {
-        console.warn("⚠️ WARNING: All images in the Drive folder have been used!");
-        return { image: null, alt: "" };
-    }
+	const allImages = await getAllImages();
+	const usedIds = getUsedImages();
+	const available = allImages.filter((img) => !usedIds.includes(img.id));
 
-    if (available.length <= 3) {
-        console.warn(`⚠️ WARNING: Only ${available.length} images left in the Drive folder!`);
-    }
+	if (available.length === 0) {
+		console.warn("⚠️ WARNING: All images in the Drive folder have been used!");
+		return { image: null, alt: "" };
+	}
 
-    // Use AI to pick the most relevant image from available names
-    const imageListStr = available.map((img, i) => `${i}: ${img.name}`).join('\n');
-    const prompt = `
+	if (available.length <= 3) {
+		console.warn(
+			`⚠️ WARNING: Only ${available.length} images left in the Drive folder!`
+		);
+	}
+
+	// Use AI to pick the most relevant image from available names
+	const imageListStr = available
+		.map((img, i) => `${i}: ${img.name}`)
+		.join("\n");
+	const prompt = `
     You are an SEO expert. Given the following blog post content and a list of available image filenames, pick the MOST RELEVANT image.
     If multiple seem relevant, pick the best one. If none are relevant, pick a random one from the list.
     
@@ -71,89 +83,97 @@ export async function getRelevantImage(content, aiInstance) {
     {"index": number, "alt": "Descriptive alt text"}
     `;
 
-    try {
-        const response = await aiInstance.models.generateContent({
-            model: 'gemini-1.5-flash',
-            contents: prompt,
-        });
+	try {
+		const response = await aiInstance.models.generateContent({
+			model: "gemini-1.5-flash",
+			contents: prompt,
+		});
 
-        let resultText = response.text;
-        if (!resultText) throw new Error("AI returned empty response");
+		let resultText = response.text;
+		if (!resultText) throw new Error("AI returned empty response");
 
-        if (resultText.includes('```json')) {
-            const match = resultText.match(/```json\n?([\s\S]*?)\n?```/);
-            if (match) resultText = match[1];
-        } else if (resultText.includes('```')) {
-            const match = resultText.match(/```\n?([\s\S]*?)\n?```/);
-            if (match) resultText = match[1];
-        }
-        
-        const result = JSON.parse(resultText.trim());
-        const selected = available[result.index] || available[0];
-        
-        return { image: selected, alt: result.alt || "Music creation and community" };
-    } catch (e) {
-        console.error("❌ Error selecting relevant image with AI:", e);
-        // Fallback to random
-        const randomIndex = Math.floor(Math.random() * available.length);
-        return { image: available[randomIndex], alt: "Music creation and community" };
-    }
+		if (resultText.includes("```json")) {
+			const match = resultText.match(/```json\n?([\s\S]*?)\n?```/);
+			if (match) resultText = match[1];
+		} else if (resultText.includes("```")) {
+			const match = resultText.match(/```\n?([\s\S]*?)\n?```/);
+			if (match) resultText = match[1];
+		}
+
+		const result = JSON.parse(resultText.trim());
+		const selected = available[result.index] || available[0];
+
+		return {
+			image: selected,
+			alt: result.alt || "Music creation and community",
+		};
+	} catch (e) {
+		console.error("❌ Error selecting relevant image with AI:", e);
+		// Fallback to random
+		const randomIndex = Math.floor(Math.random() * available.length);
+		return {
+			image: available[randomIndex],
+			alt: "Music creation and community",
+		};
+	}
 }
 
 /**
  * Injects an image into a markdown post
  */
 export function injectImageIntoMarkdown(markdown, imageUrl, imageName) {
-    const imageMarkdown = `\n![${imageName}](${imageUrl})\n`;
-    
-    // Try to inject after the H1 title
-    if (markdown.includes('# ')) {
-        const parts = markdown.split('\n');
-        const h1Index = parts.findIndex(line => line.startsWith('# '));
-        if (h1Index !== -1) {
-            parts.splice(h1Index + 1, 0, imageMarkdown);
-            return parts.join('\n');
-        }
-    }
-    
-    // Fallback: inject after frontmatter
-    if (markdown.startsWith('---')) {
-        const parts = markdown.split('---');
-        if (parts.length >= 3) {
-            parts[2] = imageMarkdown + parts[2];
-            return parts.join('---');
-        }
-    }
-    
-    return imageMarkdown + markdown;
+	const imageMarkdown = `\n![${imageName}](${imageUrl})\n`;
+
+	// Try to inject after the H1 title
+	if (markdown.includes("# ")) {
+		const parts = markdown.split("\n");
+		const h1Index = parts.findIndex((line) => line.startsWith("# "));
+		if (h1Index !== -1) {
+			parts.splice(h1Index + 1, 0, imageMarkdown);
+			return parts.join("\n");
+		}
+	}
+
+	// Fallback: inject after frontmatter
+	if (markdown.startsWith("---")) {
+		const parts = markdown.split("---");
+		if (parts.length >= 3) {
+			parts[2] = imageMarkdown + parts[2];
+			return parts.join("---");
+		}
+	}
+
+	return imageMarkdown + markdown;
 }
 
 /**
  * Downloads an image from Google Drive to the local public folder
  */
 export async function downloadImage(fileId, filename) {
-    const localDir = path.join(process.cwd(), 'public', 'blog', 'images');
-    if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
+	const localDir = path.join(process.cwd(), "public", "blog", "images");
+	if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
 
-    // Clean filename for filesystem
-    const safeName = filename.toLowerCase().replace(/[^a-z0-9.]/g, '-');
-    const localPath = path.join(localDir, safeName);
+	// Clean filename for filesystem
+	const safeName = filename.toLowerCase().replace(/[^a-z0-9.]/g, "-");
+	const localPath = path.join(localDir, safeName);
 
-    try {
-        console.log(`📥 Downloading image to local: ${safeName}...`);
-        execSync(`npx gws drive files get --params '{"fileId": "${fileId}", "alt": "media"}' --output "${localPath}"`);
-        return `/blog/images/${safeName}`;
-    } catch (e) {
-        console.error(`❌ Error downloading image ${fileId} with gws:`, e.message);
-        return null;
-    }
+	try {
+		console.log(`📥 Downloading image to local: ${safeName}...`);
+		execSync(
+			`npx gws drive files get --params '{"fileId": "${fileId}", "alt": "media"}' --output "${localPath}"`
+		);
+		return `/blog/images/${safeName}`;
+	} catch (e) {
+		console.error(`❌ Error downloading image ${fileId} with gws:`, e.message);
+		return null;
+	}
 }
 
 /**
  * Returns the local public URL for an image
  */
 export function getImageUrl(fileId) {
-    // This is no longer used for Drive URLs, we use downloadImage instead.
-    // Kept for signature compatibility if needed.
-    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+	// This is no longer used for Drive URLs, we use downloadImage instead.
+	// Kept for signature compatibility if needed.
+	return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }

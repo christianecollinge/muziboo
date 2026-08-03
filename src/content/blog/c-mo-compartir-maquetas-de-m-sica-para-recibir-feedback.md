@@ -3,11 +3,18 @@ title: "Descubre Cómo Compartir Maquetas de Música para Recibir Feedback Genui
 description: "Aprende dónde y cómo compartir tus maquetas musicales en España para obtener feedback constructivo de gente que valora el arte. Muziboo es tu espacio para la música real y el crecimiento."
 pubDate: 2023-10-27T10:00:00.000Z
 author: "Muziboo Team"
-tags: ["music", "creators", "community", "maquetas", "feedback", "música española", "producción musical"]
+tags:
+  [
+    "music",
+    "creators",
+    "community",
+    "maquetas",
+    "feedback",
+    "música española",
+    "producción musical",
+  ]
 image: "/blog/images/redo-this-image-in-my-style--2--copy-2.png"
 ---
-
-
 
 Muchos artistas en España están creando música. Desde las ciudades de Madrid y Barcelona hasta los estudios en casa de Sevilla, miles de personas dan vida a sus ideas. Con guitarras, teclados y micrófonos sencillos, la pasión por la música crece. Tú creas, pruebas cosas nuevas, y grabas esas melodías que te llegan. Haces partes de canciones que suenan prometedoras. Pero, ¿qué pasa cuando esa idea se convierte en una maqueta? ¿Cómo la sacas de tu ordenador? ¿Cómo puede crecer y mejorar? La pregunta principal para cada creador es **cómo compartir maquetas de música para recibir feedback** que sea real, útil, y que te ayude a seguir adelante.
 
@@ -46,10 +53,11 @@ Por eso, la mejor manera de saber **cómo compartir maquetas de música para rec
 ### El Arte de Pedir Comentarios Inteligentes
 
 Cuando compartas tu maqueta en Muziboo, sé claro. No solo digas "escuchad mi canción". Haz preguntas específicas. Por ejemplo:
-*   "¿Qué os parece el puente? ¿Fluye bien con el resto o suena raro?"
-*   "No estoy seguro con la línea de bajo del estribillo. ¿Debería tener más melodía o ser más simple?"
-*   "¿La letra de esta parte expresa lo que quiero o confunde?"
-*   "En la mezcla, ¿hay algún instrumento que suene muy alto o muy bajo?"
+
+- "¿Qué os parece el puente? ¿Fluye bien con el resto o suena raro?"
+- "No estoy seguro con la línea de bajo del estribillo. ¿Debería tener más melodía o ser más simple?"
+- "¿La letra de esta parte expresa lo que quiero o confunde?"
+- "En la mezcla, ¿hay algún instrumento que suene muy alto o muy bajo?"
 
 Cuanto más específicas sean tus preguntas, más útiles serán los comentarios que recibas. Esto guía a los que escuchan y les permite darte respuestas que realmente te ayuden a mejorar tu música.
 

@@ -1,512 +1,707 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{.Title}} — Muziboo</title>
-    <meta name="description" content="{{.Description}}" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{.Title}} — Muziboo</title>
+		<meta name="description" content="{{.Description}}" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Font: DM Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+		<!-- Font: DM Sans -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+			rel="stylesheet"
+		/>
 
-    <!-- Tailwind CSS v4 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style type="text/tailwindcss">
-        @theme {
-            --color-muziboo-bg: #121921;
-            --color-muziboo-bg-softer: #1a222c;
-            --color-muziboo-gold: #d9b682;
-            --color-muziboo-gold-muted: #b89d6b;
-            --color-muziboo-text: #e5e0d8;
-            --color-muziboo-text-muted: #9c9588;
-            --color-muziboo-red: #cf493c;
-            --color-muziboo-orange: #e88b5d;
-            --color-muziboo-teal: #51817e;
-            --color-muziboo-teal-light: #6a9e9a;
-            --color-muziboo-bar-1: #cf493c;
-            --color-muziboo-bar-2: #e88b5d;
-            --color-muziboo-bar-3: #d9b682;
-            --color-muziboo-bar-4: #e5e0d8;
-            --color-muziboo-bar-5: #51817e;
-            --color-muziboo-bar-6: #6a9e9a;
-            --color-muziboo-border: rgba(217, 182, 130, 0.2);
-        }
-    </style>
-    <style>
-        body { font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif; }
-        /* HTMX loading indicator */
-        .htmx-request #app-content { opacity: 0.5; transition: opacity 200ms; }
-        .htmx-settling #app-content { opacity: 1; transition: opacity 200ms; }
-    </style>
+		<!-- Tailwind CSS v4 CDN -->
+		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+		<style type="text/tailwindcss">
+			@theme {
+				--color-muziboo-bg: #121921;
+				--color-muziboo-bg-softer: #1a222c;
+				--color-muziboo-gold: #d9b682;
+				--color-muziboo-gold-muted: #b89d6b;
+				--color-muziboo-text: #e5e0d8;
+				--color-muziboo-text-muted: #9c9588;
+				--color-muziboo-red: #cf493c;
+				--color-muziboo-orange: #e88b5d;
+				--color-muziboo-teal: #51817e;
+				--color-muziboo-teal-light: #6a9e9a;
+				--color-muziboo-bar-1: #cf493c;
+				--color-muziboo-bar-2: #e88b5d;
+				--color-muziboo-bar-3: #d9b682;
+				--color-muziboo-bar-4: #e5e0d8;
+				--color-muziboo-bar-5: #51817e;
+				--color-muziboo-bar-6: #6a9e9a;
+				--color-muziboo-border: rgba(217, 182, 130, 0.2);
+			}
+		</style>
+		<style>
+			body {
+				font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+			}
+			/* HTMX loading indicator */
+			.htmx-request #app-content {
+				opacity: 0.5;
+				transition: opacity 200ms;
+			}
+			.htmx-settling #app-content {
+				opacity: 1;
+				transition: opacity 200ms;
+			}
+		</style>
 
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+		<!-- HTMX -->
+		<script src="https://unpkg.com/htmx.org@2.0.4"></script>
 
-    <!-- Supabase JS (for auth only) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="min-h-screen bg-muziboo-bg text-muziboo-text antialiased flex flex-col"
-      hx-boost="true"
-      hx-target="#app-content"
-      hx-select="#app-content"
-      hx-swap="innerHTML transition:true">
+		<!-- Supabase JS (for auth only) -->
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	</head>
+	<body
+		class="min-h-screen bg-muziboo-bg text-muziboo-text antialiased flex flex-col"
+		hx-boost="true"
+		hx-target="#app-content"
+		hx-select="#app-content"
+		hx-swap="innerHTML transition:true"
+	>
+		<!-- Navigation -->
+		<header
+			class="w-full py-4 px-4 border-b border-muziboo-border bg-muziboo-bg/95 backdrop-blur sticky top-0 z-50"
+			role="banner"
+		>
+			<nav
+				class="max-w-4xl mx-auto flex items-center justify-between"
+				aria-label="Main navigation"
+			>
+				<a
+					href="/"
+					class="flex items-center gap-3 text-muziboo-gold hover:text-muziboo-gold-muted transition-colors"
+					aria-label="Muziboo — Home"
+					hx-boost="false"
+				>
+					<img
+						src="/logo.png"
+						alt=""
+						width="40"
+						height="40"
+						class="w-10 h-10 object-contain"
+					/>
+					<span class="text-xl font-semibold tracking-tight">muziboo</span>
+				</a>
 
-    <!-- Navigation -->
-    <header class="w-full py-4 px-4 border-b border-muziboo-border bg-muziboo-bg/95 backdrop-blur sticky top-0 z-50" role="banner">
-        <nav class="max-w-4xl mx-auto flex items-center justify-between" aria-label="Main navigation">
-            <a href="/" class="flex items-center gap-3 text-muziboo-gold hover:text-muziboo-gold-muted transition-colors" aria-label="Muziboo — Home" hx-boost="false">
-                <img src="/logo.png" alt="" width="40" height="40" class="w-10 h-10 object-contain" />
-                <span class="text-xl font-semibold tracking-tight">muziboo</span>
-            </a>
+				<div class="flex items-center gap-6">
+					<a
+						href="/#features"
+						hx-boost="false"
+						class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
+						>What</a
+					>
+					<a
+						href="/#manifesto"
+						hx-boost="false"
+						class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
+						>Manifesto</a
+					>
+					<a
+						href="/blog"
+						hx-boost="false"
+						class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium"
+						>Blog</a
+					>
 
-            <div class="flex items-center gap-6">
-                <a href="/#features" hx-boost="false" class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm">What</a>
-                <a href="/#manifesto" hx-boost="false" class="hidden md:inline text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm">Manifesto</a>
-                <a href="/blog" hx-boost="false" class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium">Blog</a>
+					<div class="w-px bg-muziboo-border h-4 hidden sm:block"></div>
 
-                <div class="w-px bg-muziboo-border h-4 hidden sm:block"></div>
+					<a
+						href="/app/explore"
+						class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm"
+						>Explore</a
+					>
 
-                <a href="/app/explore" class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm">Explore</a>
+					{{if .User}}
+					<a
+						href="/app/dashboard"
+						class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors"
+						>Dashboard</a
+					>
+					{{else}}
+					<div class="flex items-center gap-3">
+						<a
+							href="/app/login"
+							class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium px-2"
+							>Log In</a
+						>
+						<a
+							href="/app/signup"
+							class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors"
+							>Sign Up</a
+						>
+					</div>
+					{{end}}
+				</div>
+			</nav>
+		</header>
 
-                {{if .User}}
-                    <a href="/app/dashboard" class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors">Dashboard</a>
-                {{else}}
-                    <div class="flex items-center gap-3">
-                        <a href="/app/login" class="text-muziboo-text-muted hover:text-muziboo-gold transition-colors text-sm font-medium px-2">Log In</a>
-                        <a href="/app/signup" class="bg-muziboo-gold text-muziboo-bg px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muziboo-text transition-colors">Sign Up</a>
-                    </div>
-                {{end}}
-            </div>
-        </nav>
-    </header>
+		<!-- Main Content Area — HTMX swaps this -->
+		<main class="flex-1">
+			<div id="app-content">{{block "content" .}}{{end}}</div>
+		</main>
 
-    <!-- Main Content Area — HTMX swaps this -->
-    <main class="flex-1">
-        <div id="app-content">
-            {{block "content" .}}{{end}}
-        </div>
-    </main>
+		<!-- Footer -->
+		<footer
+			class="w-full py-12 px-4 bg-muziboo-bg border-t border-muziboo-border"
+			role="contentinfo"
+		>
+			<div
+				class="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-12"
+			>
+				<div class="flex flex-col gap-4 max-w-xs">
+					<a
+						href="/"
+						class="flex items-center gap-2 text-muziboo-gold"
+						hx-boost="false"
+					>
+						<img
+							src="/logo.png"
+							alt=""
+							width="32"
+							height="32"
+							class="w-8 h-8 object-contain"
+						/>
+						<span class="text-xl font-bold tracking-tight">muziboo</span>
+					</a>
+					<p class="text-muziboo-text-muted text-sm leading-relaxed">
+						muziboo · EST. 2007 · REBORN 2026
+					</p>
+					<div
+						class="flex items-center gap-2 mt-2"
+						role="group"
+						aria-label="Language"
+					>
+						<a
+							href="/"
+							class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-gold bg-muziboo-gold/10 ring-1 ring-muziboo-gold/20"
+							aria-current="true"
+							aria-label="Switch to EN"
+							>EN</a
+						>
+						<a
+							href="/es"
+							class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border"
+							aria-label="Switch to ES"
+							>ES</a
+						>
+						<a
+							href="/de"
+							class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border"
+							aria-label="Switch to DE"
+							>DE</a
+						>
+					</div>
+				</div>
 
-    <!-- Footer -->
-    <footer class="w-full py-12 px-4 bg-muziboo-bg border-t border-muziboo-border" role="contentinfo">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-12">
-            <div class="flex flex-col gap-4 max-w-xs">
-                <a href="/" class="flex items-center gap-2 text-muziboo-gold" hx-boost="false">
-                    <img src="/logo.png" alt="" width="32" height="32" class="w-8 h-8 object-contain" />
-                    <span class="text-xl font-bold tracking-tight">muziboo</span>
-                </a>
-                <p class="text-muziboo-text-muted text-sm leading-relaxed">
-                    muziboo · EST. 2007 · REBORN 2026
-                </p>
-                <div class="flex items-center gap-2 mt-2" role="group" aria-label="Language">
-                    <a href="/" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-gold bg-muziboo-gold/10 ring-1 ring-muziboo-gold/20" aria-current="true" aria-label="Switch to EN">EN</a>
-                    <a href="/es" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border" aria-label="Switch to ES">ES</a>
-                    <a href="/de" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all text-muziboo-text-muted hover:text-muziboo-text hover:bg-muziboo-border" aria-label="Switch to DE">DE</a>
-                </div>
-            </div>
+				<div class="grid grid-cols-2 sm:grid-cols-3 gap-12 text-sm">
+					<div class="flex flex-col gap-4">
+						<h3 class="text-muziboo-text font-bold text-sm">Features</h3>
+						<nav class="flex flex-col gap-2 text-muziboo-text-muted">
+							<a
+								href="/#features"
+								hx-boost="false"
+								class="hover:text-muziboo-gold transition-colors"
+								>What</a
+							>
+							<a
+								href="/#manifesto"
+								hx-boost="false"
+								class="hover:text-muziboo-gold transition-colors"
+								>Manifesto</a
+							>
+						</nav>
+					</div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-12 text-sm">
-                <div class="flex flex-col gap-4">
-                    <h3 class="text-muziboo-text font-bold text-sm">Features</h3>
-                    <nav class="flex flex-col gap-2 text-muziboo-text-muted">
-                        <a href="/#features" hx-boost="false" class="hover:text-muziboo-gold transition-colors">What</a>
-                        <a href="/#manifesto" hx-boost="false" class="hover:text-muziboo-gold transition-colors">Manifesto</a>
-                    </nav>
-                </div>
-                
-                <div class="flex flex-col gap-4">
-                    <h3 class="text-muziboo-text font-bold text-sm">Resources</h3>
-                    <nav class="flex flex-col gap-2 text-muziboo-text-muted">
-                        <a href="/blog" hx-boost="false" class="hover:text-muziboo-gold transition-colors">Blog</a>
-                        <a href="https://www.facebook.com/muziboo" target="_blank" rel="noopener noreferrer" class="hover:text-muziboo-gold transition-colors">Facebook</a>
-                    </nav>
-                </div>
+					<div class="flex flex-col gap-4">
+						<h3 class="text-muziboo-text font-bold text-sm">Resources</h3>
+						<nav class="flex flex-col gap-2 text-muziboo-text-muted">
+							<a
+								href="/blog"
+								hx-boost="false"
+								class="hover:text-muziboo-gold transition-colors"
+								>Blog</a
+							>
+							<a
+								href="https://www.facebook.com/muziboo"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="hover:text-muziboo-gold transition-colors"
+								>Facebook</a
+							>
+						</nav>
+					</div>
 
-                <div class="flex flex-col gap-4">
-                    <h3 class="text-muziboo-text font-bold text-sm">Legal</h3>
-                    <nav class="flex flex-col gap-2 text-muziboo-text-muted">
-                        <a href="/privacy" hx-boost="false" class="hover:text-muziboo-gold transition-colors">PRIVACY</a>
-                        <a href="/terms" hx-boost="false" class="hover:text-muziboo-gold transition-colors">TERMS</a>
-                    </nav>
-                </div>
-            </div>
-        </div>
-        
-        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-muziboo-border flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-muziboo-text-muted uppercase tracking-[0.2em]">
-            <div>© 2026 MUZIBOO</div>
-            <div>Crafted with soul for hobby musicians</div>
-        </div>
-    </footer>
+					<div class="flex flex-col gap-4">
+						<h3 class="text-muziboo-text font-bold text-sm">Legal</h3>
+						<nav class="flex flex-col gap-2 text-muziboo-text-muted">
+							<a
+								href="/privacy"
+								hx-boost="false"
+								class="hover:text-muziboo-gold transition-colors"
+								>PRIVACY</a
+							>
+							<a
+								href="/terms"
+								hx-boost="false"
+								class="hover:text-muziboo-gold transition-colors"
+								>TERMS</a
+							>
+						</nav>
+					</div>
+				</div>
+			</div>
 
-    <!-- Persistent Audio Player -->
-    <div id="global-player" class="fixed bottom-0 left-0 right-0 bg-muziboo-bg-softer border-t border-muziboo-border z-50 hidden">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
-            <button id="player-play-btn" onclick="toggleGlobalPlayer()" class="w-10 h-10 rounded-full bg-muziboo-gold text-muziboo-bg flex items-center justify-center hover:bg-muziboo-text transition-colors flex-shrink-0">
-                <svg id="player-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21" /></svg>
-                <svg id="player-pause-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="hidden"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
-            </button>
-            <div class="flex-1 min-w-0">
-                <p id="player-title" class="text-sm text-muziboo-text font-medium truncate"></p>
-                <p id="player-artist" class="text-xs text-muziboo-text-muted truncate"></p>
-            </div>
-            <div class="flex-1 flex items-center gap-2">
-                <span id="player-time" class="text-xs text-muziboo-text-muted tabular-nums w-10 text-right">0:00</span>
-                <div id="player-progress-bar" class="flex-1 h-1.5 bg-muziboo-bg rounded-full cursor-pointer group" onclick="seekGlobalPlayer(event)">
-                    <div id="player-progress" class="h-full bg-muziboo-gold rounded-full transition-all duration-100 group-hover:bg-muziboo-text" style="width: 0%"></div>
-                </div>
-                <span id="player-duration" class="text-xs text-muziboo-text-muted tabular-nums w-10">0:00</span>
-            </div>
-        </div>
-        <audio id="global-audio"></audio>
-    </div>
+			<div
+				class="max-w-7xl mx-auto mt-12 pt-8 border-t border-muziboo-border flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-muziboo-text-muted uppercase tracking-[0.2em]"
+			>
+				<div>© 2026 MUZIBOO</div>
+				<div>Crafted with soul for hobby musicians</div>
+			</div>
+		</footer>
 
-    <script>
-    // =========================================================================
-    // Supabase Auth Helper & Handlers
-    // =========================================================================
-    
-    // Pass Go variables to JS without manual quotes — Go's html/template handles it safely.
-    const SUPABASE_URL = {{.SupabaseURL}};
-    const SUPABASE_ANON_KEY = {{.SupabaseAnonKey}};
-    
-    function getSupabase() {
-        if (window.muzibooSupabase) return window.muzibooSupabase;
-        if (window.supabase && window.supabase.createClient) {
-            window.muzibooSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            return window.muzibooSupabase;
-        }
-        return null;
-    }
+		<!-- Persistent Audio Player -->
+		<div
+			id="global-player"
+			class="fixed bottom-0 left-0 right-0 bg-muziboo-bg-softer border-t border-muziboo-border z-50 hidden"
+		>
+			<div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
+				<button
+					id="player-play-btn"
+					onclick="toggleGlobalPlayer()"
+					class="w-10 h-10 rounded-full bg-muziboo-gold text-muziboo-bg flex items-center justify-center hover:bg-muziboo-text transition-colors flex-shrink-0"
+				>
+					<svg
+						id="player-play-icon"
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+					>
+						<polygon points="5,3 19,12 5,21" />
+					</svg>
+					<svg
+						id="player-pause-icon"
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						class="hidden"
+					>
+						<rect x="6" y="4" width="4" height="16" />
+						<rect x="14" y="4" width="4" height="16" />
+					</svg>
+				</button>
+				<div class="flex-1 min-w-0">
+					<p
+						id="player-title"
+						class="text-sm text-muziboo-text font-medium truncate"
+					></p>
+					<p
+						id="player-artist"
+						class="text-xs text-muziboo-text-muted truncate"
+					></p>
+				</div>
+				<div class="flex-1 flex items-center gap-2">
+					<span
+						id="player-time"
+						class="text-xs text-muziboo-text-muted tabular-nums w-10 text-right"
+						>0:00</span
+					>
+					<div
+						id="player-progress-bar"
+						class="flex-1 h-1.5 bg-muziboo-bg rounded-full cursor-pointer group"
+						onclick="seekGlobalPlayer(event)"
+					>
+						<div
+							id="player-progress"
+							class="h-full bg-muziboo-gold rounded-full transition-all duration-100 group-hover:bg-muziboo-text"
+							style="width: 0%"
+						></div>
+					</div>
+					<span
+						id="player-duration"
+						class="text-xs text-muziboo-text-muted tabular-nums w-10"
+						>0:00</span
+					>
+				</div>
+			</div>
+			<audio id="global-audio"></audio>
+		</div>
 
-    // Explicitly global for inline onsubmit/onclick handlers
-    window.getToken = async function() {
-        const client = getSupabase();
-        if (!client) return null;
-        const { data: { session } } = await client.auth.getSession();
-        return session?.access_token || null;
-    }
+		<script>
+			// =========================================================================
+			// Supabase Auth Helper & Handlers
+			// =========================================================================
 
-    window.logout = async function() {
-        const client = getSupabase();
-        if (client) await client.auth.signOut();
-        document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
-        window.location.href = '/app/login';
-    }
+			// Pass Go variables to JS without manual quotes — Go's html/template handles it safely.
+			const SUPABASE_URL = {{.SupabaseURL}};
+			const SUPABASE_ANON_KEY = {{.SupabaseAnonKey}};
 
-    window.signInWithProvider = async function(provider, btn) {
-        const client = getSupabase();
-        if (!client) { alert('Auth service still loading...'); return; }
+			function getSupabase() {
+			    if (window.muzibooSupabase) return window.muzibooSupabase;
+			    if (window.supabase && window.supabase.createClient) {
+			        window.muzibooSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+			        return window.muzibooSupabase;
+			    }
+			    return null;
+			}
 
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.textContent = 'Redirecting…';
-        
-        try {
-            const { data, error } = await client.auth.signInWithOAuth({
-                provider: provider,
-                options: { redirectTo: window.location.origin + '/app/dashboard' }
-            });
-            if (error) throw error;
-            if (data && data.url) {
-                window.location.href = data.url;
-            }
-        } catch (error) {
-            alert(error.message || `Failed to sign in with ${provider}`);
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
-    }
+			// Explicitly global for inline onsubmit/onclick handlers
+			window.getToken = async function() {
+			    const client = getSupabase();
+			    if (!client) return null;
+			    const { data: { session } } = await client.auth.getSession();
+			    return session?.access_token || null;
+			}
 
-    // Turnstile tokens are single-use: read one per submit, reset the widget on failure.
-    window.getCaptchaToken = function(form) {
-        const input = form.querySelector('input[name="cf-turnstile-response"]');
-        return input ? input.value : '';
-    }
-    window.resetCaptcha = function(form) {
-        const widget = form.querySelector('.cf-turnstile');
-        if (widget && window.turnstile) window.turnstile.reset(widget);
-    }
+			window.logout = async function() {
+			    const client = getSupabase();
+			    if (client) await client.auth.signOut();
+			    document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
+			    window.location.href = '/app/login';
+			}
 
-    window.handleLogin = async function(e) {
-        if (e && e.preventDefault) e.preventDefault();
-        const form = e.currentTarget || e.target;
-        const client = getSupabase();
-        if (!client) { alert('Auth service still loading...'); return; }
+			window.signInWithProvider = async function(provider, btn) {
+			    const client = getSupabase();
+			    if (!client) { alert('Auth service still loading...'); return; }
 
-        const btn = form.querySelector('button[type="submit"]');
-        const errEl = document.getElementById('login-error');
-        if (errEl) errEl.classList.add('hidden');
+			    const originalText = btn.innerHTML;
+			    btn.disabled = true;
+			    btn.textContent = 'Redirecting…';
 
-        const email = form.querySelector('#email').value;
-        const password = form.querySelector('#password').value;
-        const captchaToken = getCaptchaToken(form);
-        if (!captchaToken) {
-            if (errEl) {
-                errEl.textContent = 'Please complete the verification challenge first.';
-                errEl.classList.remove('hidden');
-            }
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = 'Logging in…';
+			    try {
+			        const { data, error } = await client.auth.signInWithOAuth({
+			            provider: provider,
+			            options: { redirectTo: window.location.origin + '/app/dashboard' }
+			        });
+			        if (error) throw error;
+			        if (data && data.url) {
+			            window.location.href = data.url;
+			        }
+			    } catch (error) {
+			        alert(error.message || `Failed to sign in with ${provider}`);
+			        btn.disabled = false;
+			        btn.innerHTML = originalText;
+			    }
+			}
 
-        try {
-            const { error } = await client.auth.signInWithPassword({ email, password, options: { captchaToken } });
-            if (error) throw error;
-            window.location.href = '/app/dashboard';
-        } catch (err) {
-            resetCaptcha(form);
-            if (errEl) {
-                errEl.textContent = err.message || 'An unexpected error occurred.';
-                errEl.classList.remove('hidden');
-            } else {
-                alert(err.message || 'Login failed');
-            }
-            btn.disabled = false;
-            btn.textContent = 'Log In';
-        }
-    }
+			// Turnstile tokens are single-use: read one per submit, reset the widget on failure.
+			window.getCaptchaToken = function(form) {
+			    const input = form.querySelector('input[name="cf-turnstile-response"]');
+			    return input ? input.value : '';
+			}
+			window.resetCaptcha = function(form) {
+			    const widget = form.querySelector('.cf-turnstile');
+			    if (widget && window.turnstile) window.turnstile.reset(widget);
+			}
 
-    window.handleSignup = async function(e) {
-        console.log('Signup triggered');
-        if (e && e.preventDefault) e.preventDefault();
-        const form = e.currentTarget || e.target;
-        console.log('Form:', form);
-        const client = getSupabase();
-        if (!client) { alert('Auth service still loading...'); return; }
+			window.handleLogin = async function(e) {
+			    if (e && e.preventDefault) e.preventDefault();
+			    const form = e.currentTarget || e.target;
+			    const client = getSupabase();
+			    if (!client) { alert('Auth service still loading...'); return; }
 
-        const btn = form.querySelector('button[type="submit"]');
-        const errEl = document.getElementById('signup-error');
-        const successEl = document.getElementById('signup-success');
-        if (errEl) errEl.classList.add('hidden');
-        if (successEl) successEl.classList.add('hidden');
+			    const btn = form.querySelector('button[type="submit"]');
+			    const errEl = document.getElementById('login-error');
+			    if (errEl) errEl.classList.add('hidden');
 
-        const username = form.querySelector('#username').value;
-        const email = form.querySelector('#email').value;
-        const password = form.querySelector('#password').value;
-        const captchaToken = getCaptchaToken(form);
-        if (!captchaToken) {
-            if (errEl) {
-                errEl.textContent = 'Please complete the verification challenge first.';
-                errEl.classList.remove('hidden');
-            }
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = 'Creating account…';
+			    const email = form.querySelector('#email').value;
+			    const password = form.querySelector('#password').value;
+			    const captchaToken = getCaptchaToken(form);
+			    if (!captchaToken) {
+			        if (errEl) {
+			            errEl.textContent = 'Please complete the verification challenge first.';
+			            errEl.classList.remove('hidden');
+			        }
+			        return;
+			    }
+			    btn.disabled = true;
+			    btn.textContent = 'Logging in…';
 
-        try {
-            const { data, error } = await client.auth.signUp({
-                email,
-                password,
-                options: { data: { username: username, display_name: username }, captchaToken }
-            });
-            if (error) throw error;
+			    try {
+			        const { error } = await client.auth.signInWithPassword({ email, password, options: { captchaToken } });
+			        if (error) throw error;
+			        window.location.href = '/app/dashboard';
+			    } catch (err) {
+			        resetCaptcha(form);
+			        if (errEl) {
+			            errEl.textContent = err.message || 'An unexpected error occurred.';
+			            errEl.classList.remove('hidden');
+			        } else {
+			            alert(err.message || 'Login failed');
+			        }
+			        btn.disabled = false;
+			        btn.textContent = 'Log In';
+			    }
+			}
 
-            if (data.user && data.user.identities && data.user.identities.length === 0) {
-                throw new Error('An account with this email already exists. Please log in instead.');
-            }
+			window.handleSignup = async function(e) {
+			    console.log('Signup triggered');
+			    if (e && e.preventDefault) e.preventDefault();
+			    const form = e.currentTarget || e.target;
+			    console.log('Form:', form);
+			    const client = getSupabase();
+			    if (!client) { alert('Auth service still loading...'); return; }
 
-            if (data.user && !data.session) {
-                if (successEl) {
-                    successEl.textContent = 'Check your email to confirm your account, then log in.';
-                    successEl.classList.remove('hidden');
-                } else {
-                    alert('Check your email to confirm your account, then log in.');
-                }
-                btn.disabled = false;
-                btn.textContent = 'Create Account';
-                return;
-            }
-            window.location.href = '/app/dashboard';
-        } catch (err) {
-            resetCaptcha(form);
-            if (errEl) {
-                errEl.textContent = err.message || 'An unexpected error occurred.';
-                errEl.classList.remove('hidden');
-            } else {
-                alert(err.message || 'Signup failed');
-            }
-            btn.disabled = false;
-            btn.textContent = 'Create Account';
-        }
-    }
+			    const btn = form.querySelector('button[type="submit"]');
+			    const errEl = document.getElementById('signup-error');
+			    const successEl = document.getElementById('signup-success');
+			    if (errEl) errEl.classList.add('hidden');
+			    if (successEl) successEl.classList.add('hidden');
 
-    window.handleMagic = async function(e, page) {
-        if (e && e.preventDefault) e.preventDefault();
-        const form = e.currentTarget || e.target;
-        const client = getSupabase();
-        if (!client) { alert('Auth service still loading...'); return; }
+			    const username = form.querySelector('#username').value;
+			    const email = form.querySelector('#email').value;
+			    const password = form.querySelector('#password').value;
+			    const captchaToken = getCaptchaToken(form);
+			    if (!captchaToken) {
+			        if (errEl) {
+			            errEl.textContent = 'Please complete the verification challenge first.';
+			            errEl.classList.remove('hidden');
+			        }
+			        return;
+			    }
+			    btn.disabled = true;
+			    btn.textContent = 'Creating account…';
 
-        const btn = form.querySelector('button[type="submit"]');
-        const email = form.querySelector('#magic-email').value;
-        const errEl = document.getElementById(page + '-error');
-        const successEl = document.getElementById(page + '-success');
+			    try {
+			        const { data, error } = await client.auth.signUp({
+			            email,
+			            password,
+			            options: { data: { username: username, display_name: username }, captchaToken }
+			        });
+			        if (error) throw error;
 
-        if (errEl) errEl.classList.add('hidden');
-        if (successEl) successEl.classList.add('hidden');
+			        if (data.user && data.user.identities && data.user.identities.length === 0) {
+			            throw new Error('An account with this email already exists. Please log in instead.');
+			        }
 
-        const captchaToken = getCaptchaToken(form);
-        if (!captchaToken) {
-            if (errEl) {
-                errEl.textContent = 'Please complete the verification challenge first.';
-                errEl.classList.remove('hidden');
-            }
-            return;
-        }
-        btn.disabled = true;
-        btn.textContent = 'Sending…';
+			        if (data.user && !data.session) {
+			            if (successEl) {
+			                successEl.textContent = 'Check your email to confirm your account, then log in.';
+			                successEl.classList.remove('hidden');
+			            } else {
+			                alert('Check your email to confirm your account, then log in.');
+			            }
+			            btn.disabled = false;
+			            btn.textContent = 'Create Account';
+			            return;
+			        }
+			        window.location.href = '/app/dashboard';
+			    } catch (err) {
+			        resetCaptcha(form);
+			        if (errEl) {
+			            errEl.textContent = err.message || 'An unexpected error occurred.';
+			            errEl.classList.remove('hidden');
+			        } else {
+			            alert(err.message || 'Signup failed');
+			        }
+			        btn.disabled = false;
+			        btn.textContent = 'Create Account';
+			    }
+			}
 
-        try {
-            const { error } = await client.auth.signInWithOtp({
-                email,
-                options: { emailRedirectTo: window.location.origin + '/app/dashboard', captchaToken }
-            });
-            if (error) throw error;
-            resetCaptcha(form);
-            if (successEl) {
-                successEl.textContent = '✓ Magic link sent! Check your email inbox.';
-                successEl.classList.remove('hidden');
-            }
-            btn.disabled = false;
-            btn.textContent = 'Send Magic Link';
-        } catch (err) {
-            resetCaptcha(form);
-            if (errEl) {
-                errEl.textContent = err.message || 'Failed to send magic link.';
-                errEl.classList.remove('hidden');
-            }
-            btn.disabled = false;
-            btn.textContent = 'Send Magic Link';
-        }
-    }
+			window.handleMagic = async function(e, page) {
+			    if (e && e.preventDefault) e.preventDefault();
+			    const form = e.currentTarget || e.target;
+			    const client = getSupabase();
+			    if (!client) { alert('Auth service still loading...'); return; }
 
-    // Sync session to cookie for the Go backend
-    const initialClient = getSupabase();
-    if (initialClient) {
-        initialClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-                const token = session?.access_token;
-                if (token) {
-                    // Secure is omitted on plain-HTTP localhost so local dev keeps working.
-                    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-                    document.cookie = `sb-access-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secure}`;
-                    if (window.location.pathname === '/app/login' || window.location.pathname === '/app/signup') {
-                        window.location.href = '/app/dashboard';
-                    }
-                }
-            } else if (event === 'SIGNED_OUT') {
-                document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
-            }
-        });
-    }
+			    const btn = form.querySelector('button[type="submit"]');
+			    const email = form.querySelector('#magic-email').value;
+			    const errEl = document.getElementById(page + '-error');
+			    const successEl = document.getElementById(page + '-success');
 
-    // Inject auth header into all HTMX requests
-    document.addEventListener('htmx:configRequest', async function(evt) {
-        const token = await window.getToken();
-        if (token) {
-            evt.detail.headers['Authorization'] = 'Bearer ' + token;
-        }
-    });
+			    if (errEl) errEl.classList.add('hidden');
+			    if (successEl) successEl.classList.add('hidden');
 
-    // =========================================================================
-    // Global Audio Player
-    // =========================================================================
-    const audio = document.getElementById('global-audio');
-    let isPlaying = false;
+			    const captchaToken = getCaptchaToken(form);
+			    if (!captchaToken) {
+			        if (errEl) {
+			            errEl.textContent = 'Please complete the verification challenge first.';
+			            errEl.classList.remove('hidden');
+			        }
+			        return;
+			    }
+			    btn.disabled = true;
+			    btn.textContent = 'Sending…';
 
-    function playTrack(src, title, artist) {
-        const player = document.getElementById('global-player');
-        player.classList.remove('hidden');
-        document.getElementById('player-title').textContent = title;
-        document.getElementById('player-artist').textContent = artist;
-        audio.src = src;
-        audio.play();
-        isPlaying = true;
-        updatePlayIcon();
-    }
+			    try {
+			        const { error } = await client.auth.signInWithOtp({
+			            email,
+			            options: { emailRedirectTo: window.location.origin + '/app/dashboard', captchaToken }
+			        });
+			        if (error) throw error;
+			        resetCaptcha(form);
+			        if (successEl) {
+			            successEl.textContent = '✓ Magic link sent! Check your email inbox.';
+			            successEl.classList.remove('hidden');
+			        }
+			        btn.disabled = false;
+			        btn.textContent = 'Send Magic Link';
+			    } catch (err) {
+			        resetCaptcha(form);
+			        if (errEl) {
+			            errEl.textContent = err.message || 'Failed to send magic link.';
+			            errEl.classList.remove('hidden');
+			        }
+			        btn.disabled = false;
+			        btn.textContent = 'Send Magic Link';
+			    }
+			}
 
-    function toggleGlobalPlayer() {
-        if (isPlaying) { audio.pause(); } else { audio.play(); }
-        isPlaying = !isPlaying;
-        updatePlayIcon();
-    }
+			// Sync session to cookie for the Go backend
+			const initialClient = getSupabase();
+			if (initialClient) {
+			    initialClient.auth.onAuthStateChange((event, session) => {
+			        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+			            const token = session?.access_token;
+			            if (token) {
+			                // Secure is omitted on plain-HTTP localhost so local dev keeps working.
+			                const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+			                document.cookie = `sb-access-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secure}`;
+			                if (window.location.pathname === '/app/login' || window.location.pathname === '/app/signup') {
+			                    window.location.href = '/app/dashboard';
+			                }
+			            }
+			        } else if (event === 'SIGNED_OUT') {
+			            document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax';
+			        }
+			    });
+			}
 
-    function updatePlayIcon() {
-        document.getElementById('player-play-icon').classList.toggle('hidden', isPlaying);
-        document.getElementById('player-pause-icon').classList.toggle('hidden', !isPlaying);
-    }
+			// Inject auth header into all HTMX requests
+			document.addEventListener('htmx:configRequest', async function(evt) {
+			    const token = await window.getToken();
+			    if (token) {
+			        evt.detail.headers['Authorization'] = 'Bearer ' + token;
+			    }
+			});
 
-    function seekGlobalPlayer(e) {
-        if (!audio.duration) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const pct = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = pct * audio.duration;
-    }
+			// =========================================================================
+			// Global Audio Player
+			// =========================================================================
+			const audio = document.getElementById('global-audio');
+			let isPlaying = false;
 
-    function fmtTime(t) {
-        const m = Math.floor(t / 60);
-        const s = Math.floor(t % 60);
-        return m + ':' + s.toString().padStart(2, '0');
-    }
+			function playTrack(src, title, artist) {
+			    const player = document.getElementById('global-player');
+			    player.classList.remove('hidden');
+			    document.getElementById('player-title').textContent = title;
+			    document.getElementById('player-artist').textContent = artist;
+			    audio.src = src;
+			    audio.play();
+			    isPlaying = true;
+			    updatePlayIcon();
+			}
 
-    audio.addEventListener('timeupdate', () => {
-        if (!audio.duration) return;
-        const pct = (audio.currentTime / audio.duration) * 100;
-        document.getElementById('player-progress').style.width = pct + '%';
-        document.getElementById('player-time').textContent = fmtTime(audio.currentTime);
-    });
-    audio.addEventListener('loadedmetadata', () => {
-        document.getElementById('player-duration').textContent = fmtTime(audio.duration);
-    });
-    audio.addEventListener('ended', () => {
-        isPlaying = false;
-        updatePlayIcon();
-    });
-    </script>
-    <!-- Cookie Consent Banner -->
-    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 z-[100] bg-muziboo-bg border-t border-muziboo-border p-4 transform translate-y-full transition-transform duration-500 ease-out flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl">
-        <div class="text-sm text-muziboo-text-muted max-w-3xl">
-            <p>We use cookies to analyze site traffic and improve your experience. By clicking "Accept", you consent to our use of analytics cookies. Read our <a href="/privacy" class="text-muziboo-gold hover:underline">Privacy Policy</a>.</p>
-        </div>
-        <div class="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-end">
-            <button id="cookie-decline" class="px-4 py-2 text-sm font-medium text-muziboo-text-muted hover:text-muziboo-text transition-colors">Decline</button>
-            <button id="cookie-accept" class="px-4 py-2 text-sm font-bold bg-muziboo-gold text-muziboo-bg rounded-lg hover:bg-muziboo-text transition-colors">Accept All</button>
-        </div>
-    </div>
+			function toggleGlobalPlayer() {
+			    if (isPlaying) { audio.pause(); } else { audio.play(); }
+			    isPlaying = !isPlaying;
+			    updatePlayIcon();
+			}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const banner = document.getElementById('cookie-banner');
-            const acceptBtn = document.getElementById('cookie-accept');
-            const declineBtn = document.getElementById('cookie-decline');
-            
-            if (!banner) return;
+			function updatePlayIcon() {
+			    document.getElementById('player-play-icon').classList.toggle('hidden', isPlaying);
+			    document.getElementById('player-pause-icon').classList.toggle('hidden', !isPlaying);
+			}
 
-            if (!localStorage.getItem('muziboo_cookie_consent')) {
-                setTimeout(() => {
-                    banner.classList.remove('translate-y-full');
-                }, 500);
-            }
+			function seekGlobalPlayer(e) {
+			    if (!audio.duration) return;
+			    const rect = e.currentTarget.getBoundingClientRect();
+			    const pct = (e.clientX - rect.left) / rect.width;
+			    audio.currentTime = pct * audio.duration;
+			}
 
-            function hideBanner() {
-                banner.classList.add('translate-y-full');
-            }
+			function fmtTime(t) {
+			    const m = Math.floor(t / 60);
+			    const s = Math.floor(t % 60);
+			    return m + ':' + s.toString().padStart(2, '0');
+			}
 
-            acceptBtn.addEventListener('click', () => {
-                localStorage.setItem('muziboo_cookie_consent', 'accepted');
-                hideBanner();
-                // We do not reload here because Go backend has no analytics scripts to load
-            });
+			audio.addEventListener('timeupdate', () => {
+			    if (!audio.duration) return;
+			    const pct = (audio.currentTime / audio.duration) * 100;
+			    document.getElementById('player-progress').style.width = pct + '%';
+			    document.getElementById('player-time').textContent = fmtTime(audio.currentTime);
+			});
+			audio.addEventListener('loadedmetadata', () => {
+			    document.getElementById('player-duration').textContent = fmtTime(audio.duration);
+			});
+			audio.addEventListener('ended', () => {
+			    isPlaying = false;
+			    updatePlayIcon();
+			});
+		</script>
+		<!-- Cookie Consent Banner -->
+		<div
+			id="cookie-banner"
+			class="fixed bottom-0 left-0 right-0 z-[100] bg-muziboo-bg border-t border-muziboo-border p-4 transform translate-y-full transition-transform duration-500 ease-out flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl"
+		>
+			<div class="text-sm text-muziboo-text-muted max-w-3xl">
+				<p>
+					We use cookies to analyze site traffic and improve your experience. By
+					clicking "Accept", you consent to our use of analytics cookies. Read
+					our
+					<a href="/privacy" class="text-muziboo-gold hover:underline"
+						>Privacy Policy</a
+					>.
+				</p>
+			</div>
+			<div
+				class="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-end"
+			>
+				<button
+					id="cookie-decline"
+					class="px-4 py-2 text-sm font-medium text-muziboo-text-muted hover:text-muziboo-text transition-colors"
+				>
+					Decline
+				</button>
+				<button
+					id="cookie-accept"
+					class="px-4 py-2 text-sm font-bold bg-muziboo-gold text-muziboo-bg rounded-lg hover:bg-muziboo-text transition-colors"
+				>
+					Accept All
+				</button>
+			</div>
+		</div>
 
-            declineBtn.addEventListener('click', () => {
-                localStorage.setItem('muziboo_cookie_consent', 'declined');
-                hideBanner();
-            });
-        });
-    </script>
-</body>
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const banner = document.getElementById("cookie-banner");
+				const acceptBtn = document.getElementById("cookie-accept");
+				const declineBtn = document.getElementById("cookie-decline");
+
+				if (!banner) return;
+
+				if (!localStorage.getItem("muziboo_cookie_consent")) {
+					setTimeout(() => {
+						banner.classList.remove("translate-y-full");
+					}, 500);
+				}
+
+				function hideBanner() {
+					banner.classList.add("translate-y-full");
+				}
+
+				acceptBtn.addEventListener("click", () => {
+					localStorage.setItem("muziboo_cookie_consent", "accepted");
+					hideBanner();
+					// We do not reload here because Go backend has no analytics scripts to load
+				});
+
+				declineBtn.addEventListener("click", () => {
+					localStorage.setItem("muziboo_cookie_consent", "declined");
+					hideBanner();
+				});
+			});
+		</script>
+	</body>
 </html>
